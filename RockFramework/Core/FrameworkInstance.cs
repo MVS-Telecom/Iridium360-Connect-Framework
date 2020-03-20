@@ -148,7 +148,7 @@ namespace Rock
         /// <summary>
         /// Номер ключа в списке всех ключей. Они захардкодены в исходниках фреймворка и во всех пакетах передается именно номер, а не сам ключ!
         /// </summary>
-        internal readonly short KeyIndex = -1;
+        internal readonly short KeyIndex = 0;
 
         /// <summary>
         /// Локально сгенерированный Id приложения. Используется во всех пакетах, чтобы разруливать пакеты от устройства для "меня"
@@ -189,8 +189,7 @@ namespace Rock
             this.storage = storage;
             this.logger = logger ?? new ConsoleLogger();
 
-            if (keyIndex != null)
-                KeyIndex = keyIndex.Value;
+            KeyIndex = keyIndex ?? 0;
 
             this.ConnectedDevice = new Device(this);
         }
@@ -1281,7 +1280,9 @@ namespace Rock
         private void RequestNextMessage()
         {
             PostCommand(new GetNextMessageCommand(this.AppId, 0));
-            PostCommand(new GetNextMessageCommand(this.AppId, this.KeyIndex));
+
+            if (this.KeyIndex != 0)
+                PostCommand(new GetNextMessageCommand(this.AppId, this.KeyIndex));
 
 
             var b = BitConverter.GetBytes((long)1099511627775L).Take(5).ToArray();
