@@ -14,12 +14,17 @@ namespace Rock.Util
     {
         public void Log(string message)
         {
-            Console.WriteLine(message);
+            ///HACK: На андроиде рандромно проявыпадает исключение при вызове <see cref="Console.WriteLine"/>
+            try
+            {
+                Console.WriteLine(message);
+            }
+            catch { }
         }
 
         public void Log(Exception exception)
         {
-            Console.WriteLine(exception.ToString());
+            Log(exception.ToString());
         }
     }
 }
