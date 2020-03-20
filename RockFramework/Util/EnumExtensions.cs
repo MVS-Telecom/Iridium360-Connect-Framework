@@ -86,6 +86,19 @@ namespace Rock.Util
             return (Convert.ToUInt32(input) & Convert.ToUInt32(matchTo)) != 0;
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static IEnumerable<Enum> Flags(this Enum input)
+        {
+            foreach (Enum value in Enum.GetValues(input.GetType()))
+                if (IsSet(input, value))
+                    yield return value;
+        }
+
     }
 
 
