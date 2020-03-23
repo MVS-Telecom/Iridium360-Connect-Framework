@@ -505,15 +505,15 @@ namespace Rock
 
     public enum GpsStatus
     {
-        Yes,
-        No
+        Inactive,
+        Active,      
     }
 
 
     public enum IridiumStatus
     {
-        Yes,
-        No
+        Inactive,
+        Active,
     }
 
     public enum TrackingFrequency
