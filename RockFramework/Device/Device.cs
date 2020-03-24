@@ -79,7 +79,7 @@ namespace Rock
         Location Location { get; }
         List<DeviceParameter> Parameters { get; }
         string Firmware { get; }
-        string Imei { get; }
+        string Hardware { get; }
         LockState LockStatus { get; }
         int? Battery { get; }
 
@@ -288,17 +288,17 @@ namespace Rock
 
 
         /// <summary>
-        /// IMEI устройства
+        /// 
         /// </summary>
-        public string Imei
+        public string Hardware
         {
             get
             {
-                return imei;
+                return hardware;
             }
             internal set
             {
-                imei = value;
+                hardware = value;
                 DeviceInfoUpdated(this, new EventArgs());
             }
         }
@@ -328,7 +328,7 @@ namespace Rock
 
         private string serial;
         private string firmware;
-        private string imei;
+        private string hardware;
         private DeviceAccessory accessory;
 
 

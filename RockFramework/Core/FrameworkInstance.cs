@@ -459,7 +459,7 @@ namespace Rock
 
 
                 string _firmware = await GetDeviceFirmware();
-                string _imei = await GetDeviceImei();
+                string _hardware = await GetDeviceHardware();
 
 
                 IsRawMessagingAvailable = await GetRawMessagingAvailable();
@@ -467,7 +467,7 @@ namespace Rock
 
 
 
-                ConnectedDevice.Imei = _imei;
+                ConnectedDevice.Hardware = _hardware;
                 ConnectedDevice.Firmware = _firmware;
                 ConnectedDevice.Discovered(gatts
                     .Select(x => x.Id)
@@ -605,11 +605,11 @@ namespace Rock
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task<string> GetDeviceImei()
+        private async Task<string> GetDeviceHardware()
         {
-            var imei = gatts.FirstOrDefault(x => x.Id.ToString() == "b266cf58-8aa9-4491-a3e6-4876b4ee6efc");
-            var bytes = await imei.ReadAsync();
-            return Process_Imei(bytes);
+            var hardware = gatts.FirstOrDefault(x => x.Id.ToString() == "b266cf58-8aa9-4491-a3e6-4876b4ee6efc");
+            var bytes = await hardware.ReadAsync();
+            return Process_Hardware(bytes);
         }
 
 
@@ -1351,7 +1351,7 @@ namespace Rock
         /// 
         /// </summary>
         /// <param name="data"></param>
-        private string Process_Imei(byte[] data)
+        private string Process_Hardware(byte[] data)
         {
             return Encoding.UTF8.GetString(data).Replace("\0", string.Empty);
         }
