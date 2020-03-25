@@ -281,7 +281,9 @@ namespace Rock
         private static bool IsSatelliteDevice(string mac)
         {
             ///Из исходников Rock
-            return mac?.ToUpperInvariant()?.StartsWith("00:07:80") == true || mac?.ToUpperInvariant()?.StartsWith("88:6B:0F") == true;
+            return mac?.ToUpperInvariant()?.StartsWith("00:07:80") == true
+                || mac?.ToUpperInvariant()?.StartsWith("88:6B:0F") == true
+                || mac?.ToUpperInvariant()?.StartsWith("88:0B:81") == true;
         }
 
 
