@@ -395,7 +395,7 @@ namespace Rock
             ///Не ждем завершения попытки подключения
             if (flags.IsSet(ConnectFlags.SkipIfConnecting) && connectLock.CurrentCount == 0)
             {
-                Console.WriteLine("[CONNECT] Skip connecting attempt - already connecting");
+                ConsoleLogger.WriteLine("[CONNECT] Skip connecting attempt - already connecting");
                 return true;
             }
 

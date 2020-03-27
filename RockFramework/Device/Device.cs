@@ -1,5 +1,6 @@
 ﻿using Rock.Commands;
 using Rock.Exceptions;
+using Rock.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -194,7 +195,7 @@ namespace Rock
                     var old = lockStatus;
                     lockStatus = value;
 
-                    Console.WriteLine($"[LOCK-STATE] {old} -> {lockStatus}");
+                    ConsoleLogger.WriteLine($"[LOCK-STATE] {old} -> {lockStatus}");
 
                     DeviceLockStatusUpdated(this, new LockStatusUpdatedEventArgs()
                     {
@@ -613,7 +614,7 @@ namespace Rock
 
             await this.Rock.ReadDeviceParameter(parameter.GattId, checkSuccess: true);
 
-            Console.WriteLine($"Read finish -> [{parameterId}]");
+            ConsoleLogger.WriteLine($"Read finish -> [{parameterId}]");
         }
 
 

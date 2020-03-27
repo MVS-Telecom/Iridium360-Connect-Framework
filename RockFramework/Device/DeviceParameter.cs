@@ -220,7 +220,7 @@ namespace Rock
         {
             if (IsEvent)
             {
-                Console.WriteLine($"Event: `{Id}`");
+                ConsoleLogger.WriteLine($"Event: `{Id}`");
                 return true;
             }
 
@@ -243,7 +243,7 @@ namespace Rock
 
             if (changed)
             {
-                Console.WriteLine($"Parameter changed: [{Id}] -> {CachedValue}");
+                ConsoleLogger.WriteLine($"Parameter changed: [{Id}] -> {CachedValue}");
             }
 
             return changed;
