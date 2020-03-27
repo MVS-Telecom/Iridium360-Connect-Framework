@@ -198,6 +198,8 @@ namespace Rock
 
     public enum Parameter
     {
+        Unknown,
+
         AlertsTimerStatus,
         AlertsTimerTimeout,
         AlertsBluetoothLossStatus,

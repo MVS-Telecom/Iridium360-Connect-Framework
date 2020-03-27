@@ -491,16 +491,16 @@ namespace Rock
                 //#endif
 
 
-#if DEBUG
-                var enums = Enum.GetValues(typeof(Parameter))
-                    .Cast<Parameter>().ToList();
+                var enums = Enum
+                    .GetValues(typeof(Parameter))
+                    .Cast<Parameter>()
+                    .ToList();
 
-                gatts.ForEach(x =>
+                gatts.ForEach(gatt =>
                 {
-                    var v = enums.FirstOrDefault(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == x.Id.ToString());
-                    x.Name = v.ToString();
+                    var v = enums.FirstOrDefault(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == gatt.Id.ToString());
+                    gatt.Name = v.ToString();
                 });
-#endif
 
 
                 ConnectedDevice.SetState(DeviceState.Connected);
