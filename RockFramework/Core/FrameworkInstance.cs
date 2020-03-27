@@ -1374,16 +1374,20 @@ namespace Rock
         /// <param name="data"></param>
         private void Process_Location(byte[] data)
         {
-            Location location = DeviceHelper.IsCapabilitySupported(ConnectedDevice, DeviceCapability.DeviceCapabilityTypeRevisedPositionFormat)
-                ? ParseLocation(data)
-                : ParseLocation_Obsolete(data);
+            bool supported = DeviceHelper.IsCapabilitySupported(ConnectedDevice, DeviceCapability.DeviceCapabilityTypeRevisedPositionFormat);
 
-            //TODO: Здесь какой-то magic
+            Location location = supported
+                ? ParseLocation_RevisedFormat(data)
+                : ParseLocation(data);
 
-            Location location1 = ParseLocation(data);
-            //Location location2 = ParseLocation_Obsolete(data);
+#if DEBUG
 
-            ConnectedDevice.Location = location1;
+            Location location1 = ParseLocation_RevisedFormat(data);
+            Location location2 = ParseLocation(data);
+
+#endif
+
+            ConnectedDevice.Location = location;
         }
 
 
@@ -1392,7 +1396,7 @@ namespace Rock
         /// </summary>
         /// <param name="bArr"></param>
         /// <returns></returns>
-        private static Location ParseLocation_Obsolete(byte[] bArr)
+        private static Location ParseLocation(byte[] bArr)
         {
             double d = (((double)((long)(((((bArr[0] & 255) << 17) + ((bArr[1] & 255) << 9)) + ((bArr[2] & 255) << 1)) + ((bArr[3] & 128) >> 7)))) / 100000.0d) - 90.0d;
             double d2 = (((double)((long)(((((bArr[3] & Byte.MaxValue) << 19) + ((bArr[4] & 255) << 11)) + ((bArr[5] & 255) << 3)) + ((bArr[6] & 224) >> 5)))) / 100000.0d) - 180.0d;
@@ -1425,7 +1429,7 @@ namespace Rock
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private Location ParseLocation(byte[] data)
+        private static Location ParseLocation_RevisedFormat(byte[] data)
         {
             byte[] _data = data.GetCopy(2, data.Length - 1);
 

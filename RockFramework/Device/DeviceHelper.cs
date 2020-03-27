@@ -600,7 +600,11 @@ namespace Rock
                                 }
                                 if (fbVar == DeviceCapability.DeviceCapabilityTypeRevisedPositionFormat)
                                 {
-                                    return false;
+                                    ///TODO: ЭТО НЕ ТОЧНО, возможно поддерживают и более ранние прошивки
+                                    if (a >= 30910)
+                                    {
+                                        return true;
+                                    }
                                 }
                                 if (fbVar == DeviceCapability.DeviceCapabilityTypeDaliaFPSO)
                                 {
