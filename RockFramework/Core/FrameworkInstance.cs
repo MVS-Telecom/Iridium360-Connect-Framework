@@ -932,7 +932,7 @@ namespace Rock
         /// <param name="gatt"></param>
         private void OnGattChanged(IGattCharacteristic gatt)
         {
-            Console.WriteLine($"[GATT CHANGED] `{gatt.Name}` -> {gatt.Value.ToHexString()}");
+            logger.Log($"[GATT CHANGED] `{gatt.Name}` -> {gatt.Value.ToHexString()}");
 
 
             switch (gatt.Id.ToString())
