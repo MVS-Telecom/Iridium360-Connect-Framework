@@ -91,19 +91,6 @@ namespace Rock
     /// <summary>
     /// 
     /// </summary>
-    public class MapAttribute : Attribute
-    {
-        public int Value { get; set; }
-        public MapAttribute(int value)
-        {
-            this.Value = value;
-        }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
     public class EventAttribute : Attribute { }
 
     /// <summary>
@@ -506,7 +493,7 @@ namespace Rock
     public enum GpsStatus
     {
         Inactive,
-        Active,      
+        Active,
     }
 
 
@@ -518,31 +505,31 @@ namespace Rock
 
     public enum TrackingFrequency
     {
-        [Order(1)] [Value(5)] [Translation("$=continuous$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod5sec)] FrequencyContinuous,
-        [Order(7)] [Value(5 * 60)] [Translation("$=time_5min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod5min)] Frequency5min,
-        [Order(10)] [Value(10 * 60)] [Translation("$=time_10min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod10min)] Frequency10min,
-        [Order(12)] [Value(15 * 60)] [Translation("$=time_15min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod15min)] Frequency15min,
-        [Order(13)] [Value(20 * 60)] [Translation("$=time_20min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency20min,
-        [Order(14)] [Value(30 * 60)] [Translation("$=time_30min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency30min,
-        [Order(15)] [Value(60 * 60)] [Translation("$=time_60min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency60min,
-        [Order(16)] [Value(90 * 60)] [Translation("$=time_90min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency90min,
-        [Order(17)] [Value(120 * 60)] [Translation("$=time_120min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency120min,
-        [Order(18)] [Value(180 * 60)] [Translation("$=time_180min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency180min,
-        [Order(19)] [Value(240 * 60)] [Translation("$=time_240min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency240min,
-        [Order(20)] [Value(350 * 60)] [Translation("$=time_360min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency360min,
-        [Order(21)] [Value(480 * 60)] [Translation("$=time_480min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency480min,
-        [Order(22)] [Value(720 * 60)] [Translation("$=time_720min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency720min,
-        [Order(23)] [Value(-1)] [Translation("$=burst$$")] [Map(-1)] FrequencyBurst,
-        [Order(3)] [Value(1 * 60)] [Translation("$=time_1min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod1min)] Frequency1min,
-        [Order(4)] [Value(2 * 60)] [Translation("$=time_2min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod2min)] Frequency2min,
-        [Order(5)] [Value(3 * 60)] [Translation("$=time_3min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod5min)] Frequency3min,
-        [Order(6)] [Value(4 * 60)] [Translation("$=time_4min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod5min)] Frequency4min,
-        [Order(23)] [Value(1440 * 60)] [Translation("$=time_1440min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20min)] Frequency1440min,
-        [Order(8)] [Value(6 * 60)] [Translation("$=time_6min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod5min)] Frequency6min,
-        [Order(9)] [Value(8 * 60)] [Translation("$=time_8min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod5min)] Frequency8min,
-        [Order(11)] [Value(12 * 60)] [Translation("$=time_12min$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod15min)] Frequency12min,
-        [Order(1)] [Value(15)] [Translation("$=time_15sec$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod20sec)] Frequency15sec,
-        [Order(2)] [Value(30)] [Translation("$=time_30sec$$")] [Map((int)DistressBurstFixPeriod.DistressBurstFixPeriod30sec)] Frequency30sec
+        [Order(1)] [Value(5)] [Translation("$=continuous$$")] FrequencyContinuous,
+        [Order(7)] [Value(5 * 60)] [Translation("$=time_5min$$")] Frequency5min,
+        [Order(10)] [Value(10 * 60)] [Translation("$=time_10min$$")] Frequency10min,
+        [Order(12)] [Value(15 * 60)] [Translation("$=time_15min$$")] Frequency15min,
+        [Order(13)] [Value(20 * 60)] [Translation("$=time_20min$$")] Frequency20min,
+        [Order(14)] [Value(30 * 60)] [Translation("$=time_30min$$")] Frequency30min,
+        [Order(15)] [Value(60 * 60)] [Translation("$=time_60min$$")] Frequency60min,
+        [Order(16)] [Value(90 * 60)] [Translation("$=time_90min$$")] Frequency90min,
+        [Order(17)] [Value(120 * 60)] [Translation("$=time_120min$$")] Frequency120min,
+        [Order(18)] [Value(180 * 60)] [Translation("$=time_180min$$")] Frequency180min,
+        [Order(19)] [Value(240 * 60)] [Translation("$=time_240min$$")] Frequency240min,
+        [Order(20)] [Value(350 * 60)] [Translation("$=time_360min$$")] Frequency360min,
+        [Order(21)] [Value(480 * 60)] [Translation("$=time_480min$$")] Frequency480min,
+        [Order(22)] [Value(720 * 60)] [Translation("$=time_720min$$")] Frequency720min,
+        [Order(23)] [Value(-1)] [Translation("$=burst$$")] FrequencyBurst,
+        [Order(3)] [Value(1 * 60)] [Translation("$=time_1min$$")] Frequency1min,
+        [Order(4)] [Value(2 * 60)] [Translation("$=time_2min$$")] Frequency2min,
+        [Order(5)] [Value(3 * 60)] [Translation("$=time_3min$$")] Frequency3min,
+        [Order(6)] [Value(4 * 60)] [Translation("$=time_4min$$")] Frequency4min,
+        [Order(23)] [Value(1440 * 60)] [Translation("$=time_1440min$$")] Frequency1440min,
+        [Order(8)] [Value(6 * 60)] [Translation("$=time_6min$$")] Frequency6min,
+        [Order(9)] [Value(8 * 60)] [Translation("$=time_8min$$")] Frequency8min,
+        [Order(11)] [Value(12 * 60)] [Translation("$=time_12min$$")] Frequency12min,
+        [Order(1)] [Value(15)] [Translation("$=time_15sec$$")] Frequency15sec,
+        [Order(2)] [Value(30)] [Translation("$=time_30sec$$")] Frequency30sec
     }
 
     public enum AlertsBluetoothLossStatus
@@ -1182,17 +1169,17 @@ namespace Rock
     [Translation("$=tracking_burst_fix_period$$")]
     public enum TrackingBurstFixPeriod
     {
-        [Translation("$=time_5sec$$")] [Map((int)TrackingFrequency.Frequency15sec)] Period5sec,
-        [Translation("$=time_10sec$$")] [Map((int)TrackingFrequency.Frequency15sec)] Period10sec,
-        [Translation("$=time_15sec$$")] [Map((int)TrackingFrequency.Frequency15sec)] Period15sec,
-        [Translation("$=time_20sec$$")] [Map((int)TrackingFrequency.Frequency30sec)] Period20sec,
-        [Translation("$=time_30sec$$")] [Map((int)TrackingFrequency.Frequency30sec)] Period30sec,
-        [Translation("$=time_1min$$")] [Map((int)TrackingFrequency.Frequency1min)] Period1min,
-        [Translation("$=time_2min$$")] [Map((int)TrackingFrequency.Frequency2min)] Period2min,
-        [Translation("$=time_5min$$")] [Map((int)TrackingFrequency.Frequency5min)] Period5min,
-        [Translation("$=time_10min$$")] [Map((int)TrackingFrequency.Frequency10min)] Period10min,
-        [Translation("$=time_15min$$")] [Map((int)TrackingFrequency.Frequency15min)] Period15min,
-        [Translation("$=time_20min$$")] [Map((int)TrackingFrequency.Frequency20min)] Period20min
+        [Value(5)] [Translation("$=time_5sec$$")] Period5sec,
+        [Value(10)] [Translation("$=time_10sec$$")] Period10sec,
+        [Value(15)] [Translation("$=time_15sec$$")] Period15sec,
+        [Value(20)] [Translation("$=time_20sec$$")] Period20sec,
+        [Value(30)] [Translation("$=time_30sec$$")] Period30sec,
+        [Value(1 * 60)] [Translation("$=time_1min$$")] Period1min,
+        [Value(2 * 60)] [Translation("$=time_2min$$")] Period2min,
+        [Value(5 * 60)] [Translation("$=time_5min$$")] Period5min,
+        [Value(10 * 60)] [Translation("$=time_10min$$")] Period10min,
+        [Value(15 * 60)] [Translation("$=time_15min$$")] Period15min,
+        [Value(20 * 60)] [Translation("$=time_20min$$")] Period20min
     }
 
     [Translation("$=tracking_burst_transmit_period$$")]
