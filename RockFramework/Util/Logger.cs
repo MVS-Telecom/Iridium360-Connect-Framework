@@ -10,11 +10,20 @@ namespace Rock.Util
         void Log(Exception exception);
     }
 
+
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConsoleLogger : ILogger
     {
-        public void Log(string message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        public static void WriteLine(string message)
         {
-            ///HACK: На андроиде рандромно проявыпадает исключение при вызове <see cref="Console.WriteLine"/>
+            ///HACK: На андроиде рандромно выпадает исключение при вызове <see cref="Console.WriteLine"/>
             try
             {
                 Console.WriteLine(message);
@@ -22,9 +31,24 @@ namespace Rock.Util
             catch { }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        public void Log(string message)
+        {
+            WriteLine(message);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exception"></param>
         public void Log(Exception exception)
         {
-            Log(exception.ToString());
+            WriteLine(exception.ToString());
         }
     }
 }
