@@ -499,7 +499,9 @@ namespace Rock
                 gatts.ForEach(gatt =>
                 {
                     var v = enums.FirstOrDefault(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == gatt.Id.ToString());
-                    gatt.Name = v.ToString();
+
+                    if (v != Parameter.Unknown)
+                        gatt.Name = v.ToString();
                 });
 
 
@@ -932,7 +934,11 @@ namespace Rock
         /// <param name="gatt"></param>
         private void OnGattChanged(IGattCharacteristic gatt)
         {
-            logger.Log($"[GATT CHANGED] `{gatt.Name}` -> {gatt.Value.ToHexString()}");
+            string name = string.IsNullOrEmpty(gatt.Name)
+                ? gatt.Id.ToString()
+                : gatt.Name;
+
+            logger.Log($"[GATT CHANGED] `{name}` -> {gatt.Value.ToHexString()}");
 
 
             switch (gatt.Id.ToString())
