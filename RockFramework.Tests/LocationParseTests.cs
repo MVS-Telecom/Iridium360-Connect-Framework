@@ -15,8 +15,8 @@ namespace RockFramework.Tests
         {
             var location1 = LocationParser.Parse("6F1AFAA99234CB31770000140774365500000000".ToByteArray(), "YB3 03.6.10");
             var location2 = LocationParser.Parse("6F56C4297C6B095931E0002C10DC745400000000".ToByteArray(), "TS 01.06.09");
-            var location3 = LocationParser.Parse("06036F35D2298182287D816000040BA9243B0E1F".ToByteArray(), "YB3 03.6.10");
-            
+            var location3 = LocationParser.Parse("2640E58A7BCA3300546573740000000000000000".ToByteArray(), "YB3 03.6.10");
+
         }
     }
 }
