@@ -124,6 +124,27 @@ namespace Rock
         public event EventHandler<EventArgs> DeviceInfoUpdated = delegate { };
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns></returns>
+        public bool IsSupported(DeviceCapability capability)
+        {
+            return DeviceHelper.IsCapabilitySupported(Firmware, capability);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool IsYB()
+        {
+            return DeviceHelper.IsYB(Firmware);
+        }
+
+
         private Location location;
 
         /// <summary>
@@ -350,7 +371,7 @@ namespace Rock
             DeviceParameter deviceParameter3 = new DeviceParameter(Rock, this, Parameter.PowerStatus);
             Parameters.Add(deviceParameter3);
 
-            if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeActivitySense))
+            if (this.IsSupported(DeviceCapability.ActivitySense))
             {
                 DeviceParameter deviceParameter4 = new DeviceParameter(Rock, this, Parameter.TrackingActivitySenseStatus);
                 Parameters.Add(deviceParameter4);
@@ -367,7 +388,7 @@ namespace Rock
                 Parameters.Add(deviceParameter8);
             }
             DeviceParameter deviceParameter9 = new DeviceParameter(Rock, this, Parameter.TrackingBurstFixPeriod);
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeRevisedFrequency))
+            if (!this.IsSupported(DeviceCapability.RevisedFrequency))
             {
                 deviceParameter9.removeValueOption(TrackingBurstFixPeriod.Period20min);
             }
@@ -382,37 +403,37 @@ namespace Rock
             //DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeContextualReporting) ? context.getText(R.string.satellite_frequency).toString() : context.getText(R.string.frequency).toString());
 #endif
 
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeFastCellular))
+            if (!this.IsSupported(DeviceCapability.FastCellular))
             {
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency15sec);
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency30sec);
             }
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeRevisedFrequency))
+            if (!this.IsSupported(DeviceCapability.RevisedFrequency))
             {
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency1min);
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency2min);
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency3min);
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency4min);
             }
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeContextualReporting))
+            if (!this.IsSupported(DeviceCapability.ContextualReporting))
             {
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency6min);
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency8min);
             }
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeContextualReporting))
+            if (!this.IsSupported(DeviceCapability.ContextualReporting))
             {
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency12min);
             }
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeRevisedFrequency))
+            if (!this.IsSupported(DeviceCapability.RevisedFrequency))
             {
                 deviceParameter12.removeValueOption(TrackingFrequency.Frequency1440min);
             }
 
             Parameters.Add(deviceParameter12);
-            if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeContextualReporting))
+            if (this.IsSupported(DeviceCapability.ContextualReporting))
             {
                 DeviceParameter deviceParameter13 = new DeviceParameter(Rock, this, Parameter.DistressFrequency);
-                if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeFastCellular))
+                if (!this.IsSupported(DeviceCapability.FastCellular))
                 {
                     deviceParameter13.removeValueOption(DistressFrequency.DistressFrequency15sec);
                     deviceParameter13.removeValueOption(DistressFrequency.DistressFrequency30sec);
@@ -426,7 +447,7 @@ namespace Rock
                 if (Rock.IsGprsAttached)
                 {
                     DeviceParameter deviceParameter16 = new DeviceParameter(Rock, this, Parameter.CellularFrequency);
-                    if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeFastCellular))
+                    if (!this.IsSupported(DeviceCapability.FastCellular))
                     {
                         deviceParameter16.removeValueOption(CellularFrequency.CellularFrequency15sec);
                         deviceParameter16.removeValueOption(CellularFrequency.CellularFrequency30sec);
@@ -438,10 +459,10 @@ namespace Rock
                     Parameters.Add(deviceParameter18);
                 }
             }
-            if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeNotify))
+            if (this.IsSupported(DeviceCapability.Notify))
             {
                 DeviceParameter deviceParameter19 = new DeviceParameter(Rock, this, Parameter.Notify);
-                if (!DeviceHelper.IsYB(this))
+                if (!this.IsYB())
                 {
                     deviceParameter19.removeValueOption(AlertsNotify.AlertsNotifyVisual);
                     deviceParameter19.removeValueOption(AlertsNotify.AlertsNotifyBoth);
@@ -461,7 +482,7 @@ namespace Rock
             DeviceParameter deviceParameter25 = new DeviceParameter(Rock, this, Parameter.AlertsGeofenceCheckFrequency);
             Parameters.Add(deviceParameter25);
             DeviceParameter deviceParameter26 = new DeviceParameter(Rock, this, Parameter.AlertsGeofenceStatus);
-            if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypePolyfence))
+            if (!this.IsSupported(DeviceCapability.Polyfence))
             {
                 deviceParameter26.removeValueOption(AlertsGeofenceStatus.AlertsGeofenceStatusOnPolyfence);
             }
@@ -478,10 +499,10 @@ namespace Rock
             DeviceParameter deviceParameter31 = new DeviceParameter(Rock, this, Parameter.AlertsTemperatureStatus);
             Parameters.Add(deviceParameter31);
 
-            if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeExternalPowerAvailability))
+            if (this.IsSupported(DeviceCapability.ExternalPowerAvailability))
             {
                 DeviceParameter deviceParameter32 = new DeviceParameter(Rock, this, Parameter.ExternalPowerAvailability);
-                if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeActivationMode))
+                if (!this.IsSupported(DeviceCapability.ActivationMode))
                 {
                     deviceParameter32.removeValueOption(ExternalPowerAvailiability.ExternalPowerAvailiabilityUnlimitedActivate);
                 }
@@ -536,7 +557,7 @@ namespace Rock
             //            }
             //#endif
 
-            if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeGprs) && Rock.IsGprsAttached)
+            if (this.IsSupported(DeviceCapability.Gprs) && Rock.IsGprsAttached)
             {
                 DeviceParameter deviceParameter38 = new DeviceParameter(Rock, this, Parameter.GprsStrategy);
                 Parameters.Add(deviceParameter38);
@@ -569,7 +590,7 @@ namespace Rock
             DeviceParameter deviceParameter51 = new DeviceParameter(Rock, this, Parameter.MailboxCheckStatus);
             Parameters.Add(deviceParameter51);
 
-            if (Rock.IsGprsAttached && DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeGprsConfig))
+            if (Rock.IsGprsAttached && this.IsSupported(DeviceCapability.GprsConfig))
             {
                 List<DeviceAccessoryParameter> a = new List<DeviceAccessoryParameter>()
                 {
@@ -587,7 +608,7 @@ namespace Rock
                 this.accessory = new DeviceAccessory(a);
             }
 
-            if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeTransmissionFormat))
+            if (this.IsSupported(DeviceCapability.TransmissionFormat))
             {
                 DeviceParameter deviceParameter52 = new DeviceParameter(Rock, this, Parameter.TransmissionFormat);
                 Parameters.Add(deviceParameter52);

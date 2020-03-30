@@ -6,19 +6,19 @@ namespace Rock
 {
     public static class DeviceHelper
     {
-        public static bool IsTS(Device device)
+        public static bool IsTS(string firmware)
         {
-            return device?.Firmware?.StartsWith("TS") == true;
+            return firmware?.StartsWith("TS") == true;
         }
 
-        public static bool IsCapabilitySupported(Device device, DeviceCapability capability)
+        public static bool IsCapabilitySupported(string firmware, DeviceCapability capability)
         {
-            return IsTS(device)
-                ? IsTS_Supported(device, capability)
-                : IsYB(device)
-                    ? IsYB_Supported(device, capability)
-                    : IsGF(device)
-                        ? IsGF_Supported(device, capability)
+            return IsTS(firmware)
+                ? IsTS_Supported(firmware, capability)
+                : IsYB(firmware)
+                    ? IsYB_Supported(firmware, capability)
+                    : IsGF(firmware)
+                        ? IsGF_Supported(firmware, capability)
                         : false;
         }
 
@@ -42,194 +42,195 @@ namespace Rock
         }
 
 
-        public static bool IsYB(Device device)
+        public static bool IsYB(string firmware)
         {
-            return device?.Firmware?.StartsWith("YB3") == true;
+            return firmware?.StartsWith("YB3") == true;
         }
 
 
-        public static bool IsTS_Supported(Device connectDevice, DeviceCapability fbVar)
+        public static bool IsTS_Supported(string firmware, DeviceCapability fbVar)
         {
             bool z = true;
-            int a = GetRawFirmware(connectDevice.Firmware);
-            if (fbVar != DeviceCapability.DeviceCapabilityTypeInstallUpdateRestart)
+            int a = GetRawFirmware(firmware);
+
+            if (fbVar != DeviceCapability.InstallUpdateRestart)
             {
-                if (fbVar == DeviceCapability.DeviceCapabilityTypeGeofence)
+                if (fbVar == DeviceCapability.Geofence)
                 {
                     if (a >= 10300)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeFirmwareRestart)
+                else if (fbVar == DeviceCapability.FirmwareRestart)
                 {
                     if (a >= 10200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeChangePin)
+                else if (fbVar == DeviceCapability.ChangePin)
                 {
                     if (a >= 10200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPower)
+                else if (fbVar == DeviceCapability.ExternalPower)
                 {
                     if (a >= 10100)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeRawCommands)
+                else if (fbVar == DeviceCapability.RawCommands)
                 {
                     if (a >= 10200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeSerialAPI)
+                else if (fbVar == DeviceCapability.SerialAPI)
                 {
                     if (a >= 10302)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeActivitySense)
+                else if (fbVar == DeviceCapability.ActivitySense)
                 {
                     if (a >= 10400)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPowerAvailability)
+                else if (fbVar == DeviceCapability.ExternalPowerAvailability)
                 {
                     if (a >= 10408)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeMobWatcher)
+                else if (fbVar == DeviceCapability.MobWatcher)
                 {
                     if (a >= 10200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeNotify)
+                else if (fbVar == DeviceCapability.Notify)
                 {
                     if (a >= 10409)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeGenericAlerts)
+                else if (fbVar == DeviceCapability.GenericAlerts)
                 {
                     if (a >= 10410)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeGprs)
+                else if (fbVar == DeviceCapability.Gprs)
                 {
                     if (a >= 10512)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeMaximet)
+                else if (fbVar == DeviceCapability.Maximet)
                 {
                     if (a >= 10504)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeRockBoard)
+                else if (fbVar == DeviceCapability.RockBoard)
                 {
                     if (a >= 10511)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPowerConfigReport)
+                else if (fbVar == DeviceCapability.ExternalPowerConfigReport)
                 {
                     if (a >= 10522)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeSerialDump)
+                else if (fbVar == DeviceCapability.SerialDump)
                 {
                     if (a >= 10522)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeUnlockedFirmwareUpdate)
+                else if (fbVar == DeviceCapability.UnlockedFirmwareUpdate)
                 {
                     if (a < 10016)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeMessageAlignment)
+                else if (fbVar == DeviceCapability.MessageAlignment)
                 {
                     if (a < 10522)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeMaximetGmx200)
+                else if (fbVar == DeviceCapability.MaximetGmx200)
                 {
                     if (a >= 10600)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeInputSensitivity)
+                else if (fbVar == DeviceCapability.InputSensitivity)
                 {
                     if (a >= 10600)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeWave)
+                else if (fbVar == DeviceCapability.Wave)
                 {
                     if (a >= 10607)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypePolyfence)
+                else if (fbVar == DeviceCapability.Polyfence)
                 {
                     if (a >= 10700)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeGprsConfig)
+                else if (fbVar == DeviceCapability.GprsConfig)
                 {
                     if (a >= 10700)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeRevisedFrequency)
+                else if (fbVar == DeviceCapability.RevisedFrequency)
                 {
                     if (a >= 10800)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeVWTP3)
+                else if (fbVar == DeviceCapability.VWTP3)
                 {
                     if (a >= 10900)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeContextualReporting)
+                else if (fbVar == DeviceCapability.ContextualReporting)
                 {
                     if (a < 11000)
                     {
@@ -237,7 +238,7 @@ namespace Rock
                     }
                     return z;
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeActivationMode)
+                else if (fbVar == DeviceCapability.ActivationMode)
                 {
                     if (a < 10905)
                     {
@@ -245,7 +246,7 @@ namespace Rock
                     }
                     return z;
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeTransmissionFormat)
+                else if (fbVar == DeviceCapability.TransmissionFormat)
                 {
                     if (a < 11000)
                     {
@@ -253,7 +254,7 @@ namespace Rock
                     }
                     return z;
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeFastCellular)
+                else if (fbVar == DeviceCapability.FastCellular)
                 {
                     if (a < 10905)
                     {
@@ -261,7 +262,7 @@ namespace Rock
                     }
                     return z;
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeRevisedPositionFormat)
+                else if (fbVar == DeviceCapability.RevisedPositionFormat)
                 {
                     if (a < 11000)
                     {
@@ -269,7 +270,7 @@ namespace Rock
                     }
                     return z;
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeDaliaFPSO)
+                else if (fbVar == DeviceCapability.DaliaFPSO)
                 {
                     if (a < 10904)
                     {
@@ -282,121 +283,121 @@ namespace Rock
         }
 
 
-        private static bool IsGF(this Device device)
+        private static bool IsGF(this string firmware)
         {
-            return device?.Firmware?.StartsWith("GF") == true;
+            return firmware?.StartsWith("GF") == true;
         }
 
 
-        private static bool IsGF_Supported(this Device connectDevice, DeviceCapability fbVar)
+        private static bool IsGF_Supported(string firmware, DeviceCapability fbVar)
         {
             bool z = true;
-            int a = GetRawFirmware(connectDevice.Firmware);
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeInstallUpdateRestart)
+            int a = GetRawFirmware(firmware);
+            if (fbVar == DeviceCapability.InstallUpdateRestart)
             {
                 return false;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeGeofence)
+            if (fbVar == DeviceCapability.Geofence)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeFirmwareRestart)
+            if (fbVar == DeviceCapability.FirmwareRestart)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeChangePin)
+            if (fbVar == DeviceCapability.ChangePin)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPower)
+            if (fbVar == DeviceCapability.ExternalPower)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeRawCommands)
+            if (fbVar == DeviceCapability.RawCommands)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeSerialAPI)
+            if (fbVar == DeviceCapability.SerialAPI)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeActivitySense)
+            if (fbVar == DeviceCapability.ActivitySense)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPowerAvailability)
+            if (fbVar == DeviceCapability.ExternalPowerAvailability)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeMobWatcher)
+            if (fbVar == DeviceCapability.MobWatcher)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeNotify)
+            if (fbVar == DeviceCapability.Notify)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeGenericAlerts)
+            if (fbVar == DeviceCapability.GenericAlerts)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeGprs)
+            if (fbVar == DeviceCapability.Gprs)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeMaximet)
+            if (fbVar == DeviceCapability.Maximet)
             {
                 return false;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeRockBoard)
+            if (fbVar == DeviceCapability.RockBoard)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPowerConfigReport)
+            if (fbVar == DeviceCapability.ExternalPowerConfigReport)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeSerialDump)
+            if (fbVar == DeviceCapability.SerialDump)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeUnlockedFirmwareUpdate)
+            if (fbVar == DeviceCapability.UnlockedFirmwareUpdate)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeMessageAlignment)
+            if (fbVar == DeviceCapability.MessageAlignment)
             {
                 return false;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeMaximetGmx200)
+            if (fbVar == DeviceCapability.MaximetGmx200)
             {
                 return false;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeInputSensitivity)
+            if (fbVar == DeviceCapability.InputSensitivity)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeWave)
+            if (fbVar == DeviceCapability.Wave)
             {
                 return false;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypePolyfence)
+            if (fbVar == DeviceCapability.Polyfence)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeGprsConfig)
+            if (fbVar == DeviceCapability.GprsConfig)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeRevisedFrequency)
+            if (fbVar == DeviceCapability.RevisedFrequency)
             {
                 return true;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeVWTP3)
+            if (fbVar == DeviceCapability.VWTP3)
             {
                 return false;
             }
-            if (fbVar == DeviceCapability.DeviceCapabilityTypeContextualReporting)
+            if (fbVar == DeviceCapability.ContextualReporting)
             {
                 if (a < 10100)
                 {
@@ -404,7 +405,7 @@ namespace Rock
                 }
                 return z;
             }
-            else if (fbVar == DeviceCapability.DeviceCapabilityTypeActivationMode)
+            else if (fbVar == DeviceCapability.ActivationMode)
             {
                 if (a < 10100)
                 {
@@ -412,7 +413,7 @@ namespace Rock
                 }
                 return z;
             }
-            else if (fbVar == DeviceCapability.DeviceCapabilityTypeTransmissionFormat)
+            else if (fbVar == DeviceCapability.TransmissionFormat)
             {
                 if (a < 10100)
                 {
@@ -420,7 +421,7 @@ namespace Rock
                 }
                 return z;
             }
-            else if (fbVar == DeviceCapability.DeviceCapabilityTypeFastCellular)
+            else if (fbVar == DeviceCapability.FastCellular)
             {
                 if (a < 10200)
                 {
@@ -428,9 +429,9 @@ namespace Rock
                 }
                 return z;
             }
-            else if (fbVar != DeviceCapability.DeviceCapabilityTypeRevisedPositionFormat)
+            else if (fbVar != DeviceCapability.RevisedPositionFormat)
             {
-                return fbVar == DeviceCapability.DeviceCapabilityTypeDaliaFPSO ? false : false;
+                return fbVar == DeviceCapability.DaliaFPSO ? false : false;
             }
             else
             {
@@ -443,162 +444,163 @@ namespace Rock
         }
 
 
-        private static bool IsYB_Supported(this Device connectDevice, DeviceCapability fbVar)
+        private static bool IsYB_Supported(string firmware, DeviceCapability fbVar)
         {
-            int a = GetRawFirmware(connectDevice.Firmware);
-            if (fbVar != DeviceCapability.DeviceCapabilityTypeInstallUpdateRestart)
+            int a = GetRawFirmware(firmware);
+
+            if (fbVar != DeviceCapability.InstallUpdateRestart)
             {
-                if (fbVar == DeviceCapability.DeviceCapabilityTypeGeofence)
+                if (fbVar == DeviceCapability.Geofence)
                 {
                     if (a >= 30201)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeFirmwareRestart)
+                else if (fbVar == DeviceCapability.FirmwareRestart)
                 {
                     if (a > 30034)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeChangePin)
+                else if (fbVar == DeviceCapability.ChangePin)
                 {
                     if (a >= 30200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPower)
+                else if (fbVar == DeviceCapability.ExternalPower)
                 {
                     if (a >= 30200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeRawCommands)
+                else if (fbVar == DeviceCapability.RawCommands)
                 {
                     if (a >= 30200)
                     {
                         return true;
                     }
                 }
-                else if (fbVar == DeviceCapability.DeviceCapabilityTypeSerialAPI)
+                else if (fbVar == DeviceCapability.SerialAPI)
                 {
                     return false;
                 }
                 else
                 {
-                    if (fbVar == DeviceCapability.DeviceCapabilityTypeActivitySense)
+                    if (fbVar == DeviceCapability.ActivitySense)
                     {
                         if (a >= 30300)
                         {
                             return true;
                         }
                     }
-                    else if (fbVar == DeviceCapability.DeviceCapabilityTypeExternalPowerAvailability)
+                    else if (fbVar == DeviceCapability.ExternalPowerAvailability)
                     {
                         if (a >= 30300)
                         {
                             return true;
                         }
                     }
-                    else if (fbVar == DeviceCapability.DeviceCapabilityTypeActivitySense)
+                    else if (fbVar == DeviceCapability.ActivitySense)
                     {
                         if (a >= 30100)
                         {
                             return true;
                         }
                     }
-                    else if (fbVar == DeviceCapability.DeviceCapabilityTypeNotify)
+                    else if (fbVar == DeviceCapability.Notify)
                     {
                         if (a >= 30301)
                         {
                             return true;
                         }
                     }
-                    else if (fbVar == DeviceCapability.DeviceCapabilityTypeGenericAlerts)
+                    else if (fbVar == DeviceCapability.GenericAlerts)
                     {
                         if (a >= 30303)
                         {
                             return true;
                         }
                     }
-                    else if (fbVar == DeviceCapability.DeviceCapabilityTypeGprs)
+                    else if (fbVar == DeviceCapability.Gprs)
                     {
                         return false;
                     }
                     else
                     {
-                        if (fbVar == DeviceCapability.DeviceCapabilityTypeMaximet)
+                        if (fbVar == DeviceCapability.Maximet)
                         {
                             return false;
                         }
-                        if (fbVar == DeviceCapability.DeviceCapabilityTypeSerialDump)
+                        if (fbVar == DeviceCapability.SerialDump)
                         {
                             return false;
                         }
-                        if (fbVar == DeviceCapability.DeviceCapabilityTypeUnlockedFirmwareUpdate)
+                        if (fbVar == DeviceCapability.UnlockedFirmwareUpdate)
                         {
                             return false;
                         }
-                        if (fbVar == DeviceCapability.DeviceCapabilityTypeMessageAlignment)
+                        if (fbVar == DeviceCapability.MessageAlignment)
                         {
                             if (a < 30309)
                             {
                                 return true;
                             }
                         }
-                        else if (fbVar == DeviceCapability.DeviceCapabilityTypeMaximetGmx200)
+                        else if (fbVar == DeviceCapability.MaximetGmx200)
                         {
                             return false;
                         }
                         else
                         {
-                            if (fbVar == DeviceCapability.DeviceCapabilityTypeInputSensitivity)
+                            if (fbVar == DeviceCapability.InputSensitivity)
                             {
                                 return false;
                             }
-                            if (fbVar == DeviceCapability.DeviceCapabilityTypeWave)
+                            if (fbVar == DeviceCapability.Wave)
                             {
                                 return false;
                             }
-                            if (fbVar == DeviceCapability.DeviceCapabilityTypePolyfence)
+                            if (fbVar == DeviceCapability.Polyfence)
                             {
                                 if (a >= 30502)
                                 {
                                     return true;
                                 }
                             }
-                            else if (fbVar == DeviceCapability.DeviceCapabilityTypeFriendlyName)
+                            else if (fbVar == DeviceCapability.FriendlyName)
                             {
                                 if (a >= 30504)
                                 {
                                     return true;
                                 }
                             }
-                            else if (fbVar == DeviceCapability.DeviceCapabilityTypeRevisedFrequency)
+                            else if (fbVar == DeviceCapability.RevisedFrequency)
                             {
                                 if (a >= 30600)
                                 {
                                     return true;
                                 }
                             }
-                            else if (fbVar == DeviceCapability.DeviceCapabilityTypeContextualReporting)
+                            else if (fbVar == DeviceCapability.ContextualReporting)
                             {
                                 return false;
                             }
                             else
                             {
-                                if (fbVar == DeviceCapability.DeviceCapabilityTypeTransmissionFormat)
+                                if (fbVar == DeviceCapability.TransmissionFormat)
                                 {
                                     return false;
                                 }
-                                if (fbVar == DeviceCapability.DeviceCapabilityTypeFastCellular)
+                                if (fbVar == DeviceCapability.FastCellular)
                                 {
                                     return false;
                                 }
-                                if (fbVar == DeviceCapability.DeviceCapabilityTypeRevisedPositionFormat)
+                                if (fbVar == DeviceCapability.RevisedPositionFormat)
                                 {
                                     ///TODO: ЭТО НЕ ТОЧНО, возможно поддерживают и более ранние прошивки
                                     if (a >= 30910)
@@ -606,7 +608,7 @@ namespace Rock
                                         return true;
                                     }
                                 }
-                                if (fbVar == DeviceCapability.DeviceCapabilityTypeDaliaFPSO)
+                                if (fbVar == DeviceCapability.DaliaFPSO)
                                 {
                                     return false;
                                 }
