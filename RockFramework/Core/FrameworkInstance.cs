@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -278,19 +279,35 @@ namespace Rock
         private List<IBluetoothDevice> rockstars = new List<IBluetoothDevice>();
 
 
-        private static bool IsSatelliteDevice(string mac)
+        private static readonly Regex RockStar = new Regex(@"^[2]\d{4}$", RegexOptions.Compiled);
+        private static readonly Regex RockFleet = new Regex(@"^[5]\d{4}$", RegexOptions.Compiled);
+        private static readonly Regex RockAir = new Regex(@"^[1]\d{5}$", RegexOptions.Compiled);
+
+
+        private static bool IsSatelliteDevice(IBluetoothDevice device)
         {
-            ///Из исходников Rock
-            return mac?.ToUpperInvariant()?.StartsWith("00:07:80") == true
-                || mac?.ToUpperInvariant()?.StartsWith("88:6B:0F") == true
-                || mac?.ToUpperInvariant()?.StartsWith("88:0B:81") == true;
+            ///Соответствие по MAC адресу
+            if (
+                device?.Mac?.ToUpperInvariant()?.StartsWith("00:07:80") == true ||
+                device?.Mac?.ToUpperInvariant()?.StartsWith("88:6B:0F") == true ||
+                device?.Mac?.ToUpperInvariant()?.StartsWith("88:0B:81") == true)
+                return true;
+
+
+            ///Соответствие по серийному номеру из названия устройства
+            string serial = device?.Name?.Trim()?.Split(' ')?.LastOrDefault() ?? string.Empty;
+
+            if (RockStar.IsMatch(serial) || RockFleet.IsMatch(serial) || RockAir.IsMatch(serial))
+                return true;
+
+            return false;
         }
 
 
         private void Bluetooth_ScanResults(object sender, ScanResultsEventArgs e)
         {
             var _rockstars = e.FoundDevices
-                .Where(x => IsSatelliteDevice(x.Mac))
+                .Where(x => IsSatelliteDevice(x))
                 .ToList();
 
             if (_rockstars.Any() && _rockstars.Count != this.rockstars.Count)
