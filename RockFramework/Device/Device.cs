@@ -46,12 +46,12 @@ namespace Rock
 
     public class Location
     {
-        public float Accuracy { get; set; }
+        public float? Accuracy { get; set; }
         public double Latitude { get; set; }
-        public double Altitude { get; set; }
+        public double? Altitude { get; set; }
         public double Longitude { get; set; }
-        public float Speed { get; set; }
-        public float Bearing { get; set; }
+        public float? Speed { get; set; }
+        public float? Bearing { get; set; }
 
 
         public Location()
