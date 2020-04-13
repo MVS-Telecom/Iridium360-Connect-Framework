@@ -132,7 +132,7 @@ namespace Rock.Iridium360.Models
         /// Кол-во дней с 1 января 2018 года
         /// </summary>
         [JsonProperty("day")]
-        private int _day { get; set; }
+        public int Day { get; private set; }
 
 
         /// <summary>
@@ -143,11 +143,11 @@ namespace Rock.Iridium360.Models
         {
             get
             {
-                return DateTime.SpecifyKind(START.AddDays(_day), DateTimeKind.Utc);
+                return DateTime.SpecifyKind(START.AddDays(Day), DateTimeKind.Utc);
             }
             set
             {
-                _day = (int)(value - START).TotalDays;
+                Day = (int)(value - START).TotalDays;
             }
         }
 
