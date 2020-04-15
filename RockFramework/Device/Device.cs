@@ -99,6 +99,7 @@ namespace Rock
         Task Beep();
         void RequestBattery();
         void RequestLocation();
+        Task<Location> UpdateLocation();
     }
 
     public enum DeviceState
@@ -805,6 +806,15 @@ namespace Rock
         public void RequestLocation()
         {
             Rock.RequestLocation();
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public Task<Location> UpdateLocation()
+        {
+            return Rock.UpdateLocation();
         }
     }
 }

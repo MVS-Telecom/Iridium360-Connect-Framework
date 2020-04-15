@@ -657,6 +657,44 @@ namespace Rock
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public async Task<Location> UpdateLocation()
+        {
+            return await Task.Run(() =>
+            {
+                bool success = false;
+                AutoResetEvent r = new AutoResetEvent(false);
+
+                var handler = new EventHandler<LocationUpdatedEventArgs>((s, e) =>
+                {
+                    success = true;
+                    r.Set();
+                });
+
+                try
+                {
+                    ConnectedDevice.LocationUpdated += handler;
+
+                    RequestLocation();
+                    r.WaitOne(TimeSpan.FromSeconds(30));
+
+                }
+                finally
+                {
+                    ConnectedDevice.LocationUpdated -= handler;
+                }
+
+                if (!success)
+                    throw new TimeoutException();
+
+                return ConnectedDevice.Location;
+
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         internal async Task ReadDeviceParameter(Guid id, bool reconnectIfNeeded = true, bool checkSuccess = false)
