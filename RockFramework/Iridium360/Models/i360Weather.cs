@@ -66,11 +66,6 @@ namespace Rock.Iridium360.Models
     public enum MoonPhase
     {
         /// <summary>
-        /// не известна
-        /// </summary>
-        None = 0,
-
-        /// <summary>
         /// Новолуние 
         /// </summary>
         [Translation("Новолуние")]
@@ -214,7 +209,7 @@ namespace Rock.Iridium360.Models
         /// 
         /// </summary>
         [JsonProperty("moon")]
-        public MoonPhase MoonPhase { get; set; }
+        public MoonPhase? MoonPhase { get; set; }
 
         /// <summary>
         /// Список прогнозов по временным интервалам
