@@ -118,26 +118,33 @@ namespace RockFramework.Tests.Messaging
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void ParseFromDevice()
         {
             Message message = Message.Unpack(StringToByteArray("0104150501288260C779D9177AA920D3A71BABC0302A0E0005"));
         }
 
-        public static byte[] StringToByteArray(string hex) =>
-            Enumerable.ToArray<byte>(Enumerable.Select<int, byte>(from x in Enumerable.Range(0, hex.Length) select x, delegate (int x) {
-                return Convert.ToByte(hex.Substring(x, 2), 0x10);
-            }));
 
-        //[Serializable, CompilerGenerated]
-        //private sealed class <>c
-        //{
-        //    public static readonly MessageTest.<>c<>9 = new MessageTest.<>c();
-        //public static Func<int, bool> <>9__0_0;
 
-        //    internal bool <StringToByteArray>b__0_0(int x) =>
-        //        ((x % 2) == 0);
-    //}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
+
+
+    }
 }
-}
-

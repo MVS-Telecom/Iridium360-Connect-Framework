@@ -78,6 +78,8 @@ namespace Rock.Iridium360.Messaging
         }
 
         protected abstract void unpack(byte[] payload);
+
+
         public static Message Unpack(byte[] buffer)
         {
             Message message2;
@@ -93,38 +95,39 @@ namespace Rock.Iridium360.Messaging
                     var count = ((0 + (reader.ReadBoolean() ? ((ushort)0x400) : ((ushort)0)))
                         + (reader.ReadBoolean() ? ((ushort)0x200) : ((ushort)0)))
                         + (reader.ReadBoolean() ? ((ushort)0x100) : ((ushort)0));
-                    int num2 = 0;
-                    int num3 = 0;
+                    int parts = 0;
+                    int part = 0;
                     if (composite == Rock.Iridium360.Messaging.Composite.Complex)
                     {
-                        num2 = reader.ReadByte();
-                        num3 = reader.ReadByte();
+                        parts = reader.ReadByte();
+                        part = reader.ReadByte();
                     }
                     MessageType messageType = (MessageType)reader.ReadByte();
                     count += reader.ReadByte();
                     byte[] payload = reader.ReadBytes(count);
-                    byte num4 = reader.ReadByte();
+                    byte sum = reader.ReadByte();
                     int index = 0;
                     while (true)
                     {
                         if (index >= (stream.Length - 1L))
                         {
-                            if (num4 != 0)
+                            if (sum != 0)
                             {
                                 throw new FormatException("Invalid checksum!");
                             }
-                            Message message = (Message)Activator.CreateInstance(Enumerable.FirstOrDefault<KeyValuePair<MessageType, System.Type>>((IEnumerable<KeyValuePair<MessageType, System.Type>>)KnownTypes, delegate (KeyValuePair<MessageType, System.Type> x) {
+                            Message message = (Message)Activator.CreateInstance(Enumerable.FirstOrDefault<KeyValuePair<MessageType, System.Type>>((IEnumerable<KeyValuePair<MessageType, System.Type>>)KnownTypes, delegate (KeyValuePair<MessageType, System.Type> x)
+                            {
                                 return ((MessageType)x.Key) == messageType;
                             }).Value, true);
                             message.Composite = composite;
-                            message.Part = (byte)num3;
-                            message.Parts = (byte)num2;
+                            message.Part = (byte)part;
+                            message.Parts = (byte)parts;
                             message.Length = (ushort)count;
                             message.unpack(payload);
                             message2 = message;
                             break;
                         }
-                        num4 -= buffer[index];
+                        sum -= buffer[index];
                         index++;
                     }
                 }
@@ -150,7 +153,9 @@ namespace Rock.Iridium360.Messaging
             {
                 if ((knownTypes == null) || (knownTypes.Count == 0))
                 {
-                    foreach (System.Type type in Enumerable.ToList<System.Type>((IEnumerable<System.Type>)(from type in typeof(Message).Assembly.GetTypes() select type)))
+                    var types = typeof(Message).Assembly.GetTypes().Where(type => (typeof(Message).IsAssignableFrom(type) && !type.IsAbstract)).ToList();
+
+                    foreach (System.Type type in types)
                     {
                         try
                         {
@@ -169,15 +174,6 @@ namespace Rock.Iridium360.Messaging
             }
         }
 
-        //[Serializable, CompilerGenerated]
-    //    private sealed class <>c
-    //    {
-    //        public static readonly Message.<>c<>9 = new Message.<>c();
-    //    public static Func<Type, bool> <>9__25_0;
 
-    //        internal bool <get_KnownTypes>b__25_0(Type type) =>
-    //            (typeof(Message).IsAssignableFrom(type) && !type.IsAbstract);
-    //}
+    }
 }
-}
-

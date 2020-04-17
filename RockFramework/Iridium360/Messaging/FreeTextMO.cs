@@ -70,28 +70,31 @@ namespace Rock.Iridium360.Messaging
 
         protected static string Read(BinaryBitReader reader)
         {
-            Page? nullable = null;
+            Page? page = null;
             StringBuilder builder = new StringBuilder();
             while (true)
             {
                 try
                 {
-                    int num = (((((0 + (reader.ReadBoolean() ? 1 : 0)) + ((reader.ReadBoolean() ? 1 : 0) << 1)) + ((reader.ReadBoolean() ? 1 : 0) << 2)) + ((reader.ReadBoolean() ? 1 : 0) << 3)) + ((reader.ReadBoolean() ? 1 : 0) << 4)) + ((reader.ReadBoolean() ? 1 : 0) << 5);
+                    int num = (((((0 + (reader.ReadBoolean() ? 1 : 0))
+                        + ((reader.ReadBoolean() ? 1 : 0) << 1))
+                        + ((reader.ReadBoolean() ? 1 : 0) << 2))
+                        + ((reader.ReadBoolean() ? 1 : 0) << 3))
+                        + ((reader.ReadBoolean() ? 1 : 0) << 4))
+                        + ((reader.ReadBoolean() ? 1 : 0) << 5);
                     if (num < 8)
                     {
-                        Page? nullable2 = new Page?((Page)num);
-                        Page eND = Page.END;
-                        if ((((Page)nullable2.GetValueOrDefault()) == eND) & nullable2.HasValue)
-                        {
+                        page = (Page?)num;
+
+                        if (page == Page.END)
                             break;
-                        }
                     }
                     else
                     {
-                        Page? nullable3 = nullable;
-                        if (nullable3.HasValue)
-                        {
-                            switch (nullable3.GetValueOrDefault())
+                        ////Page? nullable3 = nullable;
+                        //if (nullable3.HasValue)
+                        //{
+                            switch (page)
                             {
                                 case Page.SYM:
                                     builder.Append(page_sym[num - 8]);
@@ -112,7 +115,7 @@ namespace Rock.Iridium360.Messaging
                                 default:
                                     break;
                             }
-                        }
+                        //}
                     }
                 }
                 catch (EndOfStreamException)
