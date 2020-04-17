@@ -3,6 +3,7 @@ namespace RockFramework.Tests.Messaging
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Rock.Iridium360.Messaging;
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Runtime.CompilerServices;
 
@@ -153,10 +154,10 @@ namespace RockFramework.Tests.Messaging
         {
             var bug = Message.Unpack(StringToByteArray("0104150501288260C779D9177AA920D3A71BABC0302A0E0005")) as ChatMessageMO;
 
-            Console.WriteLine($"bug => `{bug.Text}`");
+            Debug.WriteLine($"bug => `{bug.Text}`");
 
             var nobug = Message.Unpack(StringToByteArray("0104180501288260C779D9177AA920D3A71BABC0D036C9A238090052")) as ChatMessageMO;
-            Console.WriteLine($"nobug => `{nobug.Text}`");
+            Debug.WriteLine($"nobug => `{nobug.Text}`");
 
 
             var tests = new string[] {
@@ -181,8 +182,13 @@ A7 1B AB C0 F0 5A 95 03 00 80",
 
                 if(message is ChatMessageMO chatMessage)
                 {
-                    Console.WriteLine($"Messge is `{message.GetType()}`");
-                    Console.WriteLine($"\t, text:`{chatMessage.Text}`");
+                    Debug.WriteLine($"Messge is `{message.GetType()}`");
+
+                    Debug.WriteLine($"\t, chat:`{chatMessage.ChatId}`");
+                    Debug.WriteLine($"\t, id:`{chatMessage.Id}`");
+                    Debug.WriteLine($"\t, converssation:`{chatMessage.Conversation}`");
+                    Debug.WriteLine($"\t, subject:`{chatMessage.Subject}`");
+                    Debug.WriteLine($"\t, text:`{chatMessage.Text}`");
                 }
 
             }
