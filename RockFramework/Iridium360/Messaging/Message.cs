@@ -47,11 +47,15 @@ namespace Rock.Iridium360.Messaging
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 4) == 4));
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 2) == 2));
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 1) == 1));
+
+
                     if (this.Composite == Rock.Iridium360.Messaging.Composite.Complex)
                     {
+                        writer2.Write(this.Group);
                         writer2.Write(this.Parts);
                         writer2.Write(this.Part);
                     }
+
                     writer2.Write((byte)this.Type);
                     writer2.Write((byte)(this.Length & 0xff));
                     writer2.Write(buffer);
@@ -92,13 +96,17 @@ namespace Rock.Iridium360.Messaging
                     bool flag = reader.ReadBoolean();
                     flag = reader.ReadBoolean();
                     flag = reader.ReadBoolean();
+
                     var count = ((0 + (reader.ReadBoolean() ? ((ushort)0x400) : ((ushort)0)))
                         + (reader.ReadBoolean() ? ((ushort)0x200) : ((ushort)0)))
                         + (reader.ReadBoolean() ? ((ushort)0x100) : ((ushort)0));
+
                     int parts = 0;
                     int part = 0;
+                    int group = 0;
                     if (composite == Rock.Iridium360.Messaging.Composite.Complex)
                     {
+                        group = reader.ReadByte();
                         parts = reader.ReadByte();
                         part = reader.ReadByte();
                     }
@@ -120,6 +128,7 @@ namespace Rock.Iridium360.Messaging
                                 return ((MessageType)x.Key) == messageType;
                             }).Value, true);
                             message.Composite = composite;
+                            message.Group = (byte)group;
                             message.Part = (byte)part;
                             message.Parts = (byte)parts;
                             message.Length = (ushort)count;
@@ -138,6 +147,8 @@ namespace Rock.Iridium360.Messaging
         public abstract Rock.Iridium360.Messaging.Direction Direction { get; }
 
         public virtual Rock.Iridium360.Messaging.Composite Composite { get; private set; }
+
+        public byte Group { get; private set; }
 
         public byte Parts { get; private set; }
 
