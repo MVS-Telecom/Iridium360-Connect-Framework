@@ -127,7 +127,7 @@ namespace Rock.Iridium360.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public override MessageType Type => MessageType.ChatMessageMO;
+        public override MessageType Type => MessageType.ChatMessage;
 
         /// <summary>
         /// 

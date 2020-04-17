@@ -11,7 +11,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public override MessageType Type => MessageType.WeatherMO;
+        public override MessageType Type => MessageType.Weather;
 
 
         /// <summary>

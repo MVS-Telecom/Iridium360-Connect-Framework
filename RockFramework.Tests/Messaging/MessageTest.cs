@@ -21,7 +21,7 @@ namespace RockFramework.Tests.Messaging
             var message = WeatherMO.Create();
             var buffer = message.Pack();
 
-            var _message = Message.Unpack(buffer) as WeatherMO;
+            var _message = MessageMO.Unpack(buffer) as WeatherMO;
 
             if (_message == null)
                 Assert.Fail();
@@ -56,7 +56,7 @@ namespace RockFramework.Tests.Messaging
                     , (string)new string('t', i)
                     , (string)new string('s', i)
                     );
-                ChatMessageMO emo2 = (ChatMessageMO)Message.Unpack(emo.Pack());
+                ChatMessageMO emo2 = (ChatMessageMO)MessageMO.Unpack(emo.Pack());
                 if (emo.ChatId != (emo2.ChatId ?? ""))
                 {
                     throw new InvalidOperationException("ChatId");
@@ -106,7 +106,7 @@ namespace RockFramework.Tests.Messaging
                 string greeting = (string)new string('x', i);
                 EmptyMO ymo = EmptyMO.Create(greeting);
                 byte[] buffer = ymo.Pack();
-                EmptyMO ymo2 = Message.Unpack(buffer) as EmptyMO;
+                EmptyMO ymo2 = MessageMO.Unpack(buffer) as EmptyMO;
                 if (ymo2.Length != ymo.Length)
                 {
                     throw new InvalidOperationException("lenght");
@@ -122,13 +122,13 @@ namespace RockFramework.Tests.Messaging
         public void Pack__FreeTextMO()
         {
             FreeTextMO tmo = FreeTextMO.Create("\nApple представила iPhone SE — первый смартфон компании в 2020 году. Аппарат стал преемником одноименного девайса, выпущенного в 2016 году. Об этом \x00abЛенте.ру\x00bb сообщил представитель компании.\nСмартфон получил внешний вид, схожий с дизайном iPhone 8: 4,7-дюймовый Retina IPS-экран, кнопка Home с дактилоскопическим сенсором Touch ID, крупные горизонтальные рамки на передней панели. На задней панели девайса расположена одинарная камера разрешением 12 мегапикселей. SE имеет чип Apple A13, как у iPhone 11 и 64 гигабайт встроенной памяти в минимальной комплектации.\n\x00abДешевый\x00bb iPhone имеет стеклянный корпус с рамкой из металла, который защищен от воды и пыли. Доступны белый, черный и красный цвета корпуса. У белой версии смартфона фронтальная панель все равно черная. Устройство базируется на актуальной iOS 13, имеет NFC с поддержкой бесконтактной оплаты Apple Pay, несъемный аккумулятор, емкость которого не раскрывается.\nСтоимость базовой версии iPhone SE составит 40 тысяч рублей — это самый дешевый актуальный смартфон компании. Продажи в России начнутся 24 апреля.\n");
-            FreeTextMO tmo2 = (FreeTextMO)Message.Unpack(tmo.Pack());
+            FreeTextMO tmo2 = (FreeTextMO)MessageMO.Unpack(tmo.Pack());
             if (!tmo.Text.Equals(tmo2.Text))
             {
                 throw new InvalidOperationException();
             }
             tmo = FreeTextMO.Create("Смартфон получил внешний вид");
-            tmo2 = (FreeTextMO)Message.Unpack(tmo.Pack());
+            tmo2 = (FreeTextMO)MessageMO.Unpack(tmo.Pack());
             if (!tmo.Text.Equals(tmo2.Text))
             {
                 throw new InvalidOperationException();
@@ -137,7 +137,7 @@ namespace RockFramework.Tests.Messaging
             {
                 tmo = FreeTextMO.Create((string)new string('x', i));
                 byte[] buffer = tmo.Pack();
-                tmo2 = (FreeTextMO)Message.Unpack(buffer);
+                tmo2 = (FreeTextMO)MessageMO.Unpack(buffer);
                 if (!tmo.Text.Equals(tmo2.Text))
                 {
                     throw new InvalidOperationException();
@@ -152,11 +152,11 @@ namespace RockFramework.Tests.Messaging
         [TestMethod]
         public void ParseFromDevice()
         {
-            var bug = Message.Unpack(StringToByteArray("0104150501288260C779D9177AA920D3A71BABC0302A0E0005")) as ChatMessageMO;
+            var bug = MessageMO.Unpack(StringToByteArray("0104150501288260C779D9177AA920D3A71BABC0302A0E0005")) as ChatMessageMO;
 
             Debug.WriteLine($"bug => `{bug.Text}`");
 
-            var nobug = Message.Unpack(StringToByteArray("0104180501288260C779D9177AA920D3A71BABC0D036C9A238090052")) as ChatMessageMO;
+            var nobug = MessageMO.Unpack(StringToByteArray("0104180501288260C779D9177AA920D3A71BABC0D036C9A238090052")) as ChatMessageMO;
             Debug.WriteLine($"nobug => `{nobug.Text}`");
 
 
@@ -178,7 +178,7 @@ A7 1B AB C0 F0 5A 95 03 00 80",
 
             foreach(var test in tests)
             {
-                var message = Message.Unpack(StringToByteArray(test));
+                var message = MessageMO.Unpack(StringToByteArray(test));
 
                 if(message is ChatMessageMO chatMessage)
                 {

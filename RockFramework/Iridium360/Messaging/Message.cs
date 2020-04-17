@@ -9,7 +9,8 @@ namespace Rock.Iridium360.Messaging
 
     public abstract class Message
     {
-        private static Dictionary<MessageType, System.Type> knownTypes = new Dictionary<MessageType, System.Type>();
+        private static Dictionary<MessageType, System.Type> knownMOTypes = new Dictionary<MessageType, System.Type>();
+        private static Dictionary<MessageType, System.Type> knownMTTypes = new Dictionary<MessageType, System.Type>();
 
         protected Message()
         {
@@ -84,7 +85,13 @@ namespace Rock.Iridium360.Messaging
         protected abstract void unpack(byte[] payload);
 
 
-        public static Message Unpack(byte[] buffer)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        protected static Message Unpack(Dictionary<MessageType, Type> knownTypes, byte[] buffer)
         {
             Message message2;
             using (MemoryStream stream = new MemoryStream(buffer))
@@ -123,10 +130,10 @@ namespace Rock.Iridium360.Messaging
                             {
                                 throw new FormatException("Invalid checksum!");
                             }
-                            Message message = (Message)Activator.CreateInstance(Enumerable.FirstOrDefault<KeyValuePair<MessageType, System.Type>>((IEnumerable<KeyValuePair<MessageType, System.Type>>)KnownTypes, delegate (KeyValuePair<MessageType, System.Type> x)
-                            {
-                                return ((MessageType)x.Key) == messageType;
-                            }).Value, true);
+
+                            var type = knownTypes.Where(t => t.Key == messageType).FirstOrDefault();
+                            Message message = (Message)Activator.CreateInstance(type.Value, true);
+
                             message.Composite = composite;
                             message.Group = (byte)group;
                             message.Part = (byte)part;
@@ -158,30 +165,61 @@ namespace Rock.Iridium360.Messaging
 
         public abstract MessageType Type { get; }
 
-        protected static Dictionary<MessageType, System.Type> KnownTypes
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected static Dictionary<MessageType, System.Type> KnownMOTypes
         {
             get
             {
-                if ((knownTypes == null) || (knownTypes.Count == 0))
+                if ((knownMOTypes?.Count ?? 0) == 0)
                 {
-                    var types = typeof(Message).Assembly.GetTypes().Where(type => (typeof(Message).IsAssignableFrom(type) && !type.IsAbstract)).ToList();
-
-                    foreach (System.Type type in types)
-                    {
-                        try
-                        {
-                            Message message = (Message)Activator.CreateInstance(type, true);
-                            knownTypes.Add(message.Type, type);
-                        }
-                        catch (Exception ex)
-                        {
-#if DEBUG
-                            Debugger.Break();
-#endif
-                        }
-                    }
+                    fetchKnownTypes(Direction.MO, ref knownMOTypes);
                 }
-                return knownTypes;
+                return knownMOTypes;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected static Dictionary<MessageType, System.Type> KnownMTTypes
+        {
+            get
+            {
+                if ((knownMTTypes?.Count ?? 0) == 0)
+                {
+                    fetchKnownTypes(Direction.MO, ref knownMTTypes);
+                }
+                return knownMTTypes;
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="knownTypes"></param>
+        static void fetchKnownTypes(Direction direction, ref Dictionary<MessageType, Type> knownTypes)
+        {
+            var types = typeof(Message).Assembly.GetTypes().Where(type => (typeof(Message).IsAssignableFrom(type) && !type.IsAbstract)).ToList();
+
+            foreach (System.Type type in types)
+            {
+                try
+                {
+                    Message message = (Message)Activator.CreateInstance(type, true);
+                    if (message.Direction == direction)
+                        knownTypes.Add(message.Type, type);
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Debugger.Break();
+#endif
+                }
             }
         }
 
