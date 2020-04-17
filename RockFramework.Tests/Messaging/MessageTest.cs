@@ -9,10 +9,31 @@ namespace RockFramework.Tests.Messaging
     [TestClass]
     public class MessageTest
     {
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void Pack__WeatherMOTest()
+        {
+            var message = WeatherMO.Create();
+            var buffer = message.Pack();
+
+            var _message = Message.Unpack(buffer) as WeatherMO;
+
+            if (_message == null)
+                Assert.Fail();
+        }
+
+
+        /// <summary>
+        ///  сообщения
+        /// </summary>
         [TestMethod]
         public void Pack__ChatMessageMOTest()
         {
-            for (int i = 0; i < 100; i++)
+            for (ushort i = 0; i < 100; i++)
             {
                 ushort? nullable;
                 int? nullable4;
@@ -28,7 +49,12 @@ namespace RockFramework.Tests.Messaging
                     nullable = null;
                     nullable1 = nullable;
                 }
-                ChatMessageMO emo = ChatMessageMO.Create((string)new string('X', 0x10), nullable1, (string)new string('t', i), (string)new string('s', i));
+                ChatMessageMO emo = ChatMessageMO.Create((string)new string('X', 0x10)
+                    , (ushort)(i * i)
+                    , i
+                    , (string)new string('t', i)
+                    , (string)new string('s', i)
+                    );
                 ChatMessageMO emo2 = (ChatMessageMO)Message.Unpack(emo.Pack());
                 if (emo.ChatId != (emo2.ChatId ?? ""))
                 {
@@ -125,7 +151,13 @@ namespace RockFramework.Tests.Messaging
         [TestMethod]
         public void ParseFromDevice()
         {
-            Message message = Message.Unpack(StringToByteArray("0104150501288260C779D9177AA920D3A71BABC0302A0E0005"));
+            var bug = Message.Unpack(StringToByteArray("0104150501288260C779D9177AA920D3A71BABC0302A0E0005")) as ChatMessageMO;
+
+            Console.WriteLine($"bug => `{bug.Text}`");
+
+            var nobug = Message.Unpack(StringToByteArray("0104180501288260C779D9177AA920D3A71BABC0D036C9A238090052")) as ChatMessageMO;
+            Console.WriteLine($"nobug => `{nobug.Text}`");
+
         }
 
 

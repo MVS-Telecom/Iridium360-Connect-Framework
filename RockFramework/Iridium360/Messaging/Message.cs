@@ -162,7 +162,7 @@ namespace Rock.Iridium360.Messaging
                             Message message = (Message)Activator.CreateInstance(type, true);
                             knownTypes.Add(message.Type, type);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
 #if DEBUG
                             Debugger.Break();

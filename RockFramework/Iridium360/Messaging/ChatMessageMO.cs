@@ -5,15 +5,33 @@ namespace Rock.Iridium360.Messaging
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ChatMessageMO : FreeTextMO
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
         private ChatMessageMO()
         {
         }
 
-        public static ChatMessageMO Create(string chatId, ushort? conversation, string text, string subject = null)
+
+        /// <summary>
+        ///  Исходящее сообщение
+        /// </summary>
+        /// <param name="chatId">Чат</param>
+        /// <param name="id">id сообщения</param>
+        /// <param name="conversation">id чата</param>
+        /// <param name="text">тест</param>
+        /// <param name="subject">заголовок</param>
+        /// <returns></returns>
+        public static ChatMessageMO Create(string chatId, ushort? id, ushort? conversation, string text, string subject = null)
         {
             ChatMessageMO emo1 = new ChatMessageMO();
+            emo1.Id = id;
             emo1.ChatId = chatId;
             emo1.Conversation = conversation;
             emo1.Text = text;
@@ -23,41 +41,51 @@ namespace Rock.Iridium360.Messaging
 
         protected override void pack(BinaryBitWriter writer)
         {
-            Flags eMPTY = Flags.EMPTY;
+            Flags flags = Flags.EMPTY;
+            // --->
+
             if (!string.IsNullOrEmpty(this.ChatId))
             {
-                eMPTY |= Flags.HasChatId;
+                flags |= Flags.HasChatId;
             }
             if (this.Conversation.HasValue)
             {
-                eMPTY |= Flags.HasConversation;
+                flags |= Flags.HasConversation;
+            }
+            if (this.Id.HasValue)
+            {
+                flags |= Flags.HasId;
             }
             if (!string.IsNullOrEmpty(this.Subject))
             {
-                eMPTY |= Flags.HasSubject;
+                flags |= Flags.HasSubject;
             }
             if (!string.IsNullOrEmpty(base.Text))
             {
-                eMPTY |= Flags.HasText;
+                flags |= Flags.HasText;
             }
-            writer.Write((byte)((byte)eMPTY));
-            if (eMPTY.HasFlag(Flags.HasChatId))
+            writer.Write((byte)((byte)flags));
+            if (flags.HasFlag(Flags.HasChatId))
             {
                 Write(writer, this.ChatId);
             }
-            if (eMPTY.HasFlag(Flags.HasConversation))
+            if (flags.HasFlag(Flags.HasId))
+            {
+                writer.Write(this.Id.Value);
+            }
+            if (flags.HasFlag(Flags.HasConversation))
             {
                 writer.Write(this.Conversation.Value);
             }
-            if (eMPTY.HasFlag(Flags.HasSubject))
+            if (flags.HasFlag(Flags.HasSubject))
             {
                 Write(writer, this.Subject);
             }
-            if (eMPTY.HasFlag(Flags.HasText))
+            if (flags.HasFlag(Flags.HasText))
             {
                 Write(writer, base.Text);
             }
-            if (eMPTY.HasFlag(Flags.HasLocation))
+            if (flags.HasFlag(Flags.HasLocation))
             {
             }
         }
@@ -72,6 +100,10 @@ namespace Rock.Iridium360.Messaging
                     if (flags.HasFlag(Flags.HasChatId))
                     {
                         this.ChatId = Read(reader);
+                    }
+                    if (flags.HasFlag(Flags.HasId))
+                    {
+                        this.Id = reader.ReadUInt16();
                     }
                     if (flags.HasFlag(Flags.HasConversation))
                     {
@@ -92,14 +124,30 @@ namespace Rock.Iridium360.Messaging
             }
         }
 
-        public override MessageType Type =>
-            MessageType.ChatMessageMO;
+        /// <summary>
+        /// 
+        /// </summary>
+        public override MessageType Type => MessageType.ChatMessageMO;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ChatId { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Subject { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ushort? Conversation { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ushort? Id { get; private set; }
 
         [Flags]
         public enum Flags
@@ -110,7 +158,7 @@ namespace Rock.Iridium360.Messaging
             HasText = 4,
             HasSubject = 8,
             HasLocation = 0x10,
-            Reserved_1 = 0x20,
+            HasId = 0x20,
             Reserver_2 = 0x40,
             Reserver_3 = 0x80
         }

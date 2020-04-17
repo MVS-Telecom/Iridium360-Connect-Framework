@@ -1,7 +1,5 @@
 namespace Rock.Iridium360.Messaging
 {
-    using System;
-
     public abstract class MessageMO : Message
     {
         protected MessageMO()
@@ -11,5 +9,6 @@ namespace Rock.Iridium360.Messaging
         public sealed override Rock.Iridium360.Messaging.Direction Direction =>
             Rock.Iridium360.Messaging.Direction.MO;
     }
+
 }
 

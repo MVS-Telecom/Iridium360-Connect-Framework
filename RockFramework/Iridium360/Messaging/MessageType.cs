@@ -8,7 +8,8 @@ namespace Rock.Iridium360.Messaging
         Ping = 1,
         Payload = 2,
         FreeText = 3,
-        ChatMessageMO = 4
+        ChatMessageMO = 4,
+        WeatherMO = 5,
     }
 }
 
