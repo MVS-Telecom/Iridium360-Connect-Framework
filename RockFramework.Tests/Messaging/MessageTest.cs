@@ -158,18 +158,54 @@ namespace RockFramework.Tests.Messaging
             var nobug = Message.Unpack(StringToByteArray("0104180501288260C779D9177AA920D3A71BABC0D036C9A238090052")) as ChatMessageMO;
             Console.WriteLine($"nobug => `{nobug.Text}`");
 
+
+            var tests = new string[] {
+                @"
+01 04 1C 05 01 28 82 60 C7 79 D9 17 7A A9 20 D3
+A7 1B AB C0 20 5B D6 42 38 43 53 41 4D 02 00 95",
+                @"
+01 04 1E 05 01 28 82 60 C7 79 D9 17 7A A9 20 D3
+A7 1B AB C0 D0 36 89 66 59 0B E1 0C 4D 05 35 09
+00 7C",
+                @"
+01 04 16 05 01 28 82 60 C7 79 D9 17 7A A9 20 D3
+A7 1B AB C0 F0 42 95 93 00 F8",
+                @"01 04 16 05 01 28 82 60 C7 79 D9 17 7A A9 20 D3
+A7 1B AB C0 F0 5A 95 03 00 80",
+            };
+
+
+            foreach(var test in tests)
+            {
+                var message = Message.Unpack(StringToByteArray(test));
+
+                if(message is ChatMessageMO chatMessage)
+                {
+                    Console.WriteLine($"Messge is `{message.GetType()}`");
+                    Console.WriteLine($"\t, text:`{chatMessage.Text}`");
+                }
+
+            }
+
         }
 
 
 
 
         /// <summary>
-        /// 
+        ///     
         /// </summary>
         /// <param name="hex"></param>
         /// <returns></returns>
         public static byte[] StringToByteArray(string hex)
         {
+            while (hex.Contains(" ") || hex.Contains("\r") || hex.Contains("\n"))
+            {
+                hex = hex.Replace(" ", "");
+                hex = hex.Replace("\r", "");
+                hex = hex.Replace("\n", "");
+            }
+
             return Enumerable.Range(0, hex.Length)
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
