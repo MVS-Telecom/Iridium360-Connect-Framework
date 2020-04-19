@@ -1,7 +1,7 @@
-﻿namespace Rock.Iridium360.Messaging
-{
-    using System;
+﻿using System;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     /// <summary>
     /// 
     /// </summary>

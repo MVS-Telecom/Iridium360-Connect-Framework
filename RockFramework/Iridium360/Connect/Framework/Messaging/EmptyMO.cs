@@ -1,10 +1,10 @@
-namespace Rock.Iridium360.Messaging
-{
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
-    using System.Text;
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     public class EmptyMO : MessageMO
     {
         protected EmptyMO()

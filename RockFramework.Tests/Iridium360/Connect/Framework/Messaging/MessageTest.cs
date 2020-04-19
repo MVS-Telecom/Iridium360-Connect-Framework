@@ -1,12 +1,11 @@
-namespace RockFramework.Tests.Messaging
-{
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Rock.Iridium360.Messaging;
-    using System;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     [TestClass]
     public class MessageTest
     {

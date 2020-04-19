@@ -1,12 +1,12 @@
-namespace Rock.Iridium360.Messaging
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     public abstract class Message
     {
         private static Dictionary<MessageType, System.Type> knownMOTypes = new Dictionary<MessageType, System.Type>();
@@ -40,8 +40,8 @@ namespace Rock.Iridium360.Messaging
             {
                 using (BinaryBitWriter writer2 = new BinaryBitWriter((Stream)stream2))
                 {
-                    writer2.Write((bool)(this.Direction == Rock.Iridium360.Messaging.Direction.MO));
-                    writer2.Write((bool)(this.Composite == Rock.Iridium360.Messaging.Composite.Complex));
+                    writer2.Write((bool)(this.Direction == Iridium360.Connect.Framework.Messaging.Direction.MO));
+                    writer2.Write((bool)(this.Composite == Iridium360.Connect.Framework.Messaging.Composite.Complex));
                     writer2.Write(false);
                     writer2.Write(false);
                     writer2.Write(false);
@@ -50,7 +50,7 @@ namespace Rock.Iridium360.Messaging
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 1) == 1));
 
 
-                    if (this.Composite == Rock.Iridium360.Messaging.Composite.Complex)
+                    if (this.Composite == Iridium360.Connect.Framework.Messaging.Composite.Complex)
                     {
                         writer2.Write(this.Group);
                         writer2.Write(this.Parts);
@@ -98,8 +98,8 @@ namespace Rock.Iridium360.Messaging
             {
                 using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
                 {
-                    Rock.Iridium360.Messaging.Direction direction = reader.ReadBoolean() ? Rock.Iridium360.Messaging.Direction.MO : Rock.Iridium360.Messaging.Direction.MT;
-                    Rock.Iridium360.Messaging.Composite composite = reader.ReadBoolean() ? Rock.Iridium360.Messaging.Composite.Complex : Rock.Iridium360.Messaging.Composite.Simple;
+                    var direction = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Direction.MO : Iridium360.Connect.Framework.Messaging.Direction.MT;
+                    var composite = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Composite.Complex : Iridium360.Connect.Framework.Messaging.Composite.Simple;
                     bool flag = reader.ReadBoolean();
                     flag = reader.ReadBoolean();
                     flag = reader.ReadBoolean();
@@ -111,7 +111,7 @@ namespace Rock.Iridium360.Messaging
                     int parts = 0;
                     int part = 0;
                     int group = 0;
-                    if (composite == Rock.Iridium360.Messaging.Composite.Complex)
+                    if (composite == Iridium360.Connect.Framework.Messaging.Composite.Complex)
                     {
                         group = reader.ReadByte();
                         parts = reader.ReadByte();
@@ -151,12 +151,12 @@ namespace Rock.Iridium360.Messaging
             return message2;
         }
 
-        public abstract Rock.Iridium360.Messaging.Direction Direction { get; }
+        public abstract Iridium360.Connect.Framework.Messaging.Direction Direction { get; }
 
-        public virtual Rock.Iridium360.Messaging.Composite Composite { get; private set; }
+        public virtual Iridium360.Connect.Framework.Messaging.Composite Composite { get; private set; }
 
         public byte Group { get; private set; }
-
+        
         public byte Parts { get; private set; }
 
         public byte Part { get; private set; }

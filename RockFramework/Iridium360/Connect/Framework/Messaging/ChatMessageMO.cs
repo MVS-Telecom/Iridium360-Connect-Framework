@@ -1,10 +1,10 @@
-namespace Rock.Iridium360.Messaging
-{
-    using System;
-    using System.IO;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
+using System;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     /// <summary>
     /// 
     /// </summary>

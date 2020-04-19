@@ -1,4 +1,4 @@
-namespace Rock.Iridium360.Messaging
+namespace Iridium360.Connect.Framework.Messaging
 {
     using System;
 
@@ -19,8 +19,8 @@ namespace Rock.Iridium360.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public override Rock.Iridium360.Messaging.Direction Direction =>
-            Rock.Iridium360.Messaging.Direction.MT;
+        public override Iridium360.Connect.Framework.Messaging.Direction Direction =>
+            Iridium360.Connect.Framework.Messaging.Direction.MT;
 
 
         /// <summary>

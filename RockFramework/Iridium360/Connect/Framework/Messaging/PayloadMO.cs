@@ -1,8 +1,8 @@
-namespace Rock.Iridium360.Messaging
-{
-    using System;
-    using System.Runtime.CompilerServices;
+using System;
+using System.Runtime.CompilerServices;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     public class PayloadMO : MessageMO
     {
         public static PayloadMO Create(byte[] payload)

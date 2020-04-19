@@ -1,10 +1,10 @@
-namespace Rock.Iridium360.Messaging
-{
-    using System;
-    using System.Collections;
-    using System.IO;
-    using System.Runtime.CompilerServices;
+using System;
+using System.Collections;
+using System.IO;
+using System.Runtime.CompilerServices;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     public class BinaryBitWriter : BinaryWriter
     {
         private bool[] curByte;

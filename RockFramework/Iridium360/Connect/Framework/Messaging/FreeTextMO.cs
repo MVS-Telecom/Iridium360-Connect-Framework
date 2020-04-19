@@ -1,11 +1,11 @@
-namespace Rock.Iridium360.Messaging
-{
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Runtime.CompilerServices;
-    using System.Text;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text;
 
+namespace Iridium360.Connect.Framework.Messaging
+{
     public class FreeTextMO : MessageMO
     {
         private const int PAGE_OFFSET = 8;

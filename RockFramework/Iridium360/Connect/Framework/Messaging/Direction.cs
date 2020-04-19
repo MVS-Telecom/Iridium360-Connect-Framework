@@ -1,4 +1,4 @@
-namespace Rock.Iridium360.Messaging
+namespace Iridium360.Connect.Framework.Messaging
 {
     using System;
 
