@@ -133,6 +133,9 @@ namespace Rock.Tests
         {
             var bytes = ArrayHelper.ToByteArray("03328373B600000D00");
             var command = DeserializedStatus.Parse(bytes);
+
+            if (command.AppId != "AzKDc7Y=" || command.Key != 0 || command.MessageId != 13)
+                Assert.Fail();
         }
 
         [TestMethod]

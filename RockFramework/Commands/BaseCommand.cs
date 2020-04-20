@@ -260,7 +260,7 @@ namespace Rock.Commands
 
         private DeserializedStatus(string appId, short key, short? messageId)
         {
-            this.AppId = AppId;
+            this.AppId = appId;
             this.Key = key;
             this.MessageId = messageId;
         }
