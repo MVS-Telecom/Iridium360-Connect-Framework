@@ -109,8 +109,8 @@ namespace Rock.Tests
         {
             //var bytes = ArrayHelper.ToByteArray("000B0202F8BB2D640000008C9300");
             var bytes = ArrayHelper.ToByteArray("000A0871156899F91407784D0000000000000000");
-            var command = BaseCommand.Parse(bytes);
-            if (command.ActionRequestType != ActionRequestType.BatteryUpdate || command.Key != 20 || command._AppId != "cRVomfk=")
+            var command = DeserializedCommand.Parse(bytes);
+            if (command.ActionRequestType != ActionRequestType.BatteryUpdate || command.Key != 20 || command.AppId != "cRVomfk=")
                 Assert.Fail();
         }
 
@@ -118,21 +118,28 @@ namespace Rock.Tests
         public void ParseCommand()
         {
             var bytes = ArrayHelper.ToByteArray("782E72753A68656C6C6F20776F726C64CA410000");
-            var command = BaseCommand.Parse(bytes);
+            var command = DeserializedCommand.Parse(bytes);
         }
 
         [TestMethod]
         public void ParseCommand2()
         {
             var bytes = ArrayHelper.ToByteArray("000B01E8DFB81EB400000293BD00000000000000");
-            var command = BaseCommand.Parse(bytes);
+            var command = DeserializedCommand.Parse(bytes);
+        }
+
+        [TestMethod]
+        public void ParseCommand3()
+        {
+            var bytes = ArrayHelper.ToByteArray("03328373B600000D00");
+            var command = DeserializedStatus.Parse(bytes);
         }
 
         [TestMethod]
         public void FromDevice_DeleteMessageCommand()
         {
             var bytes = ArrayHelper.ToByteArray("000B03044FA7812A140000EF0600000000000000");
-            var command = BaseCommand.Parse(bytes);
+            var command = DeserializedCommand.Parse(bytes);
             if (command.CommandType != CommandType.DeleteMessage)
                 Assert.Fail();
         }

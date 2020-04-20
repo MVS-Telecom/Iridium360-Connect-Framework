@@ -1103,9 +1103,9 @@ namespace Rock
             logger.Log($"[FROM DEVICE] --> {hex}");
 
 
-            var command = BaseCommand.Parse(data);
+            var command = DeserializedCommand.Parse(data);
 
-            logger.Log($"[FROM DEVICE] --> AppId={command._AppId} Key={command.Key} Type={command.CommandType} ActionRequest={command.ActionRequestType} MessageId={command.MessageId}");
+            logger.Log($"[FROM DEVICE] --> AppId={command.AppId} Key={command.Key} Type={command.CommandType} ActionRequest={command.ActionRequestType} MessageId={command.MessageId}");
 
             try
             {
@@ -1362,36 +1362,34 @@ namespace Rock
         /// <param name="data"></param>
         private void Process_MessageStatus(byte[] data)
         {
-            ByteBuffer wrap = new ByteBuffer(data);
-            string appId = Convert.ToBase64String(wrap.ReadBytes(5));
-            short key = wrap.ReadInt16();
-            short messageId = wrap.ReadInt16();
+            var status = DeserializedStatus.Parse(data);
 
-            if (messageId != 0)
+
+            if (status.MessageId != 0 && status.MessageId != null)
             {
-                logger.Log($"[STATUS] Message status updated `{messageId}` -> Transmitted");
+                logger.Log($"[STATUS] Message status updated `{status.MessageId}` -> Transmitted");
 
-                if (appId == this.AppId && key == this.KeyIndex)
+                if (status.AppId == this.AppId && status.Key == this.KeyIndex)
                 {
                     var args = new MessageStatusUpdatedEventArgs()
                     {
-                        MessageId = messageId,
+                        MessageId = status.MessageId.Value,
                         Status = MessageStatus.Transmitted,
                         Handled = false
                     };
                     MessageStatusUpdated(this, args);
                 }
-                else if (key == -1)
+                else if (status.Key == -1)
                 {
                     var args = new MessageStatusUpdatedEventArgs()
                     {
-                        MessageId = messageId,
+                        MessageId = status.MessageId.Value,
                         Status = MessageStatus.Transmitted,
                         Handled = false
                     };
                     MessageStatusUpdated(this, args);
                 }
-                else if (key == 0)
+                else if (status.Key == 0)
                 {
                     throw new NotImplementedException();
 

@@ -153,6 +153,42 @@ namespace Rock.Commands
         }
 
 
+
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected abstract void AddCustomPayload(ByteBuffer buffer);
+    }
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class DeserializedCommand
+    {
+        public string AppId { get; set; }
+        public short Key { get; set; }
+        public CommandType CommandType { get; set; }
+        public readonly byte[] Payload;
+        public readonly short? MessageId;
+        public readonly ActionRequestType? ActionRequestType;
+
+
+        private DeserializedCommand(CommandType commandType, string appId, short key, byte[] payload, short? messageId, ActionRequestType? actionRequestType)
+        {
+            this.AppId = AppId;
+            this.Key = key;
+            this.Payload = payload;
+            this.MessageId = messageId;
+            this.ActionRequestType = actionRequestType;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -209,13 +245,6 @@ namespace Rock.Commands
 
             return new DeserializedCommand(commandType, appId, key, null, null, null);
         }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected abstract void AddCustomPayload(ByteBuffer buffer);
     }
 
 
@@ -223,22 +252,33 @@ namespace Rock.Commands
     /// <summary>
     /// 
     /// </summary>
-    public class DeserializedCommand : BaseCommand
+    public class DeserializedStatus
     {
-        public readonly byte[] Payload;
-        public readonly short? MessageId;
-        public readonly ActionRequestType? ActionRequestType;
+        public string AppId { get; set; }
+        public short Key { get; set; }
+        public short? MessageId { get; set; }
 
-        public DeserializedCommand(CommandType commandType, string appId, short key, byte[] payload, short? messageId, ActionRequestType? actionRequestType) : base(commandType, appId, key)
+        private DeserializedStatus(string appId, short key, short? messageId)
         {
-            this.Payload = payload;
+            this.AppId = AppId;
+            this.Key = key;
             this.MessageId = messageId;
-            this.ActionRequestType = actionRequestType;
         }
 
-        protected override void AddCustomPayload(ByteBuffer buffer)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static DeserializedStatus Parse(byte[] data)
         {
-            throw new NotSupportedException();
+            ByteBuffer wrap = new ByteBuffer(data);
+            string appId = Convert.ToBase64String(wrap.ReadBytes(5));
+            short key = (short)wrap.ReadByte();
+            short messageId = wrap.ReadInt16();
+
+            return new DeserializedStatus(appId, key, messageId);
         }
     }
 }
