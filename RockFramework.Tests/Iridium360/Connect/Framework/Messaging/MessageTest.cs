@@ -55,7 +55,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     , (string)new string('t', i)
                     , (string)new string('s', i)
                     );
-                ChatMessageMO emo2 = (ChatMessageMO)MessageMO.Unpack(emo.Pack());
+                var emo2 = (ChatMessageMO)MessageMO.Unpack(emo.Pack());
                 if (emo.ChatId != (emo2.ChatId ?? ""))
                 {
                     throw new InvalidOperationException("ChatId");

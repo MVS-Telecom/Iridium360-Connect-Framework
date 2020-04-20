@@ -6,24 +6,97 @@ using System.Text;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
-    public class FreeTextMO : MessageMO
+    /// <summary>
+    /// 
+    /// </summary>
+    public class FreeTextMO : FreeText, IMessageMO
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public override MessageType Type => MessageType.FreeText;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override Direction Direction => Direction.MO;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected FreeTextMO() { }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static FreeTextMO Create(string text)
+        {
+            var tmo1 = new FreeTextMO();
+            tmo1.Text = text;
+            return tmo1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        protected override void pack(BinaryBitWriter writer)
+        {
+            Write(writer, this.Text);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="payload"></param>
+        protected override void unpack(byte[] payload)
+        {
+            using (MemoryStream stream = new MemoryStream(payload))
+            {
+                using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
+                {
+                    this.Text = Read(reader);
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class FreeText : Message
+    {
+
+        [Flags]
+        public enum Flags
+        {
+            EMPTY = 0,
+            HasChatId = 1,
+            HasConversation = 2,
+            HasText = 4,
+            HasSubject = 8,
+            HasLocation = 0x10,
+            HasId = 0x20,
+            Reserver_2 = 0x40,
+            Reserver_3 = 0x80
+        }
+
+
         private const int PAGE_OFFSET = 8;
         private static string page_sym = "\n !\"#$%\x00a4'()*+,-./0123456789:;<=>?@{|}~—\x00ab\x00bb[\\]^_`";
         private static string page_en = "\n @.ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         private static string page_ru = "\n абдегхийклмнопярстувьызчАБДЕГХИЙКЛМНОПЯРСТУВЗЧ";
         private static string page_ru_ext = "\n жшюцщэфъёЖШЮЦЩЭФЪЁ";
 
-        protected FreeTextMO()
+
+        protected FreeText()
         {
         }
 
-        public static FreeTextMO Create(string text)
-        {
-            FreeTextMO tmo1 = new FreeTextMO();
-            tmo1.Text = text;
-            return tmo1;
-        }
+       
 
         private static byte InPage(char c, Page page)
         {
@@ -63,10 +136,7 @@ namespace Iridium360.Connect.Framework.Messaging
             return 0xff;
         }
 
-        protected override void pack(BinaryBitWriter writer)
-        {
-            Write(writer, this.Text);
-        }
+       
 
         protected static string Read(BinaryBitReader reader)
         {
@@ -94,27 +164,27 @@ namespace Iridium360.Connect.Framework.Messaging
                         ////Page? nullable3 = nullable;
                         //if (nullable3.HasValue)
                         //{
-                            switch (page)
-                            {
-                                case Page.SYM:
-                                    builder.Append(page_sym[num - 8]);
-                                    break;
+                        switch (page)
+                        {
+                            case Page.SYM:
+                                builder.Append(page_sym[num - 8]);
+                                break;
 
-                                case Page.EN:
-                                    builder.Append(page_en[num - 8]);
-                                    break;
+                            case Page.EN:
+                                builder.Append(page_en[num - 8]);
+                                break;
 
-                                case Page.RU:
-                                    builder.Append(page_ru[num - 8]);
-                                    break;
+                            case Page.RU:
+                                builder.Append(page_ru[num - 8]);
+                                break;
 
-                                case Page.RU_EXT:
-                                    builder.Append(page_ru_ext[num - 8]);
-                                    break;
+                            case Page.RU_EXT:
+                                builder.Append(page_ru_ext[num - 8]);
+                                break;
 
-                                default:
-                                    break;
-                            }
+                            default:
+                                break;
+                        }
                         //}
                     }
                 }
@@ -130,16 +200,7 @@ namespace Iridium360.Connect.Framework.Messaging
             return builder.ToString();
         }
 
-        protected override void unpack(byte[] payload)
-        {
-            using (MemoryStream stream = new MemoryStream(payload))
-            {
-                using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
-                {
-                    this.Text = Read(reader);
-                }
-            }
-        }
+       
 
         protected static void Write(BinaryBitWriter writer, string text)
         {
@@ -187,10 +248,35 @@ namespace Iridium360.Connect.Framework.Messaging
             writer.Write6(0);
         }
 
-        public override MessageType Type =>
-            MessageType.FreeText;
+        //public override MessageType Type =>
+        //    MessageType.FreeText;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Text { get; protected set; }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ChatId { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Subject { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ushort? Conversation { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ushort? Id { get; protected set; }
+
 
         private enum Page
         {

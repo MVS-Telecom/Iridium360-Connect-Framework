@@ -1,11 +1,17 @@
 namespace Iridium360.Connect.Framework.Messaging
 {
-    using System;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IMessageMT
+    { }
+
 
     /// <summary>
     ///  Вх на RockSTAR сообщение
     /// </summary>
-    public abstract class MessageMT : Message
+    public abstract class MessageMT : Message, IMessageMT
     {
 
         /// <summary>

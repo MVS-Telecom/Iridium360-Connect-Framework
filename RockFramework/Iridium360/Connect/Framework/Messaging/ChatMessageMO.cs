@@ -5,11 +5,58 @@ using System.Runtime.InteropServices;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
+
+
     /// <summary>
     /// 
     /// </summary>
-    public class ChatMessageMO : FreeTextMO
+    public class ChatMessageMT : FreeText, IMessageMT
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        protected override void pack(BinaryBitWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="payload"></param>
+        protected override void unpack(byte[] payload)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override MessageType Type => MessageType.ChatMessage;
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override Direction Direction => Direction.MT;
+
+    }
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class ChatMessageMO : FreeText, IMessageMO
+    {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override Direction Direction => Direction.MO;
+
 
         /// <summary>
         /// 
@@ -28,7 +75,8 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="text">тест</param>
         /// <param name="subject">заголовок</param>
         /// <returns></returns>
-        public static ChatMessageMO Create(string chatId, ushort? id, ushort? conversation, string text, string subject = null)
+        public static ChatMessageMO Create(string chatId, ushort? id, ushort? conversation, string text, string subject = null
+            , object location = null)
         {
             ChatMessageMO emo1 = new ChatMessageMO();
             emo1.Id = id;
@@ -36,9 +84,15 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Conversation = conversation;
             emo1.Text = text;
             emo1.Subject = subject;
+            emo1.Location = location;
             return emo1;
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
             Flags flags = Flags.EMPTY;
@@ -64,7 +118,17 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 flags |= Flags.HasText;
             }
+            if (Location != null)
+            {
+                flags |= Flags.HasLocation;
+            }
+            //
+            // --->
+            //
             writer.Write((byte)((byte)flags));
+            //
+            // --->
+            //
             if (flags.HasFlag(Flags.HasChatId))
             {
                 Write(writer, this.ChatId);
@@ -129,39 +193,31 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         public override MessageType Type => MessageType.ChatMessage;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ChatId { get; private set; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string ChatId { get; private set; }
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string Subject { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Subject { get; private set; }
+        public object Location { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ushort? Conversation { get; private set; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public ushort? Conversation { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ushort? Id { get; private set; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public ushort? Id { get; private set; }
 
-        [Flags]
-        public enum Flags
-        {
-            EMPTY = 0,
-            HasChatId = 1,
-            HasConversation = 2,
-            HasText = 4,
-            HasSubject = 8,
-            HasLocation = 0x10,
-            HasId = 0x20,
-            Reserver_2 = 0x40,
-            Reserver_3 = 0x80
-        }
     }
 }
 

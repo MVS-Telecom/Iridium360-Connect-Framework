@@ -1,10 +1,16 @@
 namespace Iridium360.Connect.Framework.Messaging
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IMessageMO
+    { }
+
 
     /// <summary>
     ///  Исх с RockSTAR сообщение
     /// </summary>
-    public abstract class MessageMO : Message
+    public abstract class MessageMO : Message, IMessageMO
     {
 
         /// <summary>
@@ -27,9 +33,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public static MessageMO Unpack(byte[] buffer)
+        public static IMessageMO Unpack(byte[] buffer)
         {
-            return Unpack(KnownMOTypes, buffer) as MessageMO;
+            return Unpack(KnownMOTypes, buffer) as IMessageMO;
         }
     }
 
