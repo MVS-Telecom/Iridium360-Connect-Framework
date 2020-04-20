@@ -122,6 +122,13 @@ namespace Rock.Tests
         }
 
         [TestMethod]
+        public void ParseCommand2()
+        {
+            var bytes = ArrayHelper.ToByteArray("000B01E8DFB81EB400000293BD00000000000000");
+            var command = BaseCommand.Parse(bytes);
+        }
+
+        [TestMethod]
         public void FromDevice_DeleteMessageCommand()
         {
             var bytes = ArrayHelper.ToByteArray("000B03044FA7812A140000EF0600000000000000");
