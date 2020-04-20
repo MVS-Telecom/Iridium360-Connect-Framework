@@ -1,3 +1,4 @@
+using Rock;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -75,8 +76,13 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="text">тест</param>
         /// <param name="subject">заголовок</param>
         /// <returns></returns>
-        public static ChatMessageMO Create(string chatId, ushort? id, ushort? conversation, string text, string subject = null
-            , object location = null)
+        public static ChatMessageMO Create(
+            string chatId, 
+            ushort? id, 
+            ushort? conversation, 
+            string text, 
+            string subject = null,
+            Location location = null)
         {
             ChatMessageMO emo1 = new ChatMessageMO();
             emo1.Id = id;
@@ -206,7 +212,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public object Location { get; private set; }
+        public Location Location { get; private set; }
 
         ///// <summary>
         ///// 
