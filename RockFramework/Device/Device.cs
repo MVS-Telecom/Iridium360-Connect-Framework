@@ -53,7 +53,6 @@ namespace Rock
         public float? Speed { get; set; }
         public float? Bearing { get; set; }
 
-
         public Location()
         {
 
