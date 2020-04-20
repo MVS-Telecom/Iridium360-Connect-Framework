@@ -117,6 +117,25 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
+
+        [TestMethod]
+        public void Pack_VK()
+        {
+            var str = @"the new version of a good one for you can be fun and you should get a free game for a bit but it’s";
+
+
+            var message = FreeTextMO.Create(str);
+
+
+            var buffer = message.Pack();
+
+            var _message = MessageMO.Unpack(buffer) as FreeTextMO;
+
+            if (message.Text != _message.Text)
+                Assert.Fail();
+        }
+
+
         [TestMethod]
         public void Pack__FreeTextMO()
         {

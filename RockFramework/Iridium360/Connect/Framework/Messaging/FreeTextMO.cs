@@ -86,7 +86,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
         private const int PAGE_OFFSET = 8;
-        private static string page_sym = "\n !\"#$%\x00a4'()*+,-./0123456789:;<=>?@{|}~—\x00ab\x00bb[\\]^_`";
+        private static string page_sym = "\n !\"#$%\x00a4'()*+,-./0123456789:;<=>?@{|}~—\x00ab\x00bb[\\]^_`’";
         private static string page_en = "\n @.ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         private static string page_ru = "\n абдегхийклмнопярстувьызчАБДЕГХИЙКЛМНОПЯРСТУВЗЧ";
         private static string page_ru_ext = "\n жшюцщэфъёЖШЮЦЩЭФЪЁ";
