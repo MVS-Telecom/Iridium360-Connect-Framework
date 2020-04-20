@@ -186,6 +186,7 @@ namespace Rock.Commands
             this.Key = key;
             this.Payload = payload;
             this.MessageId = messageId;
+            this.CommandType = commandType;
             this.ActionRequestType = actionRequestType;
         }
 
