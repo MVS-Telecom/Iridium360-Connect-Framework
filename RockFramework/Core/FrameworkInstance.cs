@@ -1378,6 +1378,9 @@ namespace Rock
                         Handled = false
                     };
                     MessageStatusUpdated(this, args);
+
+                    if (args.Handled)
+                        PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
                 }
                 else if (status.Key == -1)
                 {
@@ -1388,6 +1391,9 @@ namespace Rock
                         Handled = false
                     };
                     MessageStatusUpdated(this, args);
+
+                    if (args.Handled)
+                        PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
                 }
                 else if (status.Key == 0)
                 {
@@ -1406,6 +1412,7 @@ namespace Rock
                 }
             }
         }
+
 
 
         /// <summary>
