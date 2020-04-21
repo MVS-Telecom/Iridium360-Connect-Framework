@@ -524,17 +524,11 @@ namespace Rock
 
                 ConnectedDevice.SetState(DeviceState.Connected);
 
-#if DEBUG
-                try
-                {
-                    var b = await inbox.ReadAsync();
-                }
-                catch (Exception e)
-                {
 
-                }
-                //Beep();
-#endif
+                ///Проверяем наличие "непрочитаных" входящих сообщений
+                PostReadGatt(inbox);
+                ///Проверяем наличие "непрочитаных" статусов сообщений
+                PostReadGatt(messageStatus);
 
 
                 logger.Log($"[CONNECT] Done");
