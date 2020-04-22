@@ -397,6 +397,7 @@ namespace Rock
         private IGattCharacteristic outbox;
         private IGattCharacteristic battery;
         private IGattCharacteristic location;
+        private IGattCharacteristic messageStatus;
 
 
         internal bool IsGprsAttached { get; private set; }
@@ -466,7 +467,7 @@ namespace Rock
                 var indicator = gatts.FirstOrDefault(x => x.Id.ToString() == "d0701859-7e41-47b1-af19-fb305f98ab51");
                 var common = gatts.FirstOrDefault(x => x.Id.ToString() == "a84c417a-3380-4a4b-a885-f926a647bb3c");
                 var inbox = gatts.FirstOrDefault(x => x.Id.ToString() == "4de3e821-2f25-4da0-b696-d06f81f46a52");
-                var messageStatus = gatts.FirstOrDefault(x => x.Id.ToString() == "a7a6f930-1ad0-4a68-9d85-1228fc3e5c19");
+                this.messageStatus = gatts.FirstOrDefault(x => x.Id.ToString() == "a7a6f930-1ad0-4a68-9d85-1228fc3e5c19");
                 var screenStatus = gatts.FirstOrDefault(x => x.Id.ToString() == "049e8f08-78a3-443a-9517-58dab1ce721d");
 
 
@@ -1221,6 +1222,12 @@ namespace Rock
                     }
                     break;
 
+                case CommandType.AcknowledgeMessageStatus:
+
+                    //PostReadGatt(messageStatus);
+
+                    break;
+
                 case CommandType.DeleteMessage:
 
                     break;
@@ -1374,7 +1381,9 @@ namespace Rock
                     MessageStatusUpdated(this, args);
 
                     if (args.Handled)
+                    {
                         PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
+                    }
                 }
                 else if (status.Key == -1)
                 {
@@ -1387,13 +1396,16 @@ namespace Rock
                     MessageStatusUpdated(this, args);
 
                     if (args.Handled)
+                    {
                         PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
+                    }
                 }
                 else if (status.Key == 0)
                 {
-                    throw new NotImplementedException();
+                    var a = BitConverter.GetBytes(1099511627775);
+                    //this.comms.onMessageStatusHandled(this.id, 1099511627775L, (short)-1);
 
-                    //onMessageStatusHandled(messageId, _installationId, _appIdIndex);
+                    PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, -1));
 
                     //if (this.f452ae != 0 && messageId == this.f452ae)
                     //{
@@ -1404,6 +1416,7 @@ namespace Rock
                 {
                     //Log.w("CONNECT", "THIS STATUS UPDATE IS NOT FOR ME");
                 }
+
             }
         }
 
