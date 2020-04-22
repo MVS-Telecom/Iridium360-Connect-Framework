@@ -7,7 +7,7 @@ namespace Rock.Commands
         private readonly GenericAlertType alert;
         private readonly bool position;
 
-        public AlertCommand(string appId, short key, GenericAlertType alert, bool position)
+        public AlertCommand(string appId, byte key, GenericAlertType alert, bool position)
             : base(CommandType.GenericAlert, appId, key)
         {
             this.alert = alert;

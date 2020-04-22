@@ -149,12 +149,12 @@ namespace Rock
         /// <summary>
         /// Номер ключа в списке всех ключей. Они захардкодены в исходниках фреймворка и во всех пакетах передается именно номер, а не сам ключ!
         /// </summary>
-        internal readonly short KeyIndex = 0;
+        internal readonly byte KeyIndex;
 
         /// <summary>
         /// Локально сгенерированный Id приложения. Используется во всех пакетах, чтобы разруливать пакеты от устройства для "меня"
         /// </summary>
-        internal string AppId { get; private set; }
+        internal readonly string AppId;
 
 
         private Guid deviceMac;
@@ -179,9 +179,23 @@ namespace Rock
         private SemaphoreSlim readSemaphore = new SemaphoreSlim(1, 1);
         private SemaphoreSlim writeSemaphore = new SemaphoreSlim(1, 1);
 
+        private const string DEFAULT_APP_ID = "//////8=";
+        private const byte DEFAULT_KEY_INDEX = 255;
 
-        public FrameworkInstance(IBluetooth bluetooth, IStorage storage, short? keyIndex = null, ILogger logger = null)
+        public FrameworkInstance(
+            IBluetooth bluetooth,
+            IStorage storage,
+            byte? keyIndex = null,
+            byte[] appId = null,
+            ILogger logger = null)
         {
+            //sbyte a = -1;
+            //byte b = (byte)a;
+
+            //byte[] bb = new byte[] { 255, 255, 255, 255, 255 };
+            //var r = BitConverter.GetBytes(1099511627775);
+            //string k = Convert.ToBase64String(bb);
+
             this.bluetooth = bluetooth;
             this.bluetooth.BluetoothStateChanged += Bluetooth_BluetoothStateChanged;
             this.bluetooth.DeviceConnectionLost += Bluetooth_DeviceConnectionLost;
@@ -190,7 +204,8 @@ namespace Rock
             this.storage = storage;
             this.logger = logger ?? new ConsoleLogger();
 
-            KeyIndex = keyIndex ?? 0;
+            this.KeyIndex = keyIndex ?? DEFAULT_KEY_INDEX;
+            this.AppId = Convert.ToBase64String(appId ?? new byte[] { 255, 255, 255, 255, 255 });
 
             this.ConnectedDevice = new Device(this);
         }
@@ -326,32 +341,6 @@ namespace Rock
         }
 
 
-        /// <summary>
-        /// Id инсталляции приложения
-        /// </summary>
-        /// <returns></returns>
-        private string GetAppId()
-        {
-            string key = $"Rock_MAC_{this.deviceMac}";
-
-            string id = storage.GetString(key, string.Empty);
-
-            if (string.IsNullOrEmpty(id))
-            {
-                id = Convert.ToBase64String(Guid.NewGuid().ToByteArray().Take(5).ToArray());
-                storage.PutString(key, this.AppId);
-
-                logger.Log($"Installation id CREATED - `{id}`");
-            }
-            else
-            {
-                logger.Log($"Installation id EXISTS - `{id}`");
-            }
-
-            return id;
-        }
-
-
         private IBluetoothDevice bluetoothDevice;
         private SemaphoreSlim connectLock = new SemaphoreSlim(1, 1);
 
@@ -437,7 +426,6 @@ namespace Rock
                 bluetoothDevice = null;
 
                 this.deviceMac = deviceMac;
-                this.AppId = GetAppId();
 
 
                 logger.Log($"[CONNECT] Connecting to `{deviceMac}`...");
@@ -461,7 +449,7 @@ namespace Rock
                     gatt.ValueUpdated += (ss, e) => worker.Post(() => { OnGattChanged(e.Characteristic); }, "gatt changed");
                 }
 
-                this.location = gatts.FirstOrDefault(x => x.Id.ToString() == "d6f3af9a-cea4-4220-a7ee-8eced1534af3");
+                this.gatts.FirstOrDefault(x => x.Id.ToString() == "d6f3af9a-cea4-4220-a7ee-8eced1534af3");
                 this.battery = gatts.FirstOrDefault(x => x.Id.ToString() == "8c0a3f8b-fccb-482a-8406-e6ad57b324f4");
                 this.outbox = gatts.FirstOrDefault(x => x.Id.ToString() == "cf17c69c-9d80-4ffb-8fa3-f81a83170cef");
                 var indicator = gatts.FirstOrDefault(x => x.Id.ToString() == "d0701859-7e41-47b1-af19-fb305f98ab51");
@@ -530,6 +518,9 @@ namespace Rock
                 PostReadGatt(inbox);
                 ///Проверяем наличие "непрочитаных" статусов сообщений
                 PostReadGatt(messageStatus);
+
+                RequestMessageStatus();
+
 
 
                 logger.Log($"[CONNECT] Done");
@@ -686,6 +677,9 @@ namespace Rock
 
             });
         }
+
+
+
 
         /// <summary>
         /// 
@@ -945,6 +939,17 @@ namespace Rock
             await PostCommandAsync(new ActionCommand(AppId, KeyIndex, ActionRequestType.SendManual));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task RequestMailboxCheck()
+        {
+            await Reconnect(throwOnError: true);
+            await Unlock();
+            await PostCommandAsync(new ActionCommand(AppId, KeyIndex, ActionRequestType.MailboxCheck));
+        }
+
 
         //        /// <summary>
         //        /// 
@@ -1161,9 +1166,6 @@ namespace Rock
                 ///Сообщение принято устройством (точно не известно, нужно ли это событие вообщее)
                 case CommandType.SendMessage:
                     {
-                        if (command.MessageId == 0)
-                            throw new ArgumentNullException("Message id is 0");
-
                         if (command.MessageId == null)
                             throw new ArgumentNullException("Message id is null");
 
@@ -1177,7 +1179,7 @@ namespace Rock
 
                         if (args.Handled)
                         {
-                            //TODO: AckCommand
+                            //PostCommand(new AcknowledgeMessageStatusCommand(command.MessageId.Value, command.AppId, command.Key));
                         }
 
                         //handler.post(new MessageStatusReceivedByDeviceRunnable(this, s));
@@ -1188,6 +1190,10 @@ namespace Rock
 
                     switch (command.ActionRequestType)
                     {
+                        case ActionRequestType.UpdateMessageStatus:
+                            PostReadGatt(messageStatus);
+                            break;
+
                         case ActionRequestType.PositionUpdate:
                         case ActionRequestType.PositionUpdateLastKnown:
 
@@ -1200,7 +1206,7 @@ namespace Rock
                         case ActionRequestType.SendManual:
                         case ActionRequestType.GeofenceCentre:
 
-                            throw new NotImplementedException();
+                            //throw new NotImplementedException();
                             //handler.post(new C0096do(this, commandType));
 
                             break;
@@ -1224,7 +1230,7 @@ namespace Rock
 
                 case CommandType.AcknowledgeMessageStatus:
 
-                    //PostReadGatt(messageStatus);
+                    //RequestMessageStatus();
 
                     break;
 
@@ -1339,22 +1345,60 @@ namespace Rock
 
 
         /// <summary>
-        /// 
+        /// Попросить устройство отправить еще необработанное (непрочитанное) сообщение
         /// </summary>
         private void RequestNextMessage()
         {
             PostCommand(new GetNextMessageCommand(this.AppId, 0));
-
-            if (this.KeyIndex != 0)
-                PostCommand(new GetNextMessageCommand(this.AppId, this.KeyIndex));
-
-
-            var b = BitConverter.GetBytes((long)1099511627775L).Take(5).ToArray();
-            string key = Convert.ToBase64String(b);
+            PostCommand(new GetNextMessageCommand(this.AppId, this.KeyIndex));
 
             if (IsRawMessagingAvailable)
-                PostCommand(new GetNextMessageCommand(key, (short)-1));
+                PostCommand(new GetNextMessageCommand(DEFAULT_APP_ID, DEFAULT_KEY_INDEX));
         }
+
+        /// <summary>
+        /// Попросить устройство отправить еще необработанный статус сообщения
+        /// </summary>
+        private void RequestMessageStatus()
+        {
+            PostCommand(new ActionCommand(this.AppId, 0, ActionRequestType.UpdateMessageStatus));
+            PostCommand(new ActionCommand(this.AppId, this.KeyIndex, ActionRequestType.UpdateMessageStatus));
+
+            if (IsRawMessagingAvailable)
+                PostCommand(new ActionCommand(DEFAULT_APP_ID, DEFAULT_KEY_INDEX, ActionRequestType.UpdateMessageStatus));
+        }
+
+
+
+        //    /* renamed from: fl */
+        //    public class C0147fl extends BaseCommand
+        //    {
+        //public C0147fl(long j, short s, short s2)
+        //    {
+        //        super(R7CommandType.R7CommandTypeSendMessage, j, s);
+        //        this.messageId = s2;
+        //        ArrayList arrayList = new ArrayList();
+        //        arrayList.add(m221h());
+        //        this.packets = arrayList;
+        //    }
+
+        //    /* renamed from: h */
+        //    private byte[] m221h()
+        //    {
+        //        short s = (short)13;
+        //        ByteBuffer allocate = ByteBuffer.allocate(20);
+        //        allocate.putShort(s);
+        //        allocate.put(getCommandType_BYTE());
+        //        allocate.put(getInstallationId_BYTES());
+        //        allocate.put((byte)0);
+        //        allocate.putShort(this.messageId);
+        //        allocate.put(getAppIdIndex_BYTE());
+        //        allocate.put((byte)2);
+        //        allocate.putShort(ChecksumHelper.checksum(allocate.array(), s));
+        //        return allocate.array();
+        //    }
+        //}
+
 
 
         /// <summary>
@@ -1366,7 +1410,7 @@ namespace Rock
             var status = DeserializedStatus.Parse(data);
 
 
-            if (status.MessageId != 0 && status.MessageId != null)
+            if (status.MessageId != 0)
             {
                 logger.Log($"[STATUS] Message status updated `{status.MessageId}` -> Transmitted");
 
@@ -1385,7 +1429,7 @@ namespace Rock
                         PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
                     }
                 }
-                else if (status.Key == -1)
+                else if (status.Key == DEFAULT_KEY_INDEX)
                 {
                     var args = new MessageStatusUpdatedEventArgs()
                     {
@@ -1397,7 +1441,7 @@ namespace Rock
 
                     if (args.Handled)
                     {
-                        PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
+                        PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, this.AppId, status.Key));
                     }
                 }
                 else if (status.Key == 0)
@@ -1405,7 +1449,7 @@ namespace Rock
                     var a = BitConverter.GetBytes(1099511627775);
                     //this.comms.onMessageStatusHandled(this.id, 1099511627775L, (short)-1);
 
-                    PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, -1));
+                    PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, this.AppId, DEFAULT_KEY_INDEX));
 
                     //if (this.f452ae != 0 && messageId == this.f452ae)
                     //{

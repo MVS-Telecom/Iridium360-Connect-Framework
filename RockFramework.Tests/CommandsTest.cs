@@ -139,6 +139,16 @@ namespace Rock.Tests
         }
 
         [TestMethod]
+        public void ParseCommand4()
+        {
+            var bytes = ArrayHelper.ToByteArray("B5ABFCA541FF000900");
+            var command = DeserializedStatus.Parse(bytes);
+
+            if (command.AppId != "AzKDc7Y=" || command.Key != 0 || command.MessageId != 13)
+                Assert.Fail();
+        }
+
+        [TestMethod]
         public void FromDevice_DeleteMessageCommand()
         {
             var bytes = ArrayHelper.ToByteArray("000B03044FA7812A140000EF0600000000000000");

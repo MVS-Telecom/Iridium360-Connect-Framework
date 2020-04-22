@@ -36,7 +36,7 @@ namespace Rock.Commands
         private readonly short _Key;
 
 
-        public BaseCommand(CommandType commandType, string appId, short key)
+        public BaseCommand(CommandType commandType, string appId, byte key)
         {
             this.CommandType = commandType;
             this._AppId = appId;
@@ -180,7 +180,7 @@ namespace Rock.Commands
         public readonly ActionRequestType? ActionRequestType;
 
 
-        private DeserializedCommand(CommandType commandType, string appId, short key, byte[] payload, short? messageId, ActionRequestType? actionRequestType)
+        private DeserializedCommand(CommandType commandType, string appId, byte key, byte[] payload, short? messageId, ActionRequestType? actionRequestType)
         {
             this.AppId = AppId;
             this.Key = key;
@@ -256,10 +256,10 @@ namespace Rock.Commands
     public class DeserializedStatus
     {
         public string AppId { get; set; }
-        public short Key { get; set; }
+        public byte Key { get; set; }
         public short? MessageId { get; set; }
 
-        private DeserializedStatus(string appId, short key, short? messageId)
+        private DeserializedStatus(string appId, byte key, short? messageId)
         {
             this.AppId = appId;
             this.Key = key;
@@ -276,7 +276,7 @@ namespace Rock.Commands
         {
             ByteBuffer wrap = new ByteBuffer(data);
             string appId = Convert.ToBase64String(wrap.ReadBytes(5));
-            short key = (short)wrap.ReadByte();
+            byte key = wrap.ReadByte();
             short messageId = wrap.ReadInt16();
 
             return new DeserializedStatus(appId, key, messageId);

@@ -12,7 +12,7 @@ namespace Rock.Commands
         private byte[] body;
 
 
-        public SendMessageCommand(string appId, short key, short messageId, byte[] body)
+        public SendMessageCommand(string appId, byte key, short messageId, byte[] body)
             : base(CommandType.SendMessage, appId, key)
         {
             this.MessageId = messageId;

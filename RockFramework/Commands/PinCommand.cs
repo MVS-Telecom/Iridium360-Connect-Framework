@@ -15,7 +15,7 @@ namespace Rock.Commands
         private readonly short newPin;
 
 
-        public PinCommand(string appId, short key, short oldPin, short newPin)
+        public PinCommand(string appId, byte key, short oldPin, short newPin)
             : base(CommandType.Pin, appId, key)
         {
             this.oldPin = oldPin;

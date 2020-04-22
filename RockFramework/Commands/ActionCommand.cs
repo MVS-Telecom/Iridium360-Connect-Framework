@@ -52,7 +52,7 @@ namespace Rock.Commands
     {
         private readonly ActionRequestType actionRequestType;
 
-        public ActionCommand(string appId, short key, ActionRequestType actionRequestType) :
+        public ActionCommand(string appId, byte key, ActionRequestType actionRequestType) :
             base(CommandType.ActionRequest, appId, key)
         {
             this.actionRequestType = actionRequestType;

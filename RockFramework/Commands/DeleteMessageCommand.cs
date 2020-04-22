@@ -9,7 +9,7 @@ namespace Rock.Commands
     {
         private readonly short messageId;
 
-        public DeleteMessageCommand(short messageId, string appId, short key)
+        public DeleteMessageCommand(short messageId, string appId, byte key)
             : base(CommandType.DeleteMessage, appId, key)
         {
             this.messageId = messageId;

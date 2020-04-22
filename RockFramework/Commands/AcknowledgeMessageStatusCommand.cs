@@ -9,7 +9,7 @@ namespace Rock.Commands
     {
         private short MessageId;
 
-        public AcknowledgeMessageStatusCommand(short messageId, string appId, short keyIndex) : base(CommandType.AcknowledgeMessageStatus, appId, keyIndex)
+        public AcknowledgeMessageStatusCommand(short messageId, string appId, byte keyIndex) : base(CommandType.AcknowledgeMessageStatus, appId, keyIndex)
         {
             this.MessageId = messageId;
         }

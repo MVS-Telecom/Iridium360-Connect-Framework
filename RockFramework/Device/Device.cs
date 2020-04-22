@@ -99,6 +99,7 @@ namespace Rock
         void RequestBattery();
         void RequestLocation();
         Task<Location> UpdateLocation();
+        Task RequestMailboxCheck();
     }
 
     public enum DeviceState
@@ -814,6 +815,15 @@ namespace Rock
         public Task<Location> UpdateLocation()
         {
             return Rock.UpdateLocation();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Task RequestMailboxCheck()
+        {
+            return Rock.RequestMailboxCheck();
         }
     }
 }
