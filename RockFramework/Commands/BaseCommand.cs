@@ -180,6 +180,16 @@ namespace Rock.Commands
         public readonly ActionRequestType? ActionRequestType;
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"Command => `{CommandType}` for action: `{ActionRequestType}`";
+        }
+
+
         private DeserializedCommand(CommandType commandType, string appId, byte key, byte[] payload, short? messageId, ActionRequestType? actionRequestType)
         {
             this.AppId = AppId;
@@ -196,6 +206,25 @@ namespace Rock.Commands
         /// <param name="data"></param>
         /// <returns></returns>
         public static DeserializedCommand Parse(byte[] data)
+        {
+            try
+            {
+                return __parse(data);
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debugger.Break();
+#endif
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        static DeserializedCommand  __parse(byte[] data)
         {
             var buffer = new ByteBuffer(data);
 
@@ -231,8 +260,18 @@ namespace Rock.Commands
                         {
                             var messageId = body.ReadInt16();
                             var payload = body.ReadAllBytes();
+                            // --->
+                            if (0 == messageId)
+                                return null;
+                            // --->
                             return new DeserializedCommand(commandType, appId, key, payload, messageId, null);
                         }
+
+                    case CommandType.Pin:
+                        break;
+
+                    case CommandType.DeleteMessage:
+                        break;
 
                     default:
                         //throw new NotImplementedException();

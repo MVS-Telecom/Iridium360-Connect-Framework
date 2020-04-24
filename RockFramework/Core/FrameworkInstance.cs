@@ -204,6 +204,11 @@ namespace Rock
             this.storage = storage;
             this.logger = logger ?? new ConsoleLogger();
 
+
+            //if (appId == null)
+            //    appId = new byte[] { 100, 101, 102, 103, 104 };
+
+
             this.KeyIndex = keyIndex ?? DEFAULT_KEY_INDEX;
             this.AppId = Convert.ToBase64String(appId ?? new byte[] { 255, 255, 255, 255, 255 });
 
@@ -1105,6 +1110,9 @@ namespace Rock
 
             var command = DeserializedCommand.Parse(data);
 
+            if (command == null)
+                return;
+
             logger.Log($"[FROM DEVICE] --> AppId={command.AppId} Key={command.Key} Type={command.CommandType} ActionRequest={command.ActionRequestType} MessageId={command.MessageId}");
 
             try
@@ -1113,13 +1121,12 @@ namespace Rock
             }
             catch (Exception e)
             {
-#if DEBUG
+#if DEBUG 
                 Debugger.Break();
 #endif
                 logger.Log($"[EXCEPTION] Exception occured while handling incoming command {e}");
             }
         }
-
 
 
         /// <summary>
@@ -1135,8 +1142,8 @@ namespace Rock
                 ///Новое входящее сообщение
                 case CommandType.GetNextMessage:
                     {
-                        if (command.MessageId == 0)
-                            throw new ArgumentNullException("Message id is 0");
+                        //if (command.MessageId == 0)
+                        //    throw new ArgumentNullException("Message id is 0");
 
                         if (command.MessageId == null)
                             throw new ArgumentNullException("Message id is null");
@@ -1153,6 +1160,9 @@ namespace Rock
                         };
 
                         MessageReceived(this, args);
+
+
+
 
                         if (args.Handled)
                         {
@@ -1248,7 +1258,8 @@ namespace Rock
 
                 case CommandType.SerialDump:
 
-                    throw new NotImplementedException();
+                    // DN
+                    //throw new NotImplementedException();
                     //handler.post(new C0101dt(this, bArr));
 
                     break;
@@ -1261,6 +1272,10 @@ namespace Rock
                     break;
 
                 case CommandType.SetGprsConfig:
+
+                    break;
+
+                case CommandType.Pin:
 
                     break;
 
@@ -1339,21 +1354,33 @@ namespace Rock
 
             if (count > 0)
             {
-                //RequestNextMessage();
+                RequestNextMessage();
             }
         }
 
 
         /// <summary>
-        /// Попросить устройство отправить еще необработанное (непрочитанное) сообщение
+        ///  // Попросить устройство отправить еще необработанное (непрочитанное) сообщение
+        ///  Попросить устройство ПОЛУЧИТЬ еще необработанное (непрочитанное) сообщение
         /// </summary>
         private void RequestNextMessage()
         {
+
+            //for (byte index = 0; index < byte.MaxValue; index++)
+            //{
+            //    PostCommand(new GetNextMessageCommand(DEFAULT_APP_ID, index));
+            //}
+
+            ////return;
+
             PostCommand(new GetNextMessageCommand(this.AppId, 0));
             PostCommand(new GetNextMessageCommand(this.AppId, this.KeyIndex));
 
             if (IsRawMessagingAvailable)
+            {
                 PostCommand(new GetNextMessageCommand(DEFAULT_APP_ID, DEFAULT_KEY_INDEX));
+                PostCommand(new GetNextMessageCommand(appId: this.AppId, this.KeyIndex));
+            }
         }
 
         /// <summary>

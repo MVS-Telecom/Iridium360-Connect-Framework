@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 namespace Rock.Core
 {
@@ -82,8 +83,30 @@ namespace Rock.Core
         public byte[] ReadBytes(int length)
         {
             BeforeRead();
-            return reader.ReadBytes(length);
+            try
+            {
+
+                var max = (int)(reader.BaseStream.Length - reader.BaseStream.Position);
+
+                if (length > max || length < 0)
+                    length = max;
+
+                var buffer = reader.ReadBytes(length);
+
+                Array.Resize(ref buffer, length);
+
+                return buffer;
+
+            }
+            catch(Exception ex)
+            {
+#if DEBUG
+                Debugger.Break();
+#endif
+                throw;
+            }
         }
+
 
         /// <summary>
         ///
@@ -91,8 +114,21 @@ namespace Rock.Core
         /// <returns></returns>
         public byte[] ReadAllBytes()
         {
-            BeforeRead();
-            return ReadBytes(int.MaxValue);
+            try
+            {
+                var length = (int)(reader.BaseStream.Length - reader.BaseStream.Position);
+                // --->
+                BeforeRead();
+                var buffer = ReadBytes(length);
+                return buffer;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debugger.Break();
+#endif
+                throw;
+            }
         }
 
         /// <summary>
