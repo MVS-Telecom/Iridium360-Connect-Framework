@@ -1098,6 +1098,8 @@ namespace Rock
         }
 
 
+        private readonly IncomingBuffer incoming = new IncomingBuffer();
+
         /// <summary>
         /// Входящая команда (?) от устройства
         /// </summary>
@@ -1108,23 +1110,39 @@ namespace Rock
             logger.Log($"[FROM DEVICE] --> {hex}");
 
 
-            var command = DeserializedCommand.Parse(data);
+            this.incoming.add(data);
 
-            if (command == null)
-                return;
+            byte[] b = this.incoming.get();
 
-            logger.Log($"[FROM DEVICE] --> AppId={command.AppId} Key={command.Key} Type={command.CommandType} ActionRequest={command.ActionRequestType} MessageId={command.MessageId}");
-
-            try
+            if (b != null)
             {
-                HandleCommandFromDevice(command);
-            }
-            catch (Exception e)
-            {
-#if DEBUG 
-                Debugger.Break();
+                var command = DeserializedCommand.Parse(data);
+
+                if (command == null)
+                    return;
+
+                logger.Log($"[FROM DEVICE] --> AppId={command.AppId} Key={command.Key} Type={command.CommandType} ActionRequest={command.ActionRequestType} MessageId={command.MessageId}");
+
+                try
+                {
+                    HandleCommandFromDevice(command);
+                }
+                catch (Exception e)
+                {
+#if DEBUG
+                    Debugger.Break();
 #endif
-                logger.Log($"[EXCEPTION] Exception occured while handling incoming command {e}");
+                    logger.Log($"[EXCEPTION] Exception occured while handling incoming command {e}");
+                }
+
+
+                ///
+                //processQueue();
+
+            }
+            else
+            {
+                logger.Log($"[FROM DEVICE] --> Waiting for next part");
             }
         }
 
