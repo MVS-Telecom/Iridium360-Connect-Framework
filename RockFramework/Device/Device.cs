@@ -26,7 +26,7 @@ namespace Rock
 
     public class DeviceConnectionChangedEventArgs : EventArgs
     {
-        public Device ConnectedDevice { get; set; }
+        public IDevice ConnectedDevice { get; set; }
         public DeviceState State { get; set; }
         public ConnectFlags Flags { get; set; }
 
