@@ -11,6 +11,12 @@ namespace Rock.Core
         private DateTime date;
         private byte[] buffer;
 
+#if DEBUG
+        static readonly TimeSpan TIMEOUT = TimeSpan.FromSeconds(60);
+#else
+        static readonly TimeSpan TIMEOUT = TimeSpan.FromSeconds(10);
+#endif
+
         public IncomingBuffer()
         {
             flush(false);
@@ -23,7 +29,7 @@ namespace Rock.Core
         {
             lock (this)
             {
-                this.date = DateTime.Now.AddMilliseconds(10000);
+                this.date = DateTime.Now.Add(TIMEOUT);
             }
         }
 
@@ -75,7 +81,7 @@ namespace Rock.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public byte[] get()
+        public byte[] TryGet()
         {
             lock (this)
             {
@@ -93,5 +99,9 @@ namespace Rock.Core
             return null;
         }
 
+        public override string ToString()
+        {
+            return this.buffer.ToHexString();
+        }
     }
 }

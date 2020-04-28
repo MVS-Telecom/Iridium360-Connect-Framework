@@ -189,12 +189,6 @@ namespace Rock
             byte[] appId = null,
             ILogger logger = null)
         {
-            //sbyte a = -1;
-            //byte b = (byte)a;
-
-            //byte[] bb = new byte[] { 255, 255, 255, 255, 255 };
-            //var r = BitConverter.GetBytes(1099511627775);
-            //string k = Convert.ToBase64String(bb);
 
             this.bluetooth = bluetooth;
             this.bluetooth.BluetoothStateChanged += Bluetooth_BluetoothStateChanged;
@@ -511,8 +505,8 @@ namespace Rock
                 {
                     var v = enums.FirstOrDefault(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == gatt.Id.ToString());
 
-                    if (v != Parameter.Unknown)
-                        gatt.Name = v.ToString();
+                    //if (v != Parameter.Unknown)
+                    gatt.Name = v.ToString();
                 });
 
 
@@ -903,7 +897,7 @@ namespace Rock
                 if (!IsConnected)
                     throw new NotConnectedException();
 
-                if (ConnectedDevice.LockStatus == LockState.IncorrectPin)
+                if (ConnectedDevice.IncorrectPin == true)
                     throw new IncorrectPinException();
 
                 if (ConnectedDevice.LockStatus != LockState.Unlocked)
@@ -917,6 +911,13 @@ namespace Rock
         /// </summary>
         public async Task Beep()
         {
+#if DEBUG
+            byte[] b = this.incoming.TryGet();
+            Console.WriteLine($"[HEX] {b?.ToHexString()}");
+            incoming.flush(true);
+            PostReadGatt(gatts.FirstOrDefault(x => x.Id.ToString() == "4de3e821-2f25-4da0-b696-d06f81f46a52"));
+#endif
+
             await Reconnect(throwOnError: true);
             await Unlock();
             await PostCommandAsync(new ActionCommand(AppId, KeyIndex, ActionRequestType.Beep));
@@ -1111,8 +1112,9 @@ namespace Rock
 
 
             this.incoming.add(data);
+            logger.Log($"[BUFFER] --> {this.incoming}");
 
-            byte[] b = this.incoming.get();
+            byte[] b = this.incoming.TryGet();
 
             if (b != null)
             {
@@ -1542,6 +1544,16 @@ namespace Rock
 
 
 
+        public enum InnerLockState : int
+        {
+            Unlocked = 0,
+            Locked = 1,
+            IncorrectPin = 2,
+            Unknown = 3
+        }
+
+
+
         /// <summary>
         /// Изменилось состояние блокировки устройства
         /// </summary>
@@ -1551,7 +1563,33 @@ namespace Rock
             try
             {
                 var buffer = new ByteBuffer(data);
-                ConnectedDevice.LockStatus = (LockState)buffer.ReadInt16();
+
+                InnerLockState innerState = (InnerLockState)buffer.ReadInt16();
+
+                LockState state = LockState.Unknown;
+                bool? incorrectPin = null;
+
+                switch (innerState)
+                {
+                    case InnerLockState.IncorrectPin:
+                        state = LockState.Locked;
+                        incorrectPin = true;
+                        break;
+
+                    case InnerLockState.Locked:
+                        state = LockState.Locked;
+                        break;
+
+                    case InnerLockState.Unknown:
+                        state = LockState.Unknown;
+                        break;
+
+                    case InnerLockState.Unlocked:
+                        state = LockState.Unlocked;
+                        break;
+                }
+
+                ConnectedDevice.SetLockStatus(state, incorrectPin);
             }
             catch (Exception e)
             {
