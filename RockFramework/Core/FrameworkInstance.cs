@@ -79,8 +79,8 @@ namespace Rock
     {
         event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults;
         event EventHandler<EventArgs> SearchTimeout;
-        event EventHandler<MessageStatusUpdatedEventArgs> MessageStatusUpdated;
-        event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated;
+        event EventHandler<MessageReceivedEventArgs> _MessageReceived;
 
 
         IDevice ConnectedDevice { get; }
@@ -135,8 +135,8 @@ namespace Rock
     {
         public event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults = delegate { };
         public event EventHandler<EventArgs> SearchTimeout = delegate { };
-        public event EventHandler<MessageStatusUpdatedEventArgs> MessageStatusUpdated = delegate { };
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived = delegate { };
+        public event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated = delegate { };
+        public event EventHandler<MessageReceivedEventArgs> _MessageReceived = delegate { };
 
 
 
@@ -1183,7 +1183,7 @@ namespace Rock
                             Handled = false
                         };
 
-                        MessageReceived(this, args);
+                        _MessageReceived(this, args);
 
 
 
@@ -1209,7 +1209,7 @@ namespace Rock
                             Status = MessageStatus.ReceivedByDevice,
                         };
 
-                        MessageStatusUpdated(this, args);
+                        _MessageStatusUpdated(this, args);
 
                         if (args.Handled)
                         {
@@ -1473,7 +1473,7 @@ namespace Rock
                         Status = MessageStatus.Transmitted,
                         Handled = false
                     };
-                    MessageStatusUpdated(this, args);
+                    _MessageStatusUpdated(this, args);
 
                     if (args.Handled)
                     {
@@ -1488,7 +1488,7 @@ namespace Rock
                         Status = MessageStatus.Transmitted,
                         Handled = false
                     };
-                    MessageStatusUpdated(this, args);
+                    _MessageStatusUpdated(this, args);
 
                     if (args.Handled)
                     {
