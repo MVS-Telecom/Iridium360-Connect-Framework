@@ -23,10 +23,10 @@ namespace Rock.Commands
 
     public enum LockState : int
     {
-        Unlocked,
-        Locked,
-        IncorrectPin,
-        Unknown
+        Unknown = 0,
+        Unlocked = 1,
+        Locked = 2,
+        IncorrectPin = 3,
     }
 
     public enum ActionRequestType : int
