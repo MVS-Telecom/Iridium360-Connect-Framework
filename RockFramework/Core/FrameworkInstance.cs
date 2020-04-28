@@ -448,7 +448,6 @@ namespace Rock
                     gatt.ValueUpdated += (ss, e) => worker.Post(() => { OnGattChanged(e.Characteristic); }, "gatt changed");
                 }
 
-                this.gatts.FirstOrDefault(x => x.Id.ToString() == "d6f3af9a-cea4-4220-a7ee-8eced1534af3");
                 this.battery = gatts.FirstOrDefault(x => x.Id.ToString() == "8c0a3f8b-fccb-482a-8406-e6ad57b324f4");
                 this.outbox = gatts.FirstOrDefault(x => x.Id.ToString() == "cf17c69c-9d80-4ffb-8fa3-f81a83170cef");
                 var indicator = gatts.FirstOrDefault(x => x.Id.ToString() == "d0701859-7e41-47b1-af19-fb305f98ab51");
@@ -456,7 +455,7 @@ namespace Rock
                 var inbox = gatts.FirstOrDefault(x => x.Id.ToString() == "4de3e821-2f25-4da0-b696-d06f81f46a52");
                 this.messageStatus = gatts.FirstOrDefault(x => x.Id.ToString() == "a7a6f930-1ad0-4a68-9d85-1228fc3e5c19");
                 var screenStatus = gatts.FirstOrDefault(x => x.Id.ToString() == "049e8f08-78a3-443a-9517-58dab1ce721d");
-
+                this.location = gatts.FirstOrDefault(x => x.Id.ToString() == "d6f3af9a-cea4-4220-a7ee-8eced1534af3");
 
                 await indicator.StartUpdatesAsync();
                 await inbox.StartUpdatesAsync();
@@ -503,10 +502,15 @@ namespace Rock
 
                 gatts.ForEach(gatt =>
                 {
-                    var v = enums.FirstOrDefault(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == gatt.Id.ToString());
-
-                    //if (v != Parameter.Unknown)
-                    gatt.Name = v.ToString();
+                    if (enums.Any(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == gatt.Id.ToString()))
+                    {
+                        var name = enums.FirstOrDefault(e => e.GetAttribute<GattCharacteristicAttribute>()?.Value == gatt.Id.ToString());
+                        gatt.Name = name.ToString();
+                    }
+                    else
+                    {
+                        gatt.Name = Parameter.Unknown.ToString();
+                    }
                 });
 
 

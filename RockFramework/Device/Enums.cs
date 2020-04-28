@@ -478,7 +478,11 @@ namespace Rock
 
         [GattCharacteristic("03639c2c-291c-452b-a54a-07277a0fa95d")]
         [Values(typeof(TransmissionFormat))]
-        TransmissionFormat
+        TransmissionFormat,
+
+
+
+        Unknown = 0xffff
     }
 
 
