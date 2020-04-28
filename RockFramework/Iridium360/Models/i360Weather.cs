@@ -63,54 +63,76 @@ namespace Rock.Iridium360.Models
     /// <summary>
     /// 
     /// </summary>
+    public class IconAttribute : Attribute
+    {
+        public string Key { get; set; }
+
+        public IconAttribute(string key) : base()
+        {
+            Key = key;
+        }
+    }
+
+
+    /// <summary>
+    /// фазы луны
+    /// </summary>
     public enum MoonPhase
     {
         /// <summary>
-        /// Новолуние 
+        /// Новолуние ic_moon_phase_first_quarter
         /// </summary>
-        [Translation("Новолуние")]
+        [Translation("$=moon_new_moon$$")]
+        [Icon("ic_moon_phase_new_moon")]
         NewMoon = 1,
 
         /// <summary>
         /// Молодая луна
         /// </summary>
-        [Translation("Молодая луна")]
+        [Translation("$=moon_waxing_crescent$$")]
+        [Icon("ic_moon_phase_waxing_crescent")]
         WaxingСresent = 2,
 
         /// <summary>
         /// Первая четверть
         /// </summary>
-        [Translation("Первая четверть")]
+        [Translation("$=moon_first_quarter$$")]
+        [Icon("ic_moon_phase_first_quarter")]
         FirstQuarter = 3,
 
         /// <summary>
         /// Растущая луна
         /// </summary>
-        [Translation("Растущая луна")]
+        [Translation("$=moon_waxing_gibbous$$")]
+        [Icon("ic_moon_phase_waxing_gibbous")]
         WaxingGibbous = 4,
 
         /// <summary>
         /// Полнолуние
         /// </summary>
-        [Translation("Полнолуние")]
+        [Translation("$=moon_full_moon$$")]
+        [Icon("ic_moon_phase_full_moon")]
         FullMoon = 5,
 
         /// <summary>
         /// Убывающая луна
         /// </summary>
-        [Translation("Убывающая луна")]
+        [Translation("$=moon_waning_gibbous$$")]
+        [Icon("ic_moon_phase_waning_gibbous")]
         WanningGibbous = 6,
 
         /// <summary>
         /// Последняя четверть
         /// </summary>
-        [Translation("Последняя четверть")]
+        [Translation("$=moon_last_quarter$$")]
+        [Icon("ic_moon_phase_last_quarter")]
         LastGuarter = 7,
 
         /// <summary>
         /// Старая луна
         /// </summary>
-        [Translation("Старая луна")]
+        [Translation("$=moon_waning_crescent$$")]
+        [Icon("ic_moon_phase_waning_crescent")]
         WaningCrescent = 8,
     }
 
@@ -204,6 +226,12 @@ namespace Rock.Iridium360.Models
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonProperty("l")]
+        public int? DayLength { get; set; }
 
         /// <summary>
         /// 
