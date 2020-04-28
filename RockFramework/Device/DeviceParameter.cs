@@ -136,8 +136,8 @@ namespace Rock
 
             if (!string.IsNullOrEmpty(gatt))
                 this.GattId = Guid.Parse(gatt);
-            else
-                Debugger.Break();
+            //else
+                //Debugger.Break();
 
             IsReadonly = id.HasAttribute<ReadonlyAttribute>();
             Group = id.GetAttribute<GroupAttribute>()?.Key;
