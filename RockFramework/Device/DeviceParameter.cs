@@ -122,18 +122,22 @@ namespace Rock
         private Hashtable options = new Hashtable();
         private DateTime cachedTime;
         protected byte[] cachedValueBytes = new byte[0];
-        private FrameworkInstance Rock;
-        private Device device;
+        private IFramework Rock;
+        private IDevice device;
 
 
-        public DeviceParameter(FrameworkInstance Rock, Device device, Parameter id)
+        public DeviceParameter(IFramework Rock, IDevice device, Parameter id)
         {
             this.Rock = Rock;
             this.device = device;
             this.Id = id;
 
-            string gatt = id.GetAttribute<GattCharacteristicAttribute>().Value;
-            this.GattId = Guid.Parse(gatt);
+            string gatt = id.GetAttribute<GattCharacteristicAttribute>()?.Value;
+
+            if (!string.IsNullOrEmpty(gatt))
+                this.GattId = Guid.Parse(gatt);
+            else
+                Debugger.Break();
 
             IsReadonly = id.HasAttribute<ReadonlyAttribute>();
             Group = id.GetAttribute<GroupAttribute>()?.Key;

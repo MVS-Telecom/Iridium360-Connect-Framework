@@ -16,7 +16,7 @@ namespace Rock
     {
         public LockState Old { get; set; }
         public LockState New { get; set; }
-        public bool IsIncorrectPin { get; set; }
+        public bool? IncorrectPin { get; set; }
     }
 
     public class BatteryUpdatedEventArgs : EventArgs
@@ -80,11 +80,12 @@ namespace Rock
         List<DeviceParameter> Parameters { get; }
         string Firmware { get; }
         string Hardware { get; }
-        LockState LockStatus { get; }
         int? Battery { get; }
 
 
-        DeviceState GetState();
+        DeviceState State { get; }
+        LockState LockStatus { get; }
+        bool? IncorrectPin { get; }
 
 
         Task SaveDeviceParameter(Parameter parameter, Enum value);
@@ -202,6 +203,11 @@ namespace Rock
         private LockState lockStatus = LockState.Unknown;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool? IncorrectPin { get; private set; }
+
+        /// <summary>
         /// Статус залоченности устройства
         /// </summary>
         public LockState LockStatus
@@ -210,23 +216,30 @@ namespace Rock
             {
                 return lockStatus;
             }
-            internal set
+        }
+
+
+
+        internal void SetLockStatus(LockState value, bool? incorrectPin = null)
+        {
+            IncorrectPin = incorrectPin;
+
+            if (lockStatus != value || incorrectPin == true)
             {
-                if (lockStatus != value || value == LockState.IncorrectPin)
+                var old = lockStatus;
+                lockStatus = value;
+
+                ConsoleLogger.WriteLine($"[LOCK-STATE] {old} -> {lockStatus}");
+
+                DeviceLockStatusUpdated(this, new LockStatusUpdatedEventArgs()
                 {
-                    var old = lockStatus;
-                    lockStatus = value;
-
-                    ConsoleLogger.WriteLine($"[LOCK-STATE] {old} -> {lockStatus}");
-
-                    DeviceLockStatusUpdated(this, new LockStatusUpdatedEventArgs()
-                    {
-                        Old = old,
-                        New = value
-                    });
-                }
+                    IncorrectPin = incorrectPin,
+                    Old = old,
+                    New = value
+                });
             }
         }
+
 
 
         private DeviceState state = DeviceState.Disconnected;
@@ -259,7 +272,7 @@ namespace Rock
 
                 if (state == DeviceState.Disconnected)
                 {
-                    LockStatus = LockState.Unknown;
+                    SetLockStatus(LockState.Unknown);
 
                     ///Сбрасываем некоторые параметры устройства при отключении
                     Parameters
@@ -274,9 +287,12 @@ namespace Rock
         /// 
         /// </summary>
         /// <returns></returns>
-        public DeviceState GetState()
+        public DeviceState State
         {
-            return state;
+            get
+            {
+                return state;
+            }
         }
 
 
@@ -753,7 +769,7 @@ namespace Rock
             }
             catch (DeviceIsLockedException e)
             {
-                LockStatus = LockState.Locked;
+                SetLockStatus(LockState.Locked);
             }
         }
 
