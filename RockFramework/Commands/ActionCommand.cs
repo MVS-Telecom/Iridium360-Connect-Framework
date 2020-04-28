@@ -26,7 +26,6 @@ namespace Rock.Commands
         Unknown = 0,
         Unlocked = 1,
         Locked = 2,
-        IncorrectPin = 3,
     }
 
     public enum ActionRequestType : int
