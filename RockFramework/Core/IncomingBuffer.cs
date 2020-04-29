@@ -85,7 +85,7 @@ namespace Rock.Core
         {
             lock (this)
             {
-                if (this.buffer.Length > 2)
+                if (this.buffer?.Length > 2)
                 {
                     int count = ((this.buffer[0] & 0xFF) << 8) + ((this.buffer[1] & 0xFF) << 0);
                     if (this.buffer.Length >= count + 2)
