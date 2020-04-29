@@ -118,7 +118,7 @@ namespace Rock.Bluetooth
     /// <summary>
     /// 
     /// </summary>
-    public interface IBluetooth
+    public interface IBluetooth : IDisposable
     {
         event EventHandler<BluetoothStateChangedEventArgs> BluetoothStateChanged;
         event EventHandler<ScanResultsEventArgs> ScanResults;
