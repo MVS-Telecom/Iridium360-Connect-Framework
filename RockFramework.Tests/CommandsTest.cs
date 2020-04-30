@@ -115,6 +115,26 @@ namespace Rock.Tests
         }
 
         [TestMethod]
+        public void AAAAA()
+        {
+            var bytes = "005702ffffffffffff0010116bff0100766963746f722e646576656c6f706d656e744079616e6465782e72753acef23a766963746f722e646576656c6f706d656e744079616e6465782e72757cd2e5ece03a7c7465737443820000000000000000000000".ToByteArray();
+            var b = new IncomingBuffer();
+            b.add(bytes);
+            var bb = b.TryGet();
+
+            var a = DeserializedCommand.Parse(bb);
+            var p = a.Payload.ToHexString();
+        }
+
+
+        [TestMethod]
+        public void BBB()
+        {
+            var bytes = new byte[] { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x88, 0x99, 0xaa, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x88, 0x99, 0xaa, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x88, 0x99, 0xaa, 0xbb, 0xcc };
+            var str = $"0x0650{bytes.ToHexString()}";
+        }
+
+        [TestMethod]
         public void ParseCommand()
         {
             var bytes = ArrayHelper.ToByteArray("782E72753A68656C6C6F20776F726C64CA410000");
@@ -155,6 +175,17 @@ namespace Rock.Tests
             var command = DeserializedCommand.Parse(bytes);
             if (command.CommandType != CommandType.DeleteMessage)
                 Assert.Fail();
+        }
+
+
+        [TestMethod]
+        public void A()
+        {
+            var bytes = "116A86010037393135333930363937344062792D736B792E6E65743ACFE8EDE3".ToByteArray();
+            var sbytes = Array.ConvertAll(bytes, b => unchecked((sbyte)b));
+
+            int a = ((sbytes[0] & 0xFF) << 8) + ((sbytes[1] & 0xFF) << 0) + 2;
+            int b = ((bytes[0] & 0xFF) << 8) + ((bytes[1] & 0xFF) << 0) + 2;
         }
 
         [TestMethod]

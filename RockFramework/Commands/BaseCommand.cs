@@ -234,9 +234,7 @@ namespace Rock.Commands
             var key = buffer.ReadByte();
             var inner = buffer.ReadBytes(payloadLength);
 
-#if DEBUG
-            var text = Encoding.UTF8.GetString(inner);
-#endif
+
 
             if (inner.Length > 0)
             {
@@ -260,6 +258,10 @@ namespace Rock.Commands
                         {
                             var messageId = body.ReadInt16();
                             var payload = body.ReadAllBytes();
+
+#if DEBUG
+                            var text = Encoding.UTF8.GetString(payload);
+#endif
                             // --->
                             if (0 == messageId)
                                 return null;

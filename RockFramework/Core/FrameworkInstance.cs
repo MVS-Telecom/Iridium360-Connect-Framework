@@ -1188,11 +1188,11 @@ namespace Rock
 
 
 
-                        if (args.Handled)
-                        {
-                            PostCommand(new DeleteMessageCommand(command.MessageId.Value, AppId, KeyIndex));
-                            RequestNextMessage();
-                        }
+                        //if (args.Handled)
+                        //{
+                        //    PostCommand(new DeleteMessageCommand(command.MessageId.Value, AppId, KeyIndex));
+                        //    RequestNextMessage();
+                        //}
                     }
                     break;
 
@@ -1378,6 +1378,7 @@ namespace Rock
 
             if (count > 0)
             {
+                Debugger.Break();
                 RequestNextMessage();
             }
         }
