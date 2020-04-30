@@ -769,7 +769,7 @@ namespace Rock
             }
             catch (DeviceIsLockedException e)
             {
-                SetLockStatus(LockState.Locked, incorrectPin: true);
+                SetLockStatus(LockState.Locked);
             }
         }
 
