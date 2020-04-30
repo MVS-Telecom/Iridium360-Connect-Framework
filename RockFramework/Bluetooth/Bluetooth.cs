@@ -166,5 +166,12 @@ namespace Rock.Bluetooth
         /// </summary>
         /// <returns></returns>
         Task DisconnectFromDeviceAsync();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task DisconnectFromDeviceAsync(Guid id);
     }
 }
