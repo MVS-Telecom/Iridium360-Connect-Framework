@@ -97,6 +97,7 @@ namespace Rock
 
 
         Task Beep();
+        Task RequestAlert();
         void RequestBattery();
         void RequestLocation();
         Task<Location> UpdateLocation();
@@ -806,6 +807,15 @@ namespace Rock
             return Rock.Beep();
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Task RequestAlert()
+        {
+            return Rock.RequestAlert();
+        }
 
         /// <summary>
         /// <inheritdoc/>

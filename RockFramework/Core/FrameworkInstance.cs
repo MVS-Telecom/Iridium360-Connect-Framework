@@ -106,7 +106,7 @@ namespace Rock
         /// <summary>
         /// Отправить SOS
         /// </summary>
-        Task SendAlert();
+        Task RequestAlert();
 
         /// <summary>
         /// "БИИП"
@@ -931,7 +931,7 @@ namespace Rock
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public async Task SendAlert()
+        public async Task RequestAlert()
         {
             await Reconnect(throwOnError: true);
             await Unlock();
