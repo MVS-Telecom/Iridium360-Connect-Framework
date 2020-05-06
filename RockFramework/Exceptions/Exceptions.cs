@@ -51,4 +51,13 @@ namespace Rock.Exceptions
     {
 
     }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class BluetoothTurnedOffException : RockException
+    {
+
+    }
 }
