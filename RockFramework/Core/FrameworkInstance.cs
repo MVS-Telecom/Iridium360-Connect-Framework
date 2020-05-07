@@ -637,9 +637,11 @@ namespace Rock
         /// 
         /// </summary>
         /// <returns></returns>
-        public void RequestLocation()
+        public async Task RequestNewLocation()
         {
-            PostCommand(new ActionCommand(AppId, KeyIndex, ActionRequestType.PositionUpdateLastKnown));
+            await Reconnect();
+            await Unlock();
+            await PostCommandAsync(new ActionCommand(AppId, KeyIndex, ActionRequestType.PositionUpdate));
         }
 
 
@@ -647,9 +649,9 @@ namespace Rock
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<Location> UpdateLocation()
+        public async Task<Location> UpdateLocationFromDevice()
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 bool success = false;
                 AutoResetEvent r = new AutoResetEvent(false);
@@ -664,7 +666,10 @@ namespace Rock
                 {
                     ConnectedDevice.LocationUpdated += handler;
 
-                    RequestLocation();
+                    await Reconnect();
+                    await Unlock();
+                    await PostCommandAsync(new ActionCommand(AppId, KeyIndex, ActionRequestType.PositionUpdateLastKnown));
+
                     r.WaitOne(TimeSpan.FromSeconds(30));
 
                 }

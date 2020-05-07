@@ -99,8 +99,8 @@ namespace Rock
         Task Beep();
         Task RequestAlert();
         void RequestBattery();
-        void RequestLocation();
-        Task<Location> UpdateLocation();
+        Task RequestNewLocation();
+        Task<Location> UpdateLocationFromDevice();
         Task RequestMailboxCheck();
     }
 
@@ -829,18 +829,18 @@ namespace Rock
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public void RequestLocation()
+        public Task RequestNewLocation()
         {
-            Rock.RequestLocation();
+            return Rock.RequestNewLocation();
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <returns></returns>
-        public Task<Location> UpdateLocation()
+        public Task<Location> UpdateLocationFromDevice()
         {
-            return Rock.UpdateLocation();
+            return Rock.UpdateLocationFromDevice();
         }
 
         /// <summary>
