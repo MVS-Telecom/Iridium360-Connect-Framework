@@ -936,6 +936,18 @@ namespace Rock
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        /// <returns></returns>
+        public async Task FactoryReset()
+        {
+            await Reconnect(throwOnError: true);
+            await Unlock();
+            await PostCommandAsync(new ActionCommand(AppId, KeyIndex, ActionRequestType.FactoryReset));
+        }
+
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public async Task RequestAlert()
         {
             await Reconnect(throwOnError: true);

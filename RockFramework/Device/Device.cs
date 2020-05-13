@@ -97,6 +97,7 @@ namespace Rock
 
 
         Task Beep();
+        Task FactoryReset();
         Task RequestAlert();
         void RequestBattery();
         Task RequestNewLocation();
@@ -807,6 +808,15 @@ namespace Rock
             return Rock.Beep();
         }
 
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public Task FactoryReset()
+        {
+            return Rock.FactoryReset();
+        }
 
         /// <summary>
         /// 
