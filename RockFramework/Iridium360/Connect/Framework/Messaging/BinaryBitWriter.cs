@@ -24,7 +24,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 if (bools[i])
                 {
-                    num |= (byte)( 1 << (num2 & 0x1f));
+                    num |= (byte)(1 << (num2 & 0x1f));
                 }
                 num2++;
             }
@@ -55,6 +55,8 @@ namespace Iridium360.Connect.Framework.Messaging
                 count--;
             }
         }
+
+
 
         public override void Write(bool value)
         {

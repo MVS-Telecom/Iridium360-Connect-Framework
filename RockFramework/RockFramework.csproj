@@ -8,10 +8,4 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Iridium360\Connect\" />
-    <Folder Include="Iridium360\Connect\Framework\" />
-    <Folder Include="Iridium360\Connect\Framework\Messaging\" />
-  </ItemGroup>
 </Project>

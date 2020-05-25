@@ -34,9 +34,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public static MessageMO Unpack(byte[] buffer)
+        public static MessageMT Unpack(byte[] buffer)
         {
-            return Unpack(KnownMTTypes, buffer) as MessageMO;
+            return Unpack(KnownMTTypes, buffer) as MessageMT;
         }
     }
 }

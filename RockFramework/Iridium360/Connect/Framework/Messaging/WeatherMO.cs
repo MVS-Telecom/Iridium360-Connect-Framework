@@ -7,6 +7,7 @@ namespace Iridium360.Connect.Framework.Messaging
     /// </summary>
     public class WeatherMO : MessageMO
     {
+         
 
         /// <summary>
         /// 

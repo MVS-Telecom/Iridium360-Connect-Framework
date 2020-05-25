@@ -190,7 +190,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 if ((knownMTTypes?.Count ?? 0) == 0)
                 {
-                    fetchKnownTypes(Direction.MO, ref knownMTTypes);
+                    fetchKnownTypes(Direction.MT, ref knownMTTypes);
                 }
                 return knownMTTypes;
             }

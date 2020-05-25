@@ -1,15 +1,113 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Rock.Helpers;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
     [TestClass]
     public class MessageTest
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public async Task Pack__WeatherMTTest()
+        {
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=1&lon=1");
+            var s = await r.Content.ReadAsStringAsync();
 
+            var ffff = JsonConvert.DeserializeObject<Rock.Iridium360.Models.i360WeatherForecast>(s);
+
+            try
+            {
+                var fs = ffff.Forecasts.Select(x => new i360PointForecast()
+                {
+                    Lat = x.Lat,
+                    Lon = x.Lon,
+                    DayInfos = x.DayInfos.Select(y => new i360DayInfo()
+                    {
+                        Day = y.Day,
+                        Forecasts = y.Forecasts.Select(z => new i360Forecast()
+                        {
+                            Cloud = z.Cloud,
+                            HourOffset = z.HourOffset,
+                            Precipitation = z.Precipitation,
+                            Pressure = z.Pressure,
+                            SnowRisk = z.SnowRisk,
+                            Temperature = z.Temperature.Value,
+                            WindDirection = z.WindDirection,
+                            WindSpeed = z.WindSpeed,
+
+                        }).Take(4).ToList()
+
+                    }).Take(4).ToList()
+
+                }).ToList();
+
+                var message = WeatherMT.Create(fs);
+
+                //var message = WeatherMT.Create(new List<i360PointForecast>()
+                //{
+                //    new i360PointForecast()
+                //    {
+                //         Lat = 55.12345678,
+                //         Lon = 37.12345678,
+                //         TimeOffset = 3,
+                //          DayInfos = new List<i360DayInfo>()
+                //          {
+                //              new i360DayInfo()
+                //              {
+                //                   DateDay = DateTime.Now,
+                //                   Forecasts = new List<i360Forecast>()
+                //                   {
+                //                        new i360Forecast()
+                //                        {
+                //                             Cloud = 80,
+                //                              HourOffset = 0,
+                //                               Precipitation = 12,
+                //                                Pressure = 740,
+                //                                  SnowRisk = null,
+                //                                   Temperature = 13,
+                //                                    WindDirection = 124,
+                //                                     WindSpeed = 5.2
+                //                        },
+                //                        new i360Forecast()
+                //                        {
+                //                             Cloud = 60,
+                //                              HourOffset = 6,
+                //                               Precipitation = 50,
+                //                                Pressure = 741,
+                //                                  SnowRisk = false,
+                //                                   Temperature = 15,
+                //                                    WindDirection = 189,
+                //                                     WindSpeed = 2.9
+                //                        }
+                //                   }
+                //              }
+                //          }
+                //    }
+                //});
+                var buffer = message.Pack();
+                string hex = buffer.ToHexString();
+
+                var _message = MessageMT.Unpack(buffer) as WeatherMT;
+
+                if (_message == null)
+                    Assert.Fail();
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
 
         /// <summary>
         /// 
@@ -194,11 +292,11 @@ A7 1B AB C0 F0 5A 95 03 00 80",
             };
 
 
-            foreach(var test in tests)
+            foreach (var test in tests)
             {
                 var message = MessageMO.Unpack(StringToByteArray(test));
 
-                if(message is ChatMessageMO chatMessage)
+                if (message is ChatMessageMO chatMessage)
                 {
                     Debug.WriteLine($"Messge is `{message.GetType()}`");
 
