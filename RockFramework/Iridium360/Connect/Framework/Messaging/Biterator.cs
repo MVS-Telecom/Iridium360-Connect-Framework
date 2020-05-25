@@ -54,6 +54,10 @@ namespace Iridium360.Connect.Framework.Messaging
         //for debugging
         private List<int> bitCounts;
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Biterator()
         {
             bytes = new byte[8];
@@ -61,6 +65,10 @@ namespace Iridium360.Connect.Framework.Messaging
             bitCounts = new List<int>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
         public Biterator(byte[] data)
         {
             bytes = data;
@@ -174,7 +182,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="val">The value to compress</param>
         /// <param name="numBits">The number of bits to represent the value. Range [1, 32]</param>
-        public void PushUInt(uint val, int numBits = 32)
+        public void WriteUInt(uint val, int numBits = 32)
         {
             AddCount(numBits);
 
@@ -191,7 +199,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="val"> The value to compress</param>
         /// <param name="numBits">The number of bits to represent the value. At least 1 bit is used for the sign. Range [2, 32]</param>
-        public void PushInt(int val, int numBits = 32)
+        public void WriteInt(int val, int numBits = 32)
         {
             AddCount(numBits);
 
@@ -229,7 +237,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="val">Value to compress</param>
         /// <param name="signed">True if the value needs to be signed</param>
         /// <param name="mantissa">The number of bits dedicated to the precision of the fractional portion of the floating point number. Range [1, 23]</param>
-        public void PushFloat(float val, bool signed = true, int mantissa = 23)
+        public void WriteFloat(float val, bool signed = true, int mantissa = 23)
         {
             int signSize = signed ? 1 : 0;
             int exponentSize = 8;
@@ -332,7 +340,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="numBits">The assumed number of bits</param>
         /// <returns>The restored 32-bit unsigned integer</returns>
-        public uint PopUInt(int numBits)
+        public uint ReadUInt(int numBits)
         {
             return (uint)PopBits(numBits);
         }
@@ -363,7 +371,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="numBits">The assumed number of bits</param>
         /// <returns>The restored 32-bit signed integer</returns>
-        public int PopInt(int numBits)
+        public int ReadInt(int numBits)
         {
             int returnVal = 0;
 
@@ -399,7 +407,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="signed">Was the value signed when pushed?</param>
         /// <param name="mantissa">The number of bits for the mantissa/significand portion of the value</param>
         /// <returns>The restored 32-bit single-precision floating point number</returns>
-        public float PopFloat(bool signed = true, int mantissa = 23)
+        public float ReadFloat(bool signed = true, int mantissa = 23)
         {
             byte[] floatBytes = new byte[4];
 

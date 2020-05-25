@@ -26,8 +26,8 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             var biterator = new Biterator();
 
-            biterator.PushFloat((float)Lat, true, 10);
-            biterator.PushFloat((float)Lon, true, 10);
+            biterator.WriteFloat((float)Lat, true, 10);
+            biterator.WriteFloat((float)Lon, true, 10);
 
             var bytes = biterator.GetUsedBytes();
 
@@ -43,8 +43,8 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             var biterator = new Biterator(payload);
 
-            Lat = biterator.PopFloat(true, 10);
-            Lon = biterator.PopFloat(true, 10);
+            Lat = biterator.ReadFloat(true, 10);
+            Lon = biterator.ReadFloat(true, 10);
         }
 
 

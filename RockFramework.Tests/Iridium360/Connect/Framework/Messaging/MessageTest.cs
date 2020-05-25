@@ -70,51 +70,54 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 }).ToList();
 
-                var message = WeatherMT.Create(fs);
+                //var message = WeatherMT.Create(fs);
 
-                //var message = WeatherMT.Create(new List<WeatherMT_PointForecast>()
-                //{
-                //    new WeatherMT_PointForecast()
-                //    {
-                //         Lat = 55.12345678,
-                //         Lon = 37.12345678,
-                //         TimeOffset = 3,
-                //          DayInfos = new List<WeatherMT_DayInfo>()
-                //          {
-                //              new WeatherMT_DayInfo()
-                //              {
-                //                   DateDay = DateTime.Now,
-                //                   Forecasts = new List<WeatherMT_Forecast>()
-                //                   {
-                //                        new WeatherMT_Forecast()
-                //                        {
-                //                             Cloud = 80,
-                //                              HourOffset = 0,
-                //                               Precipitation = 12,
-                //                                Pressure = 740,
-                //                                  SnowRisk = null,
-                //                                   Temperature = 13,
-                //                                    WindDirection = 124,
-                //                                     WindSpeed = 5.2
-                //                        },
-                //                        new WeatherMT_Forecast()
-                //                        {
-                //                             Cloud = 60,
-                //                              HourOffset = 6,
-                //                               Precipitation = 50,
-                //                                Pressure = 741,
-                //                                  SnowRisk = false,
-                //                                   Temperature = 15,
-                //                                    WindDirection = 189,
-                //                                     WindSpeed = 2.9
-                //                        }
-                //                   }
-                //              }
-                //          }
-                //    }
-                //});
+                var message = WeatherMT.Create(new List<WeatherMT_PointForecast>()
+                {
+                    new WeatherMT_PointForecast()
+                    {
+                         Lat = 55.12345678,
+                         Lon = 37.12345678,
+                         TimeOffset = 3,
+                          DayInfos = new List<WeatherMT_DayInfo>()
+                          {
+                              new WeatherMT_DayInfo()
+                              {
+                                   DateDay = DateTime.Now,
+                                   Forecasts = new List<WeatherMT_Forecast>()
+                                   {
+                                        new WeatherMT_Forecast()
+                                        {
+                                             Cloud = 80,
+                                              HourOffset = 0,
+                                               Precipitation = 12,
+                                                Pressure = 740,
+                                                  SnowRisk = null,
+                                                   Temperature = 13,
+                                                    WindDirection = 124,
+                                                     WindSpeed = 5.2
+                                        },
+                                        new WeatherMT_Forecast()
+                                        {
+                                             Cloud = 60,
+                                              HourOffset = 6,
+                                               Precipitation = 50,
+                                                Pressure = 741,
+                                                  SnowRisk = false,
+                                                   Temperature = 15,
+                                                    WindDirection = 189,
+                                                     WindSpeed = 2.9
+                                        }
+                                   }
+                              }
+                          }
+                    }
+                });
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();
+
+                if (hex != "0005148D4B6814422391804083C08802AA790C64324201F8")
+                    Assert.Fail();
 
                 var _message = MessageMT.Unpack(buffer) as WeatherMT;
 

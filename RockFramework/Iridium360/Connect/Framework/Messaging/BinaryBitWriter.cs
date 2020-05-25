@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -94,6 +94,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
+
         public override void Write(double value)
         {
             this.Write(BitConverter.GetBytes(value));
@@ -143,6 +144,14 @@ namespace Iridium360.Connect.Framework.Messaging
         public override void Write(ulong value)
         {
             this.Write(BitConverter.GetBytes(value));
+        }
+
+        public void Write(byte[] buffer, int bitsCount)
+        {
+            var array = new BitArray(buffer);
+
+            for (int i = 0; i < bitsCount; i++)
+                Write(array[i]);
         }
 
         public override void Write(byte[] buffer)
