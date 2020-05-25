@@ -17,10 +17,29 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task Pack__WeatherMOTest()
+        {
+            var message = WeatherMO.Create(12.12345678, -9.12345678);
+
+            var buffer = message.Pack();
+            string hex = buffer.ToHexString();
+
+            var _message = MessageMO.Unpack(buffer) as WeatherMO;
+
+            if (_message == null)
+                Assert.Fail();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public async Task Pack__WeatherMTTest()
         {
-            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=1&lon=1");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=12.12345678&lon=-9.12345678");
             var s = await r.Content.ReadAsStringAsync();
 
             var ffff = JsonConvert.DeserializeObject<Rock.Iridium360.Models.i360WeatherForecast>(s);
@@ -51,49 +70,49 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 }).ToList();
 
-                //var message = WeatherMT.Create(fs);
+                var message = WeatherMT.Create(fs);
 
-                var message = WeatherMT.Create(new List<WeatherMT_PointForecast>()
-                {
-                    new WeatherMT_PointForecast()
-                    {
-                         Lat = 55.12345678,
-                         Lon = 37.12345678,
-                         TimeOffset = 3,
-                          DayInfos = new List<WeatherMT_DayInfo>()
-                          {
-                              new WeatherMT_DayInfo()
-                              {
-                                   DateDay = DateTime.Now,
-                                   Forecasts = new List<WeatherMT_Forecast>()
-                                   {
-                                        new WeatherMT_Forecast()
-                                        {
-                                             Cloud = 80,
-                                              HourOffset = 0,
-                                               Precipitation = 12,
-                                                Pressure = 740,
-                                                  SnowRisk = null,
-                                                   Temperature = 13,
-                                                    WindDirection = 124,
-                                                     WindSpeed = 5.2
-                                        },
-                                        new WeatherMT_Forecast()
-                                        {
-                                             Cloud = 60,
-                                              HourOffset = 6,
-                                               Precipitation = 50,
-                                                Pressure = 741,
-                                                  SnowRisk = false,
-                                                   Temperature = 15,
-                                                    WindDirection = 189,
-                                                     WindSpeed = 2.9
-                                        }
-                                   }
-                              }
-                          }
-                    }
-                });
+                //var message = WeatherMT.Create(new List<WeatherMT_PointForecast>()
+                //{
+                //    new WeatherMT_PointForecast()
+                //    {
+                //         Lat = 55.12345678,
+                //         Lon = 37.12345678,
+                //         TimeOffset = 3,
+                //          DayInfos = new List<WeatherMT_DayInfo>()
+                //          {
+                //              new WeatherMT_DayInfo()
+                //              {
+                //                   DateDay = DateTime.Now,
+                //                   Forecasts = new List<WeatherMT_Forecast>()
+                //                   {
+                //                        new WeatherMT_Forecast()
+                //                        {
+                //                             Cloud = 80,
+                //                              HourOffset = 0,
+                //                               Precipitation = 12,
+                //                                Pressure = 740,
+                //                                  SnowRisk = null,
+                //                                   Temperature = 13,
+                //                                    WindDirection = 124,
+                //                                     WindSpeed = 5.2
+                //                        },
+                //                        new WeatherMT_Forecast()
+                //                        {
+                //                             Cloud = 60,
+                //                              HourOffset = 6,
+                //                               Precipitation = 50,
+                //                                Pressure = 741,
+                //                                  SnowRisk = false,
+                //                                   Temperature = 15,
+                //                                    WindDirection = 189,
+                //                                     WindSpeed = 2.9
+                //                        }
+                //                   }
+                //              }
+                //          }
+                //    }
+                //});
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();
 
@@ -107,21 +126,6 @@ namespace Iridium360.Connect.Framework.Messaging
             {
 
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [TestMethod]
-        public void Pack__WeatherMOTest()
-        {
-            var message = WeatherMO.Create();
-            var buffer = message.Pack();
-
-            var _message = MessageMO.Unpack(buffer) as WeatherMO;
-
-            if (_message == null)
-                Assert.Fail();
         }
 
 
