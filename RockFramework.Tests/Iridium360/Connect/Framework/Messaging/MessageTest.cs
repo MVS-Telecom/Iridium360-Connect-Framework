@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Rock.Helpers;
+using Iridium360.Models;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
@@ -42,29 +43,18 @@ namespace Iridium360.Connect.Framework.Messaging
             var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=12.12345678&lon=-9.12345678");
             var s = await r.Content.ReadAsStringAsync();
 
-            var ffff = JsonConvert.DeserializeObject<Rock.Iridium360.Models.i360WeatherForecast>(s);
+            var ffff = JsonConvert.DeserializeObject<i360WeatherForecast>(s);
 
             try
             {
-                var fs = ffff.Forecasts.Select(x => new WeatherMT_PointForecast()
+                var fs = ffff.Forecasts.Select(x => new i360PointForecast()
                 {
                     Lat = x.Lat,
                     Lon = x.Lon,
-                    DayInfos = x.DayInfos.Select(y => new WeatherMT_DayInfo()
+                    DayInfos = x.DayInfos.Select(y => new i360DayInfo()
                     {
                         Day = y.Day,
-                        Forecasts = y.Forecasts.Select(z => new WeatherMT_Forecast()
-                        {
-                            Cloud = z.Cloud,
-                            HourOffset = z.HourOffset,
-                            Precipitation = z.Precipitation,
-                            Pressure = z.Pressure,
-                            SnowRisk = z.SnowRisk,
-                            Temperature = z.Temperature.Value,
-                            WindDirection = z.WindDirection,
-                            WindSpeed = z.WindSpeed,
-
-                        }).Take(4).ToList()
+                        Forecasts = y.Forecasts.Take(4).ToList()
 
                     }).Take(4).ToList()
 
@@ -72,21 +62,21 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 //var message = WeatherMT.Create(fs);
 
-                var message = WeatherMT.Create(new List<WeatherMT_PointForecast>()
+                var message = WeatherMT.Create(new List<i360PointForecast>()
                 {
-                    new WeatherMT_PointForecast()
+                    new i360PointForecast()
                     {
                          Lat = 55.12345678,
                          Lon = 37.12345678,
                          TimeOffset = 3,
-                          DayInfos = new List<WeatherMT_DayInfo>()
+                          DayInfos = new List<i360DayInfo>()
                           {
-                              new WeatherMT_DayInfo()
+                              new i360DayInfo()
                               {
                                    DateDay = DateTime.Now,
-                                   Forecasts = new List<WeatherMT_Forecast>()
+                                   Forecasts = new List<i360Forecast>()
                                    {
-                                        new WeatherMT_Forecast()
+                                        new i360Forecast()
                                         {
                                              Cloud = 80,
                                               HourOffset = 0,
@@ -97,7 +87,7 @@ namespace Iridium360.Connect.Framework.Messaging
                                                     WindDirection = 124,
                                                      WindSpeed = 5.2
                                         },
-                                        new WeatherMT_Forecast()
+                                        new i360Forecast()
                                         {
                                              Cloud = 60,
                                               HourOffset = 6,
@@ -116,7 +106,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();
 
-                if (hex != "0005148D4B6814422391804083C08802AA790C64324201F8")
+                if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
                     Assert.Fail();
 
                 var _message = MessageMT.Unpack(buffer) as WeatherMT;

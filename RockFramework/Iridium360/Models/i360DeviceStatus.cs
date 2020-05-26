@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rock.Iridium360.Models
+namespace Iridium360.Models
 {
     public class Hardware
     {

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Rock.Iridium360.Models;
+﻿using Iridium360.Models;
+using Newtonsoft.Json;
 using Rock.Util;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rock.Iridium360
+namespace Iridium360
 {
     internal class Result<T>
     {

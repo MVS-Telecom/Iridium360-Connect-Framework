@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Iridium360.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -7,155 +8,12 @@ namespace Iridium360.Connect.Framework.Messaging
     /// <summary>
     /// 
     /// </summary>
-    public class WeatherMT_Forecast
-    {
-        /// <summary>
-        /// Дата и время прогноза
-        /// </summary>
-        public int HourOffset { get; set; }
-
-
-        /// <summary>
-        /// Температура в цельсиях
-        /// </summary>
-        public int Temperature { get; set; }
-
-
-        /// <summary>
-        /// Давление в мм рт.с
-        /// </summary>
-        public int? Pressure { get; set; }
-
-
-        /// <summary>
-        /// Облачность в процентах (%)
-        /// </summary>
-        public int? Cloud { get; set; }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        //public int? Cloud
-        //{
-        //    get
-        //    {
-        //        if (_cloud == null)
-        //            return null;
-
-        //        return (int)Math.Round(_cloud.Value * 20d);
-        //    }
-        //    set
-        //    {
-        //        if (value == null)
-        //        {
-        //            _cloud = null;
-        //            return;
-        //        }
-
-        //        _cloud = (int)Math.Round(value.Value / 20d);
-        //    }
-        //}
-
-        /// <summary>
-        /// Осадки в мм
-        /// </summary>
-        public double? Precipitation { get; set; }
-
-
-        /// <summary>
-        /// Направление ветра (в градусах)
-        /// </summary>
-        public int? WindDirection { get; set; }
-
-
-        /// <summary>
-        /// Скорость ветра м/с
-        /// </summary>
-        public double? WindSpeed { get; set; }
-
-
-        /// <summary>
-        /// Вероятность снега
-        /// </summary>
-        public bool? SnowRisk { get; set; }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public class WeatherMT_DayInfo
-    {
-        private static DateTime START = new DateTime(2020, 1, 1);
-
-        /// <summary>
-        /// Кол-во дней с 1 января 2018 года
-        /// </summary>
-        public int Day { get; set; }
-
-
-        /// <summary>
-        /// Дата (в UTC)
-        /// </summary>
-        public DateTime DateDay
-        {
-            get
-            {
-                return DateTime.SpecifyKind(START.AddDays(Day), DateTimeKind.Utc);
-            }
-            set
-            {
-                Day = (int)(value - START).TotalDays;
-            }
-        }
-
-
-        /// <summary>
-        /// Список прогнозов по временным интервалам
-        /// </summary>
-        public List<WeatherMT_Forecast> Forecasts { get; set; }
-
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public class WeatherMT_PointForecast
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public double Lat { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public double Lon { get; set; }
-
-        /// <summary>
-        /// Часовой пояс
-        /// </summary>
-        public int TimeOffset { get; set; }
-
-        /// <summary>
-        /// Информация по дням прогноза
-        /// </summary>
-        public List<WeatherMT_DayInfo> DayInfos { get; set; }
-    }
-
-
-
-    /// <summary>
-    /// 
-    /// </summary>
     public class WeatherMT : MessageMT
     {
         /// <summary>
         /// 
         /// </summary>
-        public List<WeatherMT_PointForecast> Forecasts { get; set; }
+        public List<i360PointForecast> Forecasts { get; set; }
 
         /// <summary>
         /// 
@@ -200,8 +58,8 @@ namespace Iridium360.Connect.Framework.Messaging
 
             foreach (var f in Forecasts)
             {
-                biterator.WriteFloat((float)f.Lat, true, 10);
-                biterator.WriteFloat((float)f.Lon, true, 10);
+                biterator.WriteFloat((float)f.Lat, true, 11);
+                biterator.WriteFloat((float)f.Lon, true, 11);
 
                 ///->
                 
@@ -285,34 +143,34 @@ namespace Iridium360.Connect.Framework.Messaging
             var biterator = new Biterator(payload);
 
             var size = biterator.ReadInt(GetBits(max: 4));
-            var list = new List<WeatherMT_PointForecast>();
+            var list = new List<i360PointForecast>();
 
             for (int i = 0; i < size; i++)
             {
-                var f = new WeatherMT_PointForecast();
+                var f = new i360PointForecast();
 
-                f.Lat = biterator.ReadFloat(true, 10);
-                f.Lon = biterator.ReadFloat(true, 10);
+                f.Lat = biterator.ReadFloat(true, 11);
+                f.Lon = biterator.ReadFloat(true, 11);
 
                 ///->
                 
                 f.TimeOffset = biterator.ReadInt(GetBits(min: -12, max: 14));
 
                 var size2 = biterator.ReadUInt(GetBits(max: 5));
-                var list2 = new List<WeatherMT_DayInfo>();
+                var list2 = new List<i360DayInfo>();
 
                 for (int j = 0; j < size2; j++)
                 {
-                    var d = new WeatherMT_DayInfo();
+                    var d = new i360DayInfo();
 
                     d.Day = (int)biterator.ReadUInt(GetBits(min: 0, max: 14600));
 
                     var size3 = biterator.ReadUInt(GetBits(max: 8));
-                    var list3 = new List<WeatherMT_Forecast>();
+                    var list3 = new List<i360Forecast>();
 
                     for (int k = 0; k < size3; k++)
                     {
-                        var ff = new WeatherMT_Forecast();
+                        var ff = new i360Forecast();
 
                         ff.HourOffset = (int)biterator.ReadUInt(GetBits(min: 0, max: 24));
                         ff.Temperature = biterator.ReadInt(GetBits(min: -70, max: 50));
@@ -403,7 +261,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="conversation"></param>
         /// <param name="text"></param>
         /// <param name="subject"></param>
-        public static WeatherMT Create(List<WeatherMT_PointForecast> forecasts)
+        public static WeatherMT Create(List<i360PointForecast> forecasts)
         {
             WeatherMT weather = new WeatherMT();
 

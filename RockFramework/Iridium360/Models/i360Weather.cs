@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
+using Rock;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rock.Iridium360.Models
+namespace Iridium360.Models
 {
     /// <summary>
     /// 
@@ -20,7 +21,7 @@ namespace Rock.Iridium360.Models
         /// Температура в цельсиях
         /// </summary>
         [JsonProperty("t")]
-        public int? Temperature { get; set; }
+        public int Temperature { get; set; }
 
         /// <summary>
         /// Давление в мм рт.с
@@ -149,7 +150,7 @@ namespace Rock.Iridium360.Models
         /// Кол-во дней с 1 января 2018 года
         /// </summary>
         [JsonProperty("day")]
-        public int Day { get; private set; }
+        public int Day { get; set; }
 
 
         /// <summary>
@@ -281,7 +282,7 @@ namespace Rock.Iridium360.Models
         /// Часовой пояс
         /// </summary>
         [JsonProperty("zone")]
-        public int? TimeOffset { get; set; }
+        public int TimeOffset { get; set; }
 
         /// <summary>
         /// Информация по дням прогноза
