@@ -58,6 +58,164 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public void WriteNullable(bool? value)
+        {
+            int _value = value == null ? int.MaxValue : (value == true ? 1 : 0);
+
+            var array = new BitArray(BitConverter.GetBytes(_value));
+
+            for (int i = 0; i < 2; i++)
+                Write(array[i]);
+
+            Trace();
+        }
+
+
+        public void Write(uint value, int bits)
+        {
+            if (Math.Pow(2, bits) <= value)
+                throw new ArgumentOutOfRangeException($"Value {value} bigger then supported range [0..{Math.Pow(2, bits) - 1}]");
+
+
+            var array = new BitArray(BitConverter.GetBytes(value));
+
+            for (int i = 0; i < bits; i++)
+                Write(array[i]);
+
+            Trace();
+        }
+
+        public void Write(uint? value, int bits)
+        {
+            if (value != null && Math.Pow(2, bits) - 1 <= value)
+                throw new ArgumentOutOfRangeException($"Value {value} bigger then supported range [0..{Math.Pow(2, bits) - 1}]");
+
+
+            if (value == null)
+            {
+                value = uint.MaxValue;
+            }
+
+            var array = new BitArray(BitConverter.GetBytes(value.Value));
+
+            for (int i = 0; i < bits; i++)
+                Write(array[i]);
+
+            Trace();
+        }
+
+
+
+
+
+        public void Write(int value, int bits)
+        {
+            if (Math.Pow(2, bits) <= value)
+                throw new ArgumentOutOfRangeException($"Value {value} bigger then supported range [0..{Math.Pow(2, bits) - 1}]");
+
+            bool negative = false;
+
+            if (value < 0)
+            {
+                negative = true;
+                value = -value;
+            }
+
+            var array = new BitArray(BitConverter.GetBytes(value));
+
+            for (int i = 0; i < bits; i++)
+                Write(array[i]);
+
+            Write(negative);
+            Trace();
+        }
+
+        public void Write(int? value, int bits)
+        {
+            if (value != null && Math.Pow(2, bits) - 1 <= value)
+                throw new ArgumentOutOfRangeException($"Value {value} bigger then supported range [0..{Math.Pow(2, bits) - 1}]");
+
+            bool negative = false;
+
+            if (value == null)
+            {
+                value = int.MaxValue;
+            }
+            if (value < 0)
+            {
+                negative = true;
+                value = -value;
+            }
+
+            var array = new BitArray(BitConverter.GetBytes(value.Value));
+
+            for (int i = 0; i < bits; i++)
+                Write(array[i]);
+
+            Write(negative);
+            Trace();
+        }
+
+        public void Write(float value, bool signed, int bits, int decimalBits = 14)
+        {
+            if (Math.Pow(2, bits) - 1 <= value)
+                throw new ArgumentOutOfRangeException($"Value {value} bigger then supported range [0..{Math.Pow(2, bits) - 1}]");
+
+            if (value < 0 && !signed)
+                throw new InvalidOperationException("Value is negative but `singed` flag is false");
+
+
+            bool negative = value < 0;
+
+            value = Math.Abs(value);
+            var x = value - Math.Truncate(value);
+            uint a = (uint)(x * Math.Pow(2, decimalBits));
+            uint b = (uint)Math.Truncate(value);
+
+            Write(b, bits);
+            Write(a, decimalBits);
+
+            if (signed)
+            {
+                Write(negative);
+            }
+
+            Trace();
+        }
+
+
+        private void Trace()
+        {
+            System.Diagnostics.Debug.WriteLine(BitPosition);
+            Console.WriteLine(BitPosition);
+            //Convert.ToString(byteArray[20], 2).PadLeft(8, '0');
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         public override void Write(bool value)
         {
             this.curByte[this.BitPosition] = value;

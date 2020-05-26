@@ -23,92 +23,35 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
         /// <summary>
-        /// Получить кол-во битов необходимых для хранения значений в интервале [0..<paramref name="max"/>]
-        /// </summary>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        public static int GetBits(int max)
-        {
-            int value = Math.Max(1, (int)Math.Ceiling(Math.Log(max, 2)));
-            return value;
-        }
-
-
-        /// <summary>
-        /// Получить кол-во битов необходимых для хранения значений в интервале [<paramref name="min"/>...<paramref name="max"/>]
-        /// </summary>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        public static int GetBits(int min, int max)
-        {
-            return GetBits(max - min + 1);
-        }
-
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            var biterator = new Biterator();
-
-            biterator.WriteInt(Forecasts.Count, GetBits(max: 4));
+            writer.Write((uint)Forecasts.Count, 2);
 
             foreach (var f in Forecasts)
             {
-                biterator.WriteFloat((float)f.Lat, true, 11);
-                biterator.WriteFloat((float)f.Lon, true, 11);
+                writer.Write((float)f.Lat, true, 8, 10);
+                writer.Write((float)f.Lon, true, 8, 10);
 
                 ///->
-                
-                biterator.WriteInt(f.TimeOffset, GetBits(min: -12, max: 14));
-                biterator.WriteUInt((uint)f.DayInfos.Count, GetBits(max: 5));
+
+                writer.Write(f.TimeOffset, 6); //[-12...14]h часовое пояс
+                writer.Write((uint)f.DayInfos.Count, 3); //7 максимальное кол-во суток в прогнозе
+
 
                 foreach (var d in f.DayInfos)
                 {
-                    biterator.WriteUInt((uint)d.Day, GetBits(min: 0, max: 14600));
-                    biterator.WriteUInt((uint)d.Forecasts.Count, GetBits(max: 8));
+                    writer.Write((uint)d.Day, 14);
+                    writer.Write((uint)d.Forecasts.Count, 3); //7 максимальное кол-во прогнозов в сутках
+
 
                     foreach (var ff in d.Forecasts)
                     {
-                        biterator.WriteUInt((uint)ff.HourOffset, GetBits(min: 0, max: 24));
-                        biterator.WriteInt(ff.Temperature, GetBits(min: -70, max: 50));
+                        writer.Write((uint)ff.HourOffset, 5); //[0...24]h час
+                        writer.Write(ff.Temperature, 7);  //[-70...50]C температура
 
-                        int? _cloud = ff.Cloud;
-
-                        if (_cloud != null)
-                            _cloud = (int)Math.Round(_cloud.Value / 20d);
-
-                        biterator.WriteUInt((uint)(_cloud ?? 21), GetBits(min: 0, max: 20 + 1));
-
-                        double? _precipitation = ff.Precipitation;
-
-                        if (_precipitation.Value >= 0.05 && _precipitation.Value <= 0.1)
-                            _precipitation = 1;
-                        else
-                            _precipitation = (int)Math.Round(_precipitation.Value * 4d);
-
-                        biterator.WriteUInt((uint)(_precipitation ?? 241), GetBits(min: 0, max: 240 + 1));
-
-                        ///->
-
-                        int? _windDirection = ff.WindDirection;
-
-                        if (_windDirection != null)
-                            _windDirection = (int)(_windDirection.Value / 45d);
-
-                        biterator.WriteUInt((uint)(_windDirection ?? 9), GetBits(min: 0, max: 8 + 1));
-
-                        ///->
-
-                        double? _windSpeed = ff.WindSpeed;
-
-                        if (_windSpeed != null)
-                            _windSpeed = (int)Math.Round(_windSpeed.Value * 2d);
-
-                        biterator.WriteUInt((uint)(_windSpeed ?? 61), GetBits(min: 0, max: 60 + 1));
 
                         ///->
 
@@ -117,10 +60,48 @@ namespace Iridium360.Connect.Framework.Messaging
                         if (_pressure != null)
                             _pressure -= 580;
 
-                        biterator.WriteUInt((uint)(_pressure ?? 222), GetBits(min: 0, max: 221 + 1));
+                        writer.Write((uint?)_pressure, 8);  //[0...221] == [580...800]мм рт давление
 
                         ///->
-                        biterator.WriteUInt((uint)(ff.SnowRisk != null ? (ff.SnowRisk.Value ? 1 : 0) : 2), GetBits(min: 0, max: 1 + 1));
+
+                        int? _cloud = ff.Cloud;
+
+                        if (_cloud != null)
+                            _cloud = (int)Math.Round(_cloud.Value / 20d);
+
+                        writer.Write((uint?)_cloud, 5); //[0...20] == [0...100]% облачность
+
+                        ///->
+
+                        double? _precipitation = ff.Precipitation;
+
+                        if (_precipitation.Value >= 0.05 && _precipitation.Value <= 0.1)
+                            _precipitation = 1;
+                        else
+                            _precipitation = (int)Math.Round(_precipitation.Value * 4d);
+
+                        writer.Write((uint?)_precipitation, 8); //[0...240] == [0...60]мм осадки
+
+                        ///->
+
+                        int? _windDirection = ff.WindDirection;
+
+                        if (_windDirection != null)
+                            _windDirection = (int)(_windDirection.Value / 45d);
+
+                        writer.Write((uint?)_windDirection, 4); //[0...8] == [0...360] направление ветра
+
+                        ///->
+
+                        double? _windSpeed = ff.WindSpeed;
+
+                        if (_windSpeed != null)
+                            _windSpeed = (int)Math.Round(_windSpeed.Value * 2d);
+
+                        writer.Write((uint?)_windSpeed, 6); //[0...60] == [0...120]м/с скорость ветра
+
+                        ///->
+                        writer.WriteNullable(ff.SnowRisk);  //[0...1] вероятность снега
                     }
 
                 }
@@ -128,9 +109,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
             //var bytes = biterator.GetUsedBytes();
             //writer.Write(bytes, biterator.currentByte * 8 + biterator.currentBit);
-
-            var bytes = biterator.GetUsedBytes();
-            writer.Write(bytes);
         }
 
 
@@ -140,111 +118,101 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="payload"></param>
         protected override void unpack(byte[] payload)
         {
-            var biterator = new Biterator(payload);
-
-            var size = biterator.ReadInt(GetBits(max: 4));
-            var list = new List<i360PointForecast>();
-
-            for (int i = 0; i < size; i++)
+            using (var stream = new MemoryStream(payload))
             {
-                var f = new i360PointForecast();
-
-                f.Lat = biterator.ReadFloat(true, 11);
-                f.Lon = biterator.ReadFloat(true, 11);
-
-                ///->
-                
-                f.TimeOffset = biterator.ReadInt(GetBits(min: -12, max: 14));
-
-                var size2 = biterator.ReadUInt(GetBits(max: 5));
-                var list2 = new List<i360DayInfo>();
-
-                for (int j = 0; j < size2; j++)
+                using (var reader = new BinaryBitReader(stream))
                 {
-                    var d = new i360DayInfo();
 
-                    d.Day = (int)biterator.ReadUInt(GetBits(min: 0, max: 14600));
+                    var _points = reader.ReadUInt(2);
+                    var points = new List<i360PointForecast>();
 
-                    var size3 = biterator.ReadUInt(GetBits(max: 8));
-                    var list3 = new List<i360Forecast>();
-
-                    for (int k = 0; k < size3; k++)
+                    for (int i = 0; i < _points; i++)
                     {
-                        var ff = new i360Forecast();
+                        var f = new i360PointForecast();
 
-                        ff.HourOffset = (int)biterator.ReadUInt(GetBits(min: 0, max: 24));
-                        ff.Temperature = biterator.ReadInt(GetBits(min: -70, max: 50));
-
-                        ///->
-
-                        int _cloud = (int)biterator.ReadUInt(GetBits(min: 0, max: 20 + 1));
-
-                        if (_cloud == 21)
-                            ff.Cloud = null;
-                        else
-                            ff.Cloud = _cloud * 20;
-
-                        ///->
-                        ///
-                        int _precipitation = (int)biterator.ReadUInt(GetBits(min: 0, max: 240 + 1));
-
-                        if (_precipitation == 241)
-                            ff.Precipitation = null;
-                        else
-                            ff.Precipitation = _precipitation / 4d;
+                        f.Lat = reader.ReadFloat(true, 8, 10);
+                        f.Lon = reader.ReadFloat(true, 8, 10);
 
                         ///->
 
-                        int _windDirection = (int)biterator.ReadUInt(GetBits(min: 0, max: 8 + 1));
+                        f.TimeOffset = reader.ReadInt(6);
 
-                        if (_windDirection == 9)
-                            ff.WindDirection = null;
-                        else
-                            ff.WindDirection = (int)Math.Round(_windDirection * 45d);
+                        var _days = reader.ReadUInt(3);
+                        var days = new List<i360DayInfo>();
 
-                        ///-->
+                        for (int j = 0; j < _days; j++)
+                        {
+                            var d = new i360DayInfo();
 
-                        int _windSpeed = (int)biterator.ReadUInt(GetBits(min: 0, max: 60 + 1));
+                            d.Day = (int)reader.ReadUInt(14);
 
-                        if (_windSpeed == 61)
-                            ff.WindSpeed = null;
-                        else
-                            ff.WindSpeed = _windSpeed / 2d;
+                            var _forecasts = reader.ReadUInt(3);
+                            var forecasts = new List<i360Forecast>();
 
-                        ///->
+                            for (int k = 0; k < _forecasts; k++)
+                            {
+                                var ff = new i360Forecast();
 
-                        int _pressure = (int)biterator.ReadUInt(GetBits(min: 0, max: 221 + 1));
+                                ff.HourOffset = (int)reader.ReadUInt(5);
+                                ff.Temperature = reader.ReadInt(7);
 
-                        if (_pressure == 222)
-                            ff.Pressure = null;
-                        else
-                            ff.Pressure = _pressure + 580;
+                                ///->
 
-                        ///->
+                                uint? _pressure = reader.ReadUIntNullable(8);
 
-                        int? _snowRisk = (int)biterator.ReadUInt(GetBits(min: 0, max: 1 + 1));
+                                if (_pressure != null)
+                                    ff.Pressure = (int)_pressure + 580;
 
-                        if (_snowRisk == 2)
-                            ff.SnowRisk = null;
-                        else
-                            ff.SnowRisk = _snowRisk == 1 ? true : false;
+                                ///->
 
-                        ///->
+                                uint? _cloud = reader.ReadUIntNullable(5);
 
-                        list3.Add(ff);
+                                if (_cloud != null)
+                                    ff.Cloud = (int)_cloud * 20;
+
+                                ///->
+                                ///
+                                uint? _precipitation = reader.ReadUIntNullable(8);
+
+                                if (_precipitation != null)
+                                    ff.Precipitation = _precipitation / 4d;
+
+                                ///->
+
+                                uint? _windDirection = reader.ReadUIntNullable(4);
+
+                                if (_windDirection != null)
+                                    ff.WindDirection = (int)Math.Round(_windDirection.Value * 45d);
+
+                                ///-->
+
+                                uint? _windSpeed = reader.ReadUIntNullable(6);
+
+                                if (_windSpeed != null)
+                                    ff.WindSpeed = _windSpeed / 2d;
+
+                                ///->
+
+                                ff.SnowRisk = reader.ReadBoolNullable();
+
+                                ///->
+
+                                forecasts.Add(ff);
+                            }
+
+                            d.Forecasts = forecasts;
+                            days.Add(d);
+
+                        }
+
+                        f.DayInfos = days;
+                        points.Add(f);
                     }
 
-                    d.Forecasts = list3;
-                    list2.Add(d);
 
+                    Forecasts = points;
                 }
-
-                f.DayInfos = list2;
-                list.Add(f);
             }
-
-
-            Forecasts = list;
         }
 
 

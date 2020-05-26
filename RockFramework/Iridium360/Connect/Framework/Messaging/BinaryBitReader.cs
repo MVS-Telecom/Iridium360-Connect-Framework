@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -14,6 +15,148 @@ namespace Iridium360.Connect.Framework.Messaging
             BitPosition = 8;
             this.curByte = new bool[8];
         }
+
+
+        public bool? ReadBoolNullable()
+        {
+            var array = new BitArray(2);
+
+            for (int i = 0; i < 2; i++)
+                array[i] = ReadBoolean();
+
+            int[] _array = new int[1];
+            array.CopyTo(_array, 0);
+
+            Trace();
+
+            if (_array[0] == 2)
+                return null;
+
+            if (_array[0] == 1)
+                return true;
+
+            return false;
+        }
+
+        public uint ReadUInt(int bits)
+        {
+            var array = new BitArray(bits);
+
+            for (int i = 0; i < bits; i++)
+                array[i] = ReadBoolean();
+
+            uint[] _array = new uint[1];
+            array.CopyTo(_array, 0);
+
+            uint value = _array[0];
+
+            Trace();
+
+            return value;
+        }
+
+        public uint? ReadUIntNullable(int bits)
+        {
+            var array = new BitArray(bits);
+
+            for (int i = 0; i < bits; i++)
+                array[i] = ReadBoolean();
+
+            uint[] _array = new uint[1];
+            array.CopyTo(_array, 0);
+
+            uint? value = _array[0];
+
+            if (value == Math.Pow(2, bits) - 1)
+                value = null;
+
+            Trace();
+
+            return value;
+        }
+
+        public int ReadInt(int bits)
+        {
+            var array = new BitArray(bits);
+
+            for (int i = 0; i < bits; i++)
+                array[i] = ReadBoolean();
+
+            int[] _array = new int[1];
+            array.CopyTo(_array, 0);
+
+            int value = _array[0];
+            bool negative = ReadBoolean();
+
+            if (negative)
+                value = -value;
+
+            Trace();
+
+            return value;
+        }
+
+        public int? ReadIntNullable(int bits)
+        {
+            var array = new BitArray(bits);
+
+            for (int i = 0; i < bits; i++)
+                array[i] = ReadBoolean();
+
+            int[] _array = new int[1];
+            array.CopyTo(_array, 0);
+
+            int? value = _array[0];
+
+            if (value == Math.Pow(2, bits) - 1)
+                value = null;
+
+            bool negative = ReadBoolean();
+
+            if (negative)
+                value = -value;
+
+            Trace();
+
+            return value;
+        }
+
+
+        public float ReadFloat(bool signed, int bits, int decimalBits = 14)
+        {
+            bool negative = false;
+
+            float b = ReadUInt(bits);
+            float a = ReadUInt(decimalBits);
+
+            a /= (float)Math.Pow(2, decimalBits);
+
+            float value = a + b;
+
+            if (signed)
+            {
+                negative = ReadBoolean();
+                if (negative)
+                    value = -value;
+            }
+
+
+            Trace();
+
+            return value;
+        }
+
+
+        private void Trace()
+        {
+            Console.WriteLine(BitPosition);
+            //Convert.ToString(byteArray[20], 2).PadLeft(8, '0');
+        }
+
+
+
+
+
 
         public override int Read(byte[] buffer, int index, int count)
         {
@@ -62,7 +205,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     {
                         if (flagArray[index])
                         {
-                            num2 |= (byte)( 1 << (num3 & 0x1f));
+                            num2 |= (byte)(1 << (num3 & 0x1f));
                         }
                         num3++;
                         index++;

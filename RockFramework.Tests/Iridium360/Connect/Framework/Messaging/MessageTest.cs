@@ -54,60 +54,60 @@ namespace Iridium360.Connect.Framework.Messaging
                     DayInfos = x.DayInfos.Select(y => new i360DayInfo()
                     {
                         Day = y.Day,
-                        Forecasts = y.Forecasts.Take(4).ToList()
+                        Forecasts = y.Forecasts.Take(7).ToList()
 
-                    }).Take(4).ToList()
+                    }).Take(7).ToList()
 
                 }).ToList();
 
-                //var message = WeatherMT.Create(fs);
+                var message = WeatherMT.Create(fs);
 
-                var message = WeatherMT.Create(new List<i360PointForecast>()
-                {
-                    new i360PointForecast()
-                    {
-                         Lat = 55.12345678,
-                         Lon = 37.12345678,
-                         TimeOffset = 3,
-                          DayInfos = new List<i360DayInfo>()
-                          {
-                              new i360DayInfo()
-                              {
-                                   DateDay = DateTime.Now,
-                                   Forecasts = new List<i360Forecast>()
-                                   {
-                                        new i360Forecast()
-                                        {
-                                             Cloud = 80,
-                                              HourOffset = 0,
-                                               Precipitation = 12,
-                                                Pressure = 740,
-                                                  SnowRisk = null,
-                                                   Temperature = 13,
-                                                    WindDirection = 124,
-                                                     WindSpeed = 5.2
-                                        },
-                                        new i360Forecast()
-                                        {
-                                             Cloud = 60,
-                                              HourOffset = 6,
-                                               Precipitation = 50,
-                                                Pressure = 741,
-                                                  SnowRisk = false,
-                                                   Temperature = 15,
-                                                    WindDirection = 189,
-                                                     WindSpeed = 2.9
-                                        }
-                                   }
-                              }
-                          }
-                    }
-                });
+                //var message = WeatherMT.Create(new List<i360PointForecast>()
+                //{
+                //    new i360PointForecast()
+                //    {
+                //         Lat = 55.12345678,
+                //         Lon = 37.12345678,
+                //         TimeOffset = 3,
+                //          DayInfos = new List<i360DayInfo>()
+                //          {
+                //              new i360DayInfo()
+                //              {
+                //                   DateDay = DateTime.Now,
+                //                   Forecasts = new List<i360Forecast>()
+                //                   {
+                //                        new i360Forecast()
+                //                        {
+                //                             Cloud = 80,
+                //                              HourOffset = 0,
+                //                               Precipitation = 12,
+                //                                Pressure = 740,
+                //                                  SnowRisk = null,
+                //                                   Temperature = 13,
+                //                                    WindDirection = 124,
+                //                                     WindSpeed = 5.2
+                //                        },
+                //                        new i360Forecast()
+                //                        {
+                //                             Cloud = 60,
+                //                              HourOffset = 6,
+                //                               Precipitation = 50,
+                //                                Pressure = 741,
+                //                                  SnowRisk = false,
+                //                                   Temperature = 15,
+                //                                    WindDirection = 189,
+                //                                     WindSpeed = 2.9
+                //                        }
+                //                   }
+                //              },
+                //          }
+                //    } 
+                //});
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();
 
-                if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
-                    Assert.Fail();
+                //if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
+                //Assert.Fail();
 
                 var _message = MessageMT.Unpack(buffer) as WeatherMT;
 

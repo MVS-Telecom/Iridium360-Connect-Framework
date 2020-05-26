@@ -24,14 +24,14 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            var biterator = new Biterator();
+            //var packer = new Packer();
 
-            biterator.WriteFloat((float)Lat, true, 10);
-            biterator.WriteFloat((float)Lon, true, 10);
+            //packer.Write((float)Lat, true, 10);
+            //packer.Write((float)Lon, true, 10);
 
-            var bytes = biterator.GetUsedBytes();
+            //var bytes = packer.GetBytes();
 
-            writer.Write(bytes);
+            //writer.Write(bytes);
         }
 
 
@@ -41,10 +41,10 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="payload"></param>
         protected override void unpack(byte[] payload)
         {
-            var biterator = new Biterator(payload);
+            //var packer = new Packer(payload);
 
-            Lat = biterator.ReadFloat(true, 10);
-            Lon = biterator.ReadFloat(true, 10);
+            //Lat = packer.ReadFloat(true, 10);
+            //Lon = packer.ReadFloat(true, 10);
         }
 
 
