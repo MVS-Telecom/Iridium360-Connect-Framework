@@ -74,7 +74,7 @@ namespace Iridium360.Connect.Framework.Messaging
         public enum Flags
         {
             EMPTY = 0,
-            HasChatId = 1,
+            HasSubscriber = 1,
             HasConversation = 2,
             HasText = 4,
             HasSubject = 8,
@@ -260,7 +260,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public string ChatId { get; protected set; }
+        public Subscriber? Subscriber { get; protected set; }
 
         /// <summary>
         /// 
