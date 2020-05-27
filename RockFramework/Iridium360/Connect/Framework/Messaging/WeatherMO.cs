@@ -25,8 +25,8 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            writer.Write((float)Lat, true, 8, 10);
-            writer.Write((float)Lon, true, 8, 10);
+            writer.Write((float)Lat, true, 7, 9);
+            writer.Write((float)Lon, true, 8, 9);
         }
 
 
@@ -40,10 +40,10 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 using (var reader = new BinaryBitReader(stream))
                 {
-                    Lat = reader.ReadFloat(true, 8, 10);
-                    Lon = reader.ReadFloat(true, 8, 10);
+                    Lat = reader.ReadFloat(true, 7, 9);
+                    Lon = reader.ReadFloat(true, 8, 9);
                 }
-            }       
+            }
         }
 
 
