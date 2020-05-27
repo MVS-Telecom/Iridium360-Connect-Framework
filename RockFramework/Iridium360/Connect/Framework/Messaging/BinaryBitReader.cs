@@ -149,7 +149,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         private void Trace()
         {
-            Console.WriteLine(BitPosition);
+            //Console.WriteLine(BitPosition);
             //Convert.ToString(byteArray[20], 2).PadLeft(8, '0');
         }
 

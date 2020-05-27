@@ -102,6 +102,7 @@ namespace Rock.Threading
     }
 
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -109,7 +110,7 @@ namespace Rock.Threading
     {
         public readonly IAsyncWork Work;
 
-        public AsyncWorkContainer(IAsyncWork work):base(work.Name)
+        public AsyncWorkContainer(IAsyncWork work) : base(work.Name)
         {
             Work = work;
         }
@@ -208,6 +209,33 @@ namespace Rock.Threading
         public virtual void Post(Func<Task> task, string name)
         {
             Post(new AWorkContainer(task, name));
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="task"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public virtual Task<T> PostAsync<T>(Func<Task<T>> task, string name)
+        {
+            return Task.Run(() =>
+            {
+                AutoResetEvent r = new AutoResetEvent(false);
+                T result = default(T);
+
+                Post(new AWorkContainer(async () =>
+                {
+                    result = await task();
+                    r.Set();
+
+                }, name));
+
+                r.WaitOne();
+                return result;
+            });
         }
 
 

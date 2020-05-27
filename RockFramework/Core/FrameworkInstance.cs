@@ -124,7 +124,7 @@ namespace Rock
         /// <param name="bytes"></param>
         /// <param name="shortId"></param>
         /// <returns></returns>
-        Task SendRawMessageWithDataAndIdentifier(byte[] data, short messageId);
+        Task SendRawMessageWithDataAndIdentifier(byte[] data, ushort messageId);
     }
 
 
@@ -1756,7 +1756,7 @@ namespace Rock
         /// <param name="data"></param>
         /// <param name="messageId"></param>
         /// <returns></returns>
-        public async Task SendRawMessageWithDataAndIdentifier(byte[] data, short messageId)
+        public async Task SendRawMessageWithDataAndIdentifier(byte[] data, ushort messageId)
         {
             if (!IsConnected)
                 throw new MessageSendingException("Device is not connected");
@@ -1767,7 +1767,7 @@ namespace Rock
             if (data.Length > 338)
                 throw new MessageSendingException("Message payload is too long");
 
-            await PostCommandAsync(new SendMessageCommand(AppId, KeyIndex, messageId, data));
+            await PostCommandAsync(new SendMessageCommand(AppId, KeyIndex, (short)messageId, data));
         }
 
 

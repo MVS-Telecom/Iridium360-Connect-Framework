@@ -151,7 +151,7 @@ namespace Iridium360.Models
         /// Кол-во дней с 1 января 2018 года
         /// </summary>
         [JsonProperty("day")]
-        private int _day { get; set; }
+        public int _day { get; private set; }
 
 
         /// <summary>
@@ -259,13 +259,13 @@ namespace Iridium360.Models
         /// 
         /// </summary>
         [JsonProperty("lat")]
-        public double Lat { get; set; }
+        public double? Lat { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [JsonProperty("lon")]
-        public double Lon { get; set; }
+        public double? Lon { get; set; }
 
         /// <summary>
         /// 
