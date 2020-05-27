@@ -24,12 +24,14 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             try
             {
-                var message = WeatherMO.Create(12.98243112, -9.12345678);
+                var message = WeatherMO.Create(12.12109375, -9.12109375);
 
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();
 
                 var _message = MessageMO.Unpack(buffer) as WeatherMO;
+
+                var __message = MessageMO.Unpack("0105050C1F127C04C8".ToByteArray());
 
                 if (_message == null)
                     Assert.Fail();
@@ -63,7 +65,7 @@ namespace Iridium360.Connect.Framework.Messaging
                         DateDay = y.DateDay,//.AddDays(3),
                         Forecasts = y.Forecasts.Select(z => new i360Forecast()
                         {
-                            Cloud = null,
+                            Cloud = z.Cloud,
                             HourOffset = z.HourOffset,
                             Precipitation = z.Precipitation,
                             WindSpeed = z.WindSpeed,
