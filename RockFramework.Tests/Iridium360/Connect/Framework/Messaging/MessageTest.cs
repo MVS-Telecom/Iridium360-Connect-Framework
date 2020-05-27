@@ -166,7 +166,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     , (string)new string('s', i)
                     );
                 var emo2 = (ChatMessageMO)MessageMO.Unpack(emo.Pack());
-                if (emo.ChatId != (emo2.ChatId ?? ""))
+                if (emo.Subscriber != (emo2.Subscriber ?? ""))
                 {
                     throw new InvalidOperationException("ChatId");
                 }
@@ -312,7 +312,7 @@ A7 1B AB C0 F0 5A 95 03 00 80",
                 {
                     Debug.WriteLine($"Messge is `{message.GetType()}`");
 
-                    Debug.WriteLine($"\t, chat:`{chatMessage.ChatId}`");
+                    Debug.WriteLine($"\t, chat:`{chatMessage.Subscriber}`");
                     Debug.WriteLine($"\t, id:`{chatMessage.Id}`");
                     Debug.WriteLine($"\t, converssation:`{chatMessage.Conversation}`");
                     Debug.WriteLine($"\t, subject:`{chatMessage.Subject}`");
