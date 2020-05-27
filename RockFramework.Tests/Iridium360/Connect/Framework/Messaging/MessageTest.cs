@@ -9,12 +9,15 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Rock.Helpers;
 using Iridium360.Models;
+using Rock;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
     [TestClass]
     public class MessageTest
     {
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -140,6 +143,43 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
         /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void Pack__ChatMessageMOTest2()
+        {
+            ChatMessageMO emo = ChatMessageMO.Create(new Subscriber("hello@world", SubscriberNetwork.Email)
+                    , 123
+                    , 56789
+                    , "this is subject"
+                    , "The markdown document and any attachments, such as images, will then be sent to your email address"
+                    , new Location(32.8192159, -56.1295223)
+                    );
+
+            var b = emo.Pack();
+            var emo2 = (ChatMessageMO)MessageMO.Unpack(b);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void Pack__ChatMessageMTTest2()
+        {
+            ChatMessageMT emt = ChatMessageMT.Create(new Subscriber("79151234567", SubscriberNetwork.Mobile)
+                    , 123
+                    , null
+                    , "this is subject"
+                    , "The markdown document and any attachments, such as images, will then be sent to your email address"
+                    );
+
+            var b = emt.Pack();
+            var emt2 = MessageMT.Unpack(b) as ChatMessageMT;
+        }
+
+
+        /// <summary>
         ///  сообщения
         /// </summary>
         [TestMethod]
@@ -161,14 +201,14 @@ namespace Iridium360.Connect.Framework.Messaging
                     nullable = null;
                     nullable1 = nullable;
                 }
-                ChatMessageMO emo = ChatMessageMO.Create((string)new string('X', 0x10)
+                ChatMessageMO emo = ChatMessageMO.Create(new Subscriber("hello@world", SubscriberNetwork.Email)
                     , (ushort)(i * i)
                     , i
                     , (string)new string('t', i)
                     , (string)new string('s', i)
                     );
                 var emo2 = (ChatMessageMO)MessageMO.Unpack(emo.Pack());
-                if (emo.Subscriber != (emo2.Subscriber ?? ""))
+                if (emo.Subscriber != emo2.Subscriber)
                 {
                     throw new InvalidOperationException("ChatId");
                 }
