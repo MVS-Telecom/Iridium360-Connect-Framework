@@ -22,15 +22,22 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public async Task Pack__WeatherMOTest()
         {
-            var message = WeatherMO.Create(12.12345678, -9.12345678);
+            try
+            {
+                var message = WeatherMO.Create(12.98243112, -9.12345678);
 
-            var buffer = message.Pack();
-            string hex = buffer.ToHexString();
+                var buffer = message.Pack();
+                string hex = buffer.ToHexString();
 
-            var _message = MessageMO.Unpack(buffer) as WeatherMO;
+                var _message = MessageMO.Unpack(buffer) as WeatherMO;
 
-            if (_message == null)
-                Assert.Fail();
+                if (_message == null)
+                    Assert.Fail();
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
 
@@ -53,23 +60,32 @@ namespace Iridium360.Connect.Framework.Messaging
                     Lon = x.Lon,
                     DayInfos = x.DayInfos.Select(y => new i360DayInfo()
                     {
-                        Day = y.Day,
-                        Forecasts = y.Forecasts.Take(7).ToList()
+                        DateDay = y.DateDay,//.AddDays(3),
+                        Forecasts = y.Forecasts.Select(z => new i360Forecast()
+                        {
+                            Cloud = null,
+                            HourOffset = z.HourOffset,
+                            Precipitation = z.Precipitation,
+                            WindSpeed = z.WindSpeed,
+                            WindDirection = z.WindDirection,
+                            Temperature = z.Temperature,
+                            SnowRisk = z.SnowRisk,
+                            Pressure = z.Pressure
 
-                    }).Take(7).ToList()
+                        }).Take(4).ToList()
 
-                }).ToList();
+                    }).Take(4).ToList()
+
+                }).FirstOrDefault();
 
                 var message = WeatherMT.Create(fs);
 
-                //var message = WeatherMT.Create(new List<i360PointForecast>()
+                //var message = WeatherMT.Create(new i360PointForecast()
                 //{
-                //    new i360PointForecast()
-                //    {
-                //         Lat = 55.12345678,
-                //         Lon = 37.12345678,
-                //         TimeOffset = 3,
-                //          DayInfos = new List<i360DayInfo>()
+                //    Lat = 55.12345678,
+                //    Lon = 37.12345678,
+                //    TimeOffset = 3,
+                //    DayInfos = new List<i360DayInfo>()
                 //          {
                 //              new i360DayInfo()
                 //              {
@@ -82,7 +98,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 //                              HourOffset = 0,
                 //                               Precipitation = 12,
                 //                                Pressure = 740,
-                //                                  SnowRisk = null,
+                //                                  SnowRisk = false,
                 //                                   Temperature = 13,
                 //                                    WindDirection = 124,
                 //                                     WindSpeed = 5.2
@@ -93,7 +109,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 //                              HourOffset = 6,
                 //                               Precipitation = 50,
                 //                                Pressure = 741,
-                //                                  SnowRisk = false,
+                //                                  SnowRisk = true,
                 //                                   Temperature = 15,
                 //                                    WindDirection = 189,
                 //                                     WindSpeed = 2.9
@@ -101,7 +117,6 @@ namespace Iridium360.Connect.Framework.Messaging
                 //                   }
                 //              },
                 //          }
-                //    } 
                 //});
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();

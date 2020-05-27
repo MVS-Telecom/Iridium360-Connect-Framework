@@ -17,6 +17,7 @@ namespace Iridium360.Models
         [JsonProperty("h")]
         public int HourOffset { get; set; }
 
+
         /// <summary>
         /// Температура в цельсиях
         /// </summary>
@@ -57,7 +58,7 @@ namespace Iridium360.Models
         /// Вероятность снега
         /// </summary>
         [JsonProperty("s")]
-        public bool? SnowRisk { get; set; }
+        public bool SnowRisk { get; set; }
     }
 
 
@@ -150,7 +151,7 @@ namespace Iridium360.Models
         /// Кол-во дней с 1 января 2018 года
         /// </summary>
         [JsonProperty("day")]
-        public int Day { get; set; }
+        private int _day { get; set; }
 
 
         /// <summary>
@@ -161,11 +162,11 @@ namespace Iridium360.Models
         {
             get
             {
-                return DateTime.SpecifyKind(START.AddDays(Day), DateTimeKind.Utc);
+                return DateTime.SpecifyKind(START.AddDays(_day), DateTimeKind.Utc);
             }
             set
             {
-                Day = (int)(value - START).TotalDays;
+                _day = (int)(value - START).TotalDays;
             }
         }
 

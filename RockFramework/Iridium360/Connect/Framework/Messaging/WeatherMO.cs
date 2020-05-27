@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
@@ -24,14 +25,8 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            //var packer = new Packer();
-
-            //packer.Write((float)Lat, true, 10);
-            //packer.Write((float)Lon, true, 10);
-
-            //var bytes = packer.GetBytes();
-
-            //writer.Write(bytes);
+            writer.Write((float)Lat, true, 8, 10);
+            writer.Write((float)Lon, true, 8, 10);
         }
 
 
@@ -41,10 +36,14 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="payload"></param>
         protected override void unpack(byte[] payload)
         {
-            //var packer = new Packer(payload);
-
-            //Lat = packer.ReadFloat(true, 10);
-            //Lon = packer.ReadFloat(true, 10);
+            using (var stream = new MemoryStream(payload))
+            {
+                using (var reader = new BinaryBitReader(stream))
+                {
+                    Lat = reader.ReadFloat(true, 8, 10);
+                    Lon = reader.ReadFloat(true, 8, 10);
+                }
+            }       
         }
 
 
