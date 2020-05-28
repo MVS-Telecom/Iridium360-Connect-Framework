@@ -15,7 +15,7 @@ namespace Iridium360.Connect.Framework.Messaging
         {
         }
 
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
         }
 

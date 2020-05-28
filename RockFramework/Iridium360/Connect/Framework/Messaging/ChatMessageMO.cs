@@ -97,37 +97,31 @@ namespace Iridium360.Connect.Framework.Messaging
         /// 
         /// </summary>
         /// <param name="payload"></param>
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
-            using (MemoryStream stream = new MemoryStream(payload))
+            Flags flags = (Flags)reader.ReadByte();
+            if (flags.HasFlag(Flags.HasSubscriber))
             {
-                using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
-                {
-                    Flags flags = (Flags)reader.ReadByte();
-                    if (flags.HasFlag(Flags.HasSubscriber))
-                    {
-                        string number = Read(reader);
-                        SubscriberNetwork network = (SubscriberNetwork)reader.ReadUInt(5);
+                string number = Read(reader);
+                SubscriberNetwork network = (SubscriberNetwork)reader.ReadUInt(5);
 
-                        this.Subscriber = new Subscriber(number, network);
-                    }
-                    if (flags.HasFlag(Flags.HasId))
-                    {
-                        this.Id = reader.ReadUInt16();
-                    }
-                    if (flags.HasFlag(Flags.HasConversation))
-                    {
-                        this.Conversation = new ushort?(reader.ReadUInt16());
-                    }
-                    if (flags.HasFlag(Flags.HasSubject))
-                    {
-                        this.Subject = Read(reader);
-                    }
-                    if (flags.HasFlag(Flags.HasText))
-                    {
-                        base.Text = Read(reader);
-                    }
-                }
+                this.Subscriber = new Subscriber(number, network);
+            }
+            if (flags.HasFlag(Flags.HasId))
+            {
+                this.Id = reader.ReadUInt16();
+            }
+            if (flags.HasFlag(Flags.HasConversation))
+            {
+                this.Conversation = new ushort?(reader.ReadUInt16());
+            }
+            if (flags.HasFlag(Flags.HasSubject))
+            {
+                this.Subject = Read(reader);
+            }
+            if (flags.HasFlag(Flags.HasText))
+            {
+                base.Text = Read(reader);
             }
         }
 
@@ -260,49 +254,39 @@ namespace Iridium360.Connect.Framework.Messaging
             }
             if (flags.HasFlag(Flags.HasLocation))
             {
-                writer.Write((float)Location.Latitude, true, 7, 9);
-                writer.Write((float)Location.Longitude, true, 8, 9);
+                Location.pack(writer);
             }
         }
 
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
-            using (MemoryStream stream = new MemoryStream(payload))
+            Flags flags = (Flags)reader.ReadByte();
+            if (flags.HasFlag(Flags.HasSubscriber))
             {
-                using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
-                {
-                    Flags flags = (Flags)reader.ReadByte();
-                    if (flags.HasFlag(Flags.HasSubscriber))
-                    {
-                        string number = Read(reader);
-                        SubscriberNetwork network = (SubscriberNetwork)reader.ReadUInt(5);
+                string number = Read(reader);
+                SubscriberNetwork network = (SubscriberNetwork)reader.ReadUInt(5);
 
-                        this.Subscriber = new Subscriber(number, network);
-                    }
-                    if (flags.HasFlag(Flags.HasId))
-                    {
-                        this.Id = reader.ReadUInt16();
-                    }
-                    if (flags.HasFlag(Flags.HasConversation))
-                    {
-                        this.Conversation = new ushort?(reader.ReadUInt16());
-                    }
-                    if (flags.HasFlag(Flags.HasSubject))
-                    {
-                        this.Subject = Read(reader);
-                    }
-                    if (flags.HasFlag(Flags.HasText))
-                    {
-                        base.Text = Read(reader);
-                    }
-                    if (flags.HasFlag(Flags.HasLocation))
-                    {
-                        double lat = reader.ReadFloat(true, 7, 9);
-                        double lon = reader.ReadFloat(true, 8, 9);
-
-                        this.Location = new Location(lat, lon);
-                    }
-                }
+                this.Subscriber = new Subscriber(number, network);
+            }
+            if (flags.HasFlag(Flags.HasId))
+            {
+                this.Id = reader.ReadUInt16();
+            }
+            if (flags.HasFlag(Flags.HasConversation))
+            {
+                this.Conversation = new ushort?(reader.ReadUInt16());
+            }
+            if (flags.HasFlag(Flags.HasSubject))
+            {
+                this.Subject = Read(reader);
+            }
+            if (flags.HasFlag(Flags.HasText))
+            {
+                base.Text = Read(reader);
+            }
+            if (flags.HasFlag(Flags.HasLocation))
+            {
+                this.Location = Location.unpack(reader);
             }
         }
 

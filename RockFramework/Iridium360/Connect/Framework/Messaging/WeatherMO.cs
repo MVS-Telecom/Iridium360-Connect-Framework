@@ -9,15 +9,15 @@ namespace Iridium360.Connect.Framework.Messaging
     /// </summary>
     public class WeatherMO : MessageMO
     {
-        public double Lat { get; set; }
-        public double Lon { get; set; }
-
-
         /// <summary>
         /// 
         /// </summary>
         public override MessageType Type => MessageType.Weather;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Location Location { get; set; }
 
         /// <summary>
         /// 
@@ -25,8 +25,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            writer.Write((float)Lat, true, 7, 9);
-            writer.Write((float)Lon, true, 8, 9);
+            Location.pack(writer);
         }
 
 
@@ -34,16 +33,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// 
         /// </summary>
         /// <param name="payload"></param>
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
-            using (var stream = new MemoryStream(payload))
-            {
-                using (var reader = new BinaryBitReader(stream))
-                {
-                    Lat = reader.ReadFloat(true, 7, 9);
-                    Lon = reader.ReadFloat(true, 8, 9);
-                }
-            }
+            Location = Location.unpack(reader);
         }
 
 
@@ -63,8 +55,8 @@ namespace Iridium360.Connect.Framework.Messaging
         public static WeatherMO Create(double lat, double lon)
         {
             WeatherMO weather = new WeatherMO();
-            weather.Lat = lat;
-            weather.Lon = lon;
+            weather.Location = new Location(lat, lon);
+
             // --->
             return weather;
         }

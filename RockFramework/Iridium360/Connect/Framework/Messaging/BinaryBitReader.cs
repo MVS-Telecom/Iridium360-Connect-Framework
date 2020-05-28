@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
@@ -14,6 +15,16 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             BitPosition = 8;
             this.curByte = new bool[8];
+        }
+
+
+        public byte[] ReadAllBytes()
+        {
+            if (BitPosition % 8 != 0)
+                throw new NotImplementedException();
+
+            int bytesToRead = (int)(this.BaseStream.Length - this.BaseStream.Position);
+            return ReadBytes(bytesToRead);
         }
 
 

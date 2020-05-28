@@ -112,102 +112,97 @@ namespace Iridium360.Connect.Framework.Messaging
         /// 
         /// </summary>
         /// <param name="payload"></param>
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
-            using (var stream = new MemoryStream(payload))
+            Forecast = new i360PointForecast();
+
+            Forecast.TimeOffset = (int)reader.ReadUInt(5) - 12;
+
+
+            var dates = new int[16];
+            var forecasts = new List<i360Forecast>();
+
+            for (int j = 0; j < 16; j++)
             {
-                using (var reader = new BinaryBitReader(stream))
+                try
                 {
-                    Forecast = new i360PointForecast();
+                    var forecast = new i360Forecast();
 
-                    Forecast.TimeOffset = (int)reader.ReadUInt(5) - 12;
+                    ///->
 
+                    ///Дата не изменилась?
+                    bool sameDay = reader.ReadBoolean();
 
-                    var dates = new int[16];
-                    var forecasts = new List<i360Forecast>();
-
-                    for (int j = 0; j < 16; j++)
-                    {
-                        try
-                        {
-                            var forecast = new i360Forecast();
-
-                            ///->
-
-                            ///Дата не изменилась?
-                            bool sameDay = reader.ReadBoolean();
-
-                            ///Если изменилась - сохраняем день от начала месяца
-                            if (!sameDay)
-                                dates[j] = (int)reader.ReadUInt(5);
-                            else
-                                dates[j] = dates[j - 1];
+                    ///Если изменилась - сохраняем день от начала месяца
+                    if (!sameDay)
+                        dates[j] = (int)reader.ReadUInt(5);
+                    else
+                        dates[j] = dates[j - 1];
 
 
-                            int month = 0;
+                    int month = 0;
 
-                            if (j > 0 && dates[j] < dates[j - 1])
-                                month = 1;
+                    if (j > 0 && dates[j] < dates[j - 1])
+                        month = 1;
 
 
-                            int hourOffset = (int)reader.ReadUInt(5);
+                    int hourOffset = (int)reader.ReadUInt(5);
 
-                            forecast.Date = new DateTime(DateTime.Now.Year, DateTime.Now.Month + month, dates[j], hourOffset, 0, 0, DateTimeKind.Utc);
+                    forecast.Date = new DateTime(DateTime.Now.Year, DateTime.Now.Month + month, dates[j], hourOffset, 0, 0, DateTimeKind.Utc);
 
-                            ///->
+                    ///->
 
-                            forecast.Temperature = (int)reader.ReadUInt(7) - 70;
+                    forecast.Temperature = (int)reader.ReadUInt(7) - 70;
 
-                            ///->
+                    ///->
 
-                            uint? _pressure = reader.ReadUIntNullable(8);
+                    uint? _pressure = reader.ReadUIntNullable(8);
 
-                            if (_pressure != null)
-                                forecast.Pressure = (int)_pressure + 580;
+                    if (_pressure != null)
+                        forecast.Pressure = (int)_pressure + 580;
 
-                            ///->
+                    ///->
 
-                            uint? _cloud = reader.ReadUIntNullable(4);
+                    uint? _cloud = reader.ReadUIntNullable(4);
 
-                            if (_cloud != null)
-                                forecast.Cloud = Math.Min(100, (int)_cloud * 15);
+                    if (_cloud != null)
+                        forecast.Cloud = Math.Min(100, (int)_cloud * 15);
 
-                            ///->
-                            ///
-                            uint? _precipitation = reader.ReadUIntNullable(8);
+                    ///->
+                    ///
+                    uint? _precipitation = reader.ReadUIntNullable(8);
 
-                            if (_precipitation != null)
-                                forecast.Precipitation = _precipitation / 4d;
+                    if (_precipitation != null)
+                        forecast.Precipitation = _precipitation / 4d;
 
-                            ///->
+                    ///->
 
-                            uint? _windDirection = reader.ReadUIntNullable(4);
+                    uint? _windDirection = reader.ReadUIntNullable(4);
 
-                            if (_windDirection != null)
-                                forecast.WindDirection = (int)Math.Round(_windDirection.Value * 45d);
+                    if (_windDirection != null)
+                        forecast.WindDirection = (int)Math.Round(_windDirection.Value * 45d);
 
-                            ///-->
+                    ///-->
 
-                            forecast.WindSpeed = reader.ReadUIntNullable(6);
+                    forecast.WindSpeed = reader.ReadUIntNullable(6);
 
-                            ///->
+                    ///->
 
-                            forecast.SnowRisk = reader.ReadBoolean();
+                    forecast.SnowRisk = reader.ReadBoolean();
 
-                            ///->
+                    ///->
 
-                            forecasts.Add(forecast);
-                        }
-                        catch (Exception e)
-                        {
-                            Debugger.Break();
-                        }
-                    }
-
-                    Forecast.DayInfos = forecasts.GroupBy(x => x.Date.Date).Select(x => new i360DayInfo() { Date = x.Key }).ToList();
-                    Forecast.Forecasts = forecasts;
+                    forecasts.Add(forecast);
+                }
+                catch (Exception e)
+                {
+                    Debugger.Break();
                 }
             }
+
+            Forecast.DayInfos = forecasts.GroupBy(x => x.Date.Date).Select(x => new i360DayInfo() { Date = x.Key }).ToList();
+            Forecast.Forecasts = forecasts;
+
         }
 
 

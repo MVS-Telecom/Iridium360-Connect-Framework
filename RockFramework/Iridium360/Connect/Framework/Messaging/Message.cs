@@ -82,7 +82,7 @@ namespace Iridium360.Connect.Framework.Messaging
             return buffer3;
         }
 
-        protected abstract void unpack(byte[] payload);
+        protected abstract void unpack(BinaryBitReader reader);
 
 
         /// <summary>
@@ -139,7 +139,15 @@ namespace Iridium360.Connect.Framework.Messaging
                             message.Part = (byte)part;
                             message.Parts = (byte)parts;
                             message.Length = (ushort)count;
-                            message.unpack(payload);
+
+                            using (MemoryStream stream2 = new MemoryStream(payload))
+                            {
+                                using (BinaryBitReader reader2 = new BinaryBitReader((Stream)stream2))
+                                {
+                                    message.unpack(reader2);
+                                }
+                            }
+
                             message2 = message;
                             break;
                         }
@@ -156,7 +164,7 @@ namespace Iridium360.Connect.Framework.Messaging
         public virtual Iridium360.Connect.Framework.Messaging.Composite Composite { get; private set; }
 
         public byte Group { get; private set; }
-        
+
         public byte Parts { get; private set; }
 
         public byte Part { get; private set; }

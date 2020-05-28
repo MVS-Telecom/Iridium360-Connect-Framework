@@ -51,15 +51,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// 
         /// </summary>
         /// <param name="payload"></param>
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
-            using (MemoryStream stream = new MemoryStream(payload))
-            {
-                using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
-                {
-                    this.Text = Read(reader);
-                }
-            }
+            this.Text = Read(reader);
         }
     }
 
@@ -96,7 +90,7 @@ namespace Iridium360.Connect.Framework.Messaging
         {
         }
 
-       
+
 
         private static byte InPage(char c, Page page)
         {
@@ -136,7 +130,7 @@ namespace Iridium360.Connect.Framework.Messaging
             return 0xff;
         }
 
-       
+
 
         protected static string Read(BinaryBitReader reader)
         {
@@ -200,7 +194,7 @@ namespace Iridium360.Connect.Framework.Messaging
             return builder.ToString();
         }
 
-       
+
 
         protected static void Write(BinaryBitWriter writer, string text)
         {

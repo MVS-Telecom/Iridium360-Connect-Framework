@@ -17,9 +17,9 @@ namespace Iridium360.Connect.Framework.Messaging
             writer.Write(this.Payload);
         }
 
-        protected override void unpack(byte[] payload)
+        protected override void unpack(BinaryBitReader reader)
         {
-            this.Payload = payload;
+            this.Payload = reader.ReadAllBytes();
         }
 
         public override MessageType Type =>
