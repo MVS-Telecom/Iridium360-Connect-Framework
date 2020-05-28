@@ -175,7 +175,8 @@ namespace Iridium360.Connect.Framework.Messaging
             ushort? conversation,
             string text,
             string subject = null,
-            Location location = null)
+            double? lat = null,
+            double? lon = null)
         {
             if (to == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
@@ -186,7 +187,8 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Conversation = conversation;
             emo1.Text = text;
             emo1.Subject = subject;
-            emo1.Location = location;
+            emo1.Lat = lat;
+            emo1.Lon = lon;
             return emo1;
         }
 
@@ -220,7 +222,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 flags |= Flags.HasText;
             }
-            if (Location != null)
+            if (Lat != null && Lon != null)
             {
                 flags |= Flags.HasLocation;
             }
@@ -254,7 +256,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
             if (flags.HasFlag(Flags.HasLocation))
             {
-                Location.pack(writer);
+                WriteLocation(writer);
             }
         }
 
@@ -286,7 +288,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
             if (flags.HasFlag(Flags.HasLocation))
             {
-                this.Location = Location.unpack(reader);
+                ReadLocation(reader);
             }
         }
 
@@ -304,11 +306,6 @@ namespace Iridium360.Connect.Framework.Messaging
         ///// 
         ///// </summary>
         //public string Subject { get; private set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Location Location { get; private set; }
 
         ///// <summary>
         ///// 

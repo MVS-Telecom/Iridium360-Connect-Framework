@@ -61,7 +61,7 @@ namespace Iridium360.Connect.Framework.Messaging
     /// <summary>
     /// 
     /// </summary>
-    public abstract class FreeText : Message
+    public abstract class FreeText : MessageWithLocation
     {
 
         [Flags]

@@ -59,7 +59,7 @@ namespace Iridium360.Connect.Framework.Messaging
             var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=12.12345678&lon=-9.12345678&interval=6");
             var s = await r.Content.ReadAsStringAsync();
 
-            
+
 
             try
             {
@@ -155,7 +155,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     , 56789
                     , null
                     , "The markdown document and any attachments, such as images, will then be sent to your email address"
-                    , new Location(32.8192159, -56.1295223)
+                    , 32.8192159, -56.1295223
                     );
 
             var b = emo.Pack();

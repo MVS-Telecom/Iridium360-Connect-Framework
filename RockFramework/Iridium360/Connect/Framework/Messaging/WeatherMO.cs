@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
@@ -17,15 +18,10 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public Location Location { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            Location.pack(writer);
+            WriteLocation(writer);
         }
 
 
@@ -35,7 +31,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="payload"></param>
         protected override void unpack(BinaryBitReader reader)
         {
-            Location = Location.unpack(reader);
+            ReadLocation(reader);
         }
 
 
@@ -55,7 +51,9 @@ namespace Iridium360.Connect.Framework.Messaging
         public static WeatherMO Create(double lat, double lon)
         {
             WeatherMO weather = new WeatherMO();
-            weather.Location = new Location(lat, lon);
+
+            weather.Lat = lat;
+            weather.Lon = lon;
 
             // --->
             return weather;

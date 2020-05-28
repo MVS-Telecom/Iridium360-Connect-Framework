@@ -10,7 +10,7 @@ namespace Iridium360.Connect.Framework.Messaging
     /// <summary>
     ///  Исх с RockSTAR сообщение
     /// </summary>
-    public abstract class MessageMO : Message, IMessageMO
+    public abstract class MessageMO : MessageWithLocation, IMessageMO
     {
 
         /// <summary>
