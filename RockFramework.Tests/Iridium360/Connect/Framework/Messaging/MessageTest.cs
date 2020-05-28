@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Rock.Helpers;
 using Iridium360.Models;
 using Rock;
+using System.Text;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
@@ -27,6 +28,9 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             try
             {
+                string s1 = Encoding.UTF8.GetString("118310010037393939393734303536323A46524F4D37393939393734303536322832382E352E32302D30363A35302855544329293A2054657374".ToByteArray());
+                string s2 = Encoding.UTF8.GetString("37393939393734303536323A46524F4D37393939393734303536322832382E352E32302D30363A35302855544329293A2054657374".ToByteArray());
+
                 var message = WeatherMO.Create(12.12109375, -9.12109375);
 
                 var buffer = message.Pack();
@@ -34,7 +38,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 var _message = MessageMO.Unpack(buffer) as WeatherMO;
 
-                var __message = MessageMO.Unpack("0105050C1F127C04C8".ToByteArray());
+                var __message = MessageMO.Unpack("01050537AD4A04013E".ToByteArray());
 
                 if (_message == null)
                     Assert.Fail();
@@ -52,34 +56,32 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public async Task Pack__WeatherMTTest()
         {
-            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=12.12345678&lon=-9.12345678");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=12.12345678&lon=-9.12345678&interval=6");
             var s = await r.Content.ReadAsStringAsync();
 
-            var ffff = JsonConvert.DeserializeObject<i360WeatherForecast>(s);
+            
 
             try
             {
+                var ffff = JsonConvert.DeserializeObject<i360WeatherForecast>(s);
+
                 var fs = ffff.Forecasts.Select(x => new i360PointForecast()
                 {
                     Lat = x.Lat,
                     Lon = x.Lon,
-                    DayInfos = x.DayInfos.Select(y => new i360DayInfo()
+                    DayInfos = x.DayInfos,
+                    Forecasts = x.Forecasts.Select(z => new i360Forecast()
                     {
-                        DateDay = y.DateDay,//.AddDays(3),
-                        Forecasts = y.Forecasts.Select(z => new i360Forecast()
-                        {
-                            Cloud = z.Cloud,
-                            HourOffset = z.HourOffset,
-                            Precipitation = z.Precipitation,
-                            WindSpeed = z.WindSpeed,
-                            WindDirection = z.WindDirection,
-                            Temperature = z.Temperature,
-                            SnowRisk = z.SnowRisk,
-                            Pressure = z.Pressure
+                        Cloud = z.Cloud,
+                        Date = z.Date,
+                        Precipitation = z.Precipitation,
+                        WindSpeed = z.WindSpeed,
+                        WindDirection = z.WindDirection,
+                        Temperature = z.Temperature,
+                        SnowRisk = z.SnowRisk,
+                        Pressure = z.Pressure
 
-                        }).Take(4).ToList()
-
-                    }).Take(4).ToList()
+                    }).Take(16).ToList()
 
                 }).FirstOrDefault();
 
@@ -148,16 +150,22 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public void Pack__ChatMessageMOTest2()
         {
-            ChatMessageMO emo = ChatMessageMO.Create(new Subscriber("hello@world", SubscriberNetwork.Email)
+            ChatMessageMO emo = ChatMessageMO.Create(null
                     , 123
                     , 56789
-                    , "this is subject"
+                    , null
                     , "The markdown document and any attachments, such as images, will then be sent to your email address"
                     , new Location(32.8192159, -56.1295223)
                     );
 
             var b = emo.Pack();
             var emo2 = (ChatMessageMO)MessageMO.Unpack(b);
+
+
+            // var emo3 = (ChatMessageMO)MessageMO.Unpack("0104AD3542ABC631ADF0F41DA740180010A88437F124BF7D77669399CE1356CD93D344E1C49D13D94F64774E132A61D53C91FDE4A5CFE4345138A1825B88E324376338E1DDBC4D643F916939A1825B88E38455F324A713964E723AC95B3559DD1BCF132AB885384E4E35394D144EDC39C95B35494D3FA1825B9093FCF6DD994D663A4F58354F5A5A56132AB80539C96FDF9DD984D6F3840A6E218E135C5593D69593D8CCD53BC9E9D4F41380E143828FC3".ToByteArray());
+            var emo3 = (ChatMessageMO)MessageMO.Unpack("0104183501286A1E276E5E276A002800103811EA3E1260F890E0232D".ToByteArray());
+
+
         }
 
 
@@ -167,14 +175,15 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public void Pack__ChatMessageMTTest2()
         {
-            ChatMessageMT emt = ChatMessageMT.Create(new Subscriber("79151234567", SubscriberNetwork.Mobile)
+            ChatMessageMT emt = ChatMessageMT.Create(new Subscriber("hello@world", SubscriberNetwork.Email)
                     , 123
                     , null
-                    , "this is subject"
                     , "The markdown document and any attachments, such as images, will then be sent to your email address"
+                    , null
                     );
 
             var b = emt.Pack();
+            var h = b.ToHexString();
             var emt2 = MessageMT.Unpack(b) as ChatMessageMT;
         }
 
