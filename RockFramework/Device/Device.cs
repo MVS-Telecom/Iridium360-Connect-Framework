@@ -52,6 +52,7 @@ namespace Rock
         public double Longitude { get; set; }
         public float? Speed { get; set; }
         public float? Bearing { get; set; }
+        public DateTime? Date { get; set; }
 
         public Location()
         {
