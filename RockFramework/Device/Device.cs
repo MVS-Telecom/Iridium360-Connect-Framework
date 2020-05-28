@@ -63,6 +63,12 @@ namespace Rock
             Latitude = lat;
             Longitude = lon;
         }
+
+
+        public override string ToString()
+        {
+            return $"{Latitude},{Longitude}";
+        }
     }
 
 
