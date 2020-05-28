@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Rock;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,15 @@ namespace Iridium360.Models
         /// <summary>
         /// Дата и время прогноза
         /// </summary>
-        [JsonProperty("h")]
-        public int HourOffset { get; set; }
+        [JsonIgnore]
+        public int HourOffset => Date.Hour;
 
+        /// <summary>
+        /// Дата
+        /// </summary>
+        [JsonProperty("d")]
+        [JsonConverter(typeof(DateFormatConverter), "yyyy-MM-dd HH:mm:ss")]
+        public DateTime Date { get; set; }
 
         /// <summary>
         /// Температура в цельсиях
@@ -139,36 +146,36 @@ namespace Iridium360.Models
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public class DateFormatConverter : IsoDateTimeConverter
+    {
+        public DateFormatConverter(string format)
+        {
+            DateTimeFormat = format;
+        }
+    }
+
 
     /// <summary>
     /// 
     /// </summary>
     public class i360DayInfo
     {
-        private static DateTime START = new DateTime(2018, 1, 1);
-
-        /// <summary>
-        /// Кол-во дней с 1 января 2018 года
-        /// </summary>
-        [JsonProperty("day")]
-        public int _day { get; private set; }
-
-
         /// <summary>
         /// Дата (в UTC)
         /// </summary>
+        [JsonProperty("date")]
+        [JsonConverter(typeof(DateFormatConverter), "yyyy-MM-dd")]
+        public DateTime Date { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonIgnore]
-        public DateTime DateDay
-        {
-            get
-            {
-                return DateTime.SpecifyKind(START.AddDays(_day), DateTimeKind.Utc);
-            }
-            set
-            {
-                _day = (int)(value - START).TotalDays;
-            }
-        }
+        public int Day => (int)(Date - new DateTime(2020, 1, 1)).TotalDays;
+
 
         /// <summary>
         /// Восход солнца (в минутах)
@@ -194,7 +201,7 @@ namespace Iridium360.Models
                 if (_sunRise == null)
                     return null;
 
-                return DateTime.SpecifyKind(DateDay.AddMinutes(_sunRise.Value), DateTimeKind.Local);
+                return DateTime.SpecifyKind(Date.AddMinutes(_sunRise.Value), DateTimeKind.Local);
             }
             set
             {
@@ -217,7 +224,7 @@ namespace Iridium360.Models
                 if (_sunSet == null)
                     return null;
 
-                return DateTime.SpecifyKind(DateDay.AddMinutes(_sunSet.Value), DateTimeKind.Local);
+                return DateTime.SpecifyKind(Date.AddMinutes(_sunSet.Value), DateTimeKind.Local);
             }
             set
             {
@@ -240,13 +247,6 @@ namespace Iridium360.Models
         /// </summary>
         [JsonProperty("moon")]
         public MoonPhase? MoonPhase { get; set; }
-
-        /// <summary>
-        /// Список прогнозов по временным интервалам
-        /// </summary>
-        [JsonProperty("forecasts")]
-        public List<i360Forecast> Forecasts { get; set; }
-
     }
 
 
@@ -290,6 +290,12 @@ namespace Iridium360.Models
         /// </summary>
         [JsonProperty("days")]
         public List<i360DayInfo> DayInfos { get; set; }
+
+        /// <summary>
+        /// Список прогнозов по временным интервалам
+        /// </summary>
+        [JsonProperty("forecasts")]
+        public List<i360Forecast> Forecasts { get; set; }
     }
 
 

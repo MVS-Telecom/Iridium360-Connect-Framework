@@ -30,76 +30,81 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
-            writer.Write((uint)Forecast.TimeOffset + 12, 5); //[-12...14]h часовое пояс
+            writer.Write((uint)Forecast.TimeOffset + 12, 5); //[-12...14]h часовой пояс
 
-            if (Forecast.DayInfos.Count != 4)
-                throw new ArgumentOutOfRangeException("Days != 4");
+            if (Forecast.Forecasts.Count != 16)
+                throw new ArgumentOutOfRangeException("Forecasts != 16");
 
-            if (Forecast.DayInfos.Any(x => x.Forecasts.Count != 4))
-                throw new ArgumentOutOfRangeException("Forecasts != 4");
+            i360Forecast prev = null;
 
-            foreach (var d in Forecast.DayInfos)
+            foreach (var ff in Forecast.Forecasts)
             {
-                writer.Write((uint)d.DateDay.Day, 5);
+                bool sameDay = prev?.Date.Date == ff.Date.Date;
+                prev = ff;
 
-                foreach (var ff in d.Forecasts)
-                {
-                    writer.Write((uint)ff.HourOffset, 5); //[0...24]h час
-                    writer.Write((uint)ff.Temperature + 70, 7);  //[-70...50]C температура
+                ///Дата не изменилась?
+                writer.Write(sameDay);
+
+                ///Если изменилась - сохраняем день от начала месяца
+                if (!sameDay)
+                    writer.Write((uint)ff.Date.Day, 5);
 
 
-                    ///->
+                writer.Write((uint)ff.HourOffset, 5); //[0...24]h час
+                writer.Write((uint)ff.Temperature + 70, 7);  //[-70...50]C температура
 
-                    double? _pressure = ff.Pressure;
+                ///->
 
-                    if (_pressure != null)
-                        _pressure -= 580;
+                double? _pressure = ff.Pressure;
 
-                    writer.Write((uint?)_pressure, 8);  //[0...221] == [580...800]мм рт давление
+                if (_pressure != null)
+                    _pressure -= 580;
 
-                    ///->
+                writer.Write((uint?)_pressure, 8);  //[0...221] == [580...800]мм рт давление
 
-                    int? _cloud = ff.Cloud;
+                ///->
 
-                    if (_cloud != null)
-                        _cloud = (int)Math.Round(_cloud.Value / 15d);
+                int? _cloud = ff.Cloud;
 
-                    writer.Write((uint?)_cloud, 4); //[0...15] == [0...100]% облачность
+                if (_cloud != null)
+                    _cloud = (int)Math.Round(_cloud.Value / 15d);
 
-                    ///->
+                writer.Write((uint?)_cloud, 4); //[0...15] == [0...100]% облачность
 
-                    double? _precipitation = ff.Precipitation;
+                ///->
 
-                    if (_precipitation.Value >= 0.05 && _precipitation.Value <= 0.1)
-                        _precipitation = 1;
-                    else
-                        _precipitation = (int)Math.Round(_precipitation.Value * 4d);
+                double? _precipitation = ff.Precipitation;
 
-                    writer.Write((uint?)_precipitation, 8); //[0...240] == [0...60]мм осадки
+                if (_precipitation.Value >= 0.05 && _precipitation.Value <= 0.1)
+                    _precipitation = 1;
+                else
+                    _precipitation = (int)Math.Round(_precipitation.Value * 4d);
 
-                    ///->
+                writer.Write((uint?)_precipitation, 8); //[0...240] == [0...60]мм осадки
 
-                    int? _windDirection = ff.WindDirection;
+                ///->
 
-                    if (_windDirection != null)
-                        _windDirection = (int)(_windDirection.Value / 45d);
+                int? _windDirection = ff.WindDirection;
 
-                    writer.Write((uint?)_windDirection, 4); //[0...8] == [0...360] направление ветра
+                if (_windDirection != null)
+                    _windDirection = (int)(_windDirection.Value / 45d);
 
-                    ///->
+                writer.Write((uint?)_windDirection, 4); //[0...8] == [0...360] направление ветра
 
-                    double? _windSpeed = ff.WindSpeed;
+                ///->
 
-                    if (_windSpeed != null)
-                        _windSpeed = (int)Math.Round(_windSpeed.Value);
+                double? _windSpeed = ff.WindSpeed;
 
-                    writer.Write((uint?)_windSpeed, 6); //[0...60]м/с скорость ветра
+                if (_windSpeed != null)
+                    _windSpeed = (int)Math.Round(_windSpeed.Value);
 
-                    ///->
-                    writer.Write(ff.SnowRisk);  //[0...1] вероятность снега
-                }
+                writer.Write((uint?)_windSpeed, 6); //[0...60]м/с скорость ветра
 
+                ///->
+                writer.Write(ff.SnowRisk);  //[0...1] вероятность снега
             }
+
+
         }
 
 
@@ -117,86 +122,90 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     Forecast.TimeOffset = (int)reader.ReadUInt(5) - 12;
 
-                    var days = new List<i360DayInfo>();
-                    var dates = new int[4];
 
-                    for (int j = 0; j < 4; j++)
+                    var dates = new int[16];
+                    var forecasts = new List<i360Forecast>();
+
+                    for (int j = 0; j < 16; j++)
                     {
-                        var d = new i360DayInfo();
-
-                        dates[j] = (int)reader.ReadUInt(5);
-
-                        int month = 0;
-
-                        if (j > 0 && dates[j] < dates[j - 1])
-                            month = 1;
-
-                        d.DateDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month + month, dates[j], 0, 0, 0, DateTimeKind.Utc);
-
-
-                        var forecasts = new List<i360Forecast>();
-
-                        for (int k = 0; k < 4; k++)
+                        try
                         {
-                            try
-                            {
-                                var ff = new i360Forecast();
+                            var forecast = new i360Forecast();
 
-                                ff.HourOffset = (int)reader.ReadUInt(5);
-                                ff.Temperature = (int)reader.ReadUInt(7) - 70;
+                            ///->
 
-                                ///->
+                            ///Дата не изменилась?
+                            bool sameDay = reader.ReadBoolean();
 
-                                uint? _pressure = reader.ReadUIntNullable(8);
+                            ///Если изменилась - сохраняем день от начала месяца
+                            if (!sameDay)
+                                dates[j] = (int)reader.ReadUInt(5);
+                            else
+                                dates[j] = dates[j - 1];
 
-                                if (_pressure != null)
-                                    ff.Pressure = (int)_pressure + 580;
 
-                                ///->
+                            int month = 0;
 
-                                uint? _cloud = reader.ReadUIntNullable(4);
+                            if (j > 0 && dates[j] < dates[j - 1])
+                                month = 1;
 
-                                if (_cloud != null)
-                                    ff.Cloud = Math.Min(100, (int)_cloud * 15);
 
-                                ///->
-                                ///
-                                uint? _precipitation = reader.ReadUIntNullable(8);
+                            int hourOffset = (int)reader.ReadUInt(5);
 
-                                if (_precipitation != null)
-                                    ff.Precipitation = _precipitation / 4d;
+                            forecast.Date = new DateTime(DateTime.Now.Year, DateTime.Now.Month + month, dates[j], hourOffset, 0, 0, DateTimeKind.Utc);
 
-                                ///->
+                            ///->
 
-                                uint? _windDirection = reader.ReadUIntNullable(4);
+                            forecast.Temperature = (int)reader.ReadUInt(7) - 70;
 
-                                if (_windDirection != null)
-                                    ff.WindDirection = (int)Math.Round(_windDirection.Value * 45d);
+                            ///->
 
-                                ///-->
+                            uint? _pressure = reader.ReadUIntNullable(8);
 
-                                ff.WindSpeed = reader.ReadUIntNullable(6);
+                            if (_pressure != null)
+                                forecast.Pressure = (int)_pressure + 580;
 
-                                ///->
+                            ///->
 
-                                ff.SnowRisk = reader.ReadBoolean();
+                            uint? _cloud = reader.ReadUIntNullable(4);
 
-                                ///->
+                            if (_cloud != null)
+                                forecast.Cloud = Math.Min(100, (int)_cloud * 15);
 
-                                forecasts.Add(ff);
-                            }
-                            catch (Exception e)
-                            {
-                                Debugger.Break();
-                            }
+                            ///->
+                            ///
+                            uint? _precipitation = reader.ReadUIntNullable(8);
+
+                            if (_precipitation != null)
+                                forecast.Precipitation = _precipitation / 4d;
+
+                            ///->
+
+                            uint? _windDirection = reader.ReadUIntNullable(4);
+
+                            if (_windDirection != null)
+                                forecast.WindDirection = (int)Math.Round(_windDirection.Value * 45d);
+
+                            ///-->
+
+                            forecast.WindSpeed = reader.ReadUIntNullable(6);
+
+                            ///->
+
+                            forecast.SnowRisk = reader.ReadBoolean();
+
+                            ///->
+
+                            forecasts.Add(forecast);
                         }
-
-                        d.Forecasts = forecasts;
-                        days.Add(d);
-
+                        catch (Exception e)
+                        {
+                            Debugger.Break();
+                        }
                     }
 
-                    Forecast.DayInfos = days;
+                    Forecast.DayInfos = forecasts.GroupBy(x => x.Date.Date).Select(x => new i360DayInfo() { Date = x.Key }).ToList();
+                    Forecast.Forecasts = forecasts;
                 }
             }
         }
