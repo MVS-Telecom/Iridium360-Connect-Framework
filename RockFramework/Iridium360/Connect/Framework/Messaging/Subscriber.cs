@@ -85,6 +85,12 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
+        public static Subscriber PORTAL => new Subscriber("iridium360.ru", SubscriberNetwork.Portal);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Number
         {
             get
