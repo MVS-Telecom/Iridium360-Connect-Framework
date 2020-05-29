@@ -18,6 +18,26 @@ namespace Iridium360.Connect.Framework.Messaging
     public class MessageTest
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task Unpack__ANYTest()
+        {
+            try
+            {
+                var buffer = "0104163501288AA2087699F76D0038001018D3046E5A950802BE".ToByteArray();
+                var _message = MessageMO.Unpack(buffer);
+
+                if (_message == null)
+                    Assert.Fail();
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
 
         /// <summary>
         /// 
@@ -38,7 +58,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 var _message = MessageMO.Unpack(buffer) as WeatherMO;
 
-                var __message = MessageMO.Unpack("01050537AD4A04013E".ToByteArray());
+                var __message = MessageMO.Unpack("0104173501288AA2087699F76D001000185EA872809B56258200D9".ToByteArray());
 
                 if (_message == null)
                     Assert.Fail();
@@ -56,7 +76,7 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public async Task Pack__WeatherMTTest()
         {
-            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=12.12345678&lon=-9.12345678&interval=6");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.25390625&interval=6");
             var s = await r.Content.ReadAsStringAsync();
 
 
@@ -128,6 +148,9 @@ namespace Iridium360.Connect.Framework.Messaging
                 var buffer = message.Pack();
                 string hex = buffer.ToHexString();
 
+
+                string b = string.Join("", buffer.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
+
                 //if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
                 //Assert.Fail();
 
@@ -150,7 +173,7 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public void Pack__ChatMessageMOTest2()
         {
-            ChatMessageMO emo = ChatMessageMO.Create(null
+            ChatMessageMO emo = ChatMessageMO.Create(new Subscriber(string.Empty, SubscriberNetwork.Portal)
                     , 123
                     , 56789
                     , null
