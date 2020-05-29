@@ -44,6 +44,13 @@ namespace Rock
     }
 
 
+
+    public enum LocationSource : int
+    {
+        Device = 0,
+        Smartphone = 1
+    }
+
     public class Location
     {
         public float? Accuracy { get; set; }
@@ -53,6 +60,7 @@ namespace Rock
         public float? Speed { get; set; }
         public float? Bearing { get; set; }
         public DateTime? Date { get; set; }
+        public LocationSource? Source { get; set; }
 
         public Location()
         {
