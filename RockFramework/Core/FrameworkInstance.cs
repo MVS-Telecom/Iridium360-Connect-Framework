@@ -82,19 +82,41 @@ namespace Rock
         event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated;
         event EventHandler<MessageReceivedEventArgs> _MessageReceived;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         IDevice ConnectedDevice { get; }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="flags"></param>
+        /// <param name="throwOnError"></param>
+        /// <returns></returns>
         Task<bool> Connect(
             Guid id,
             ConnectFlags flags = ConnectFlags.None,
             bool throwOnError = false);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="flags"></param>
+        /// <param name="throwOnError"></param>
+        /// <returns></returns>
         Task<bool> Connect(
             IBluetoothDevice device,
             ConnectFlags flags = ConnectFlags.None,
             bool throwOnError = false);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Task Disconnect();
 
 
 
@@ -338,6 +360,19 @@ namespace Rock
                 });
             }
         }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task Disconnect()
+        {
+            await bluetooth.DisconnectFromDeviceAsync();
+            await Task.Delay(500);
+        }
+
 
 
         private IBluetoothDevice bluetoothDevice;
