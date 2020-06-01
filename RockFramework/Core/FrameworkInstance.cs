@@ -53,28 +53,6 @@ namespace Rock
     }
 
 
-    [Flags]
-    public enum ConnectFlags : int
-    {
-        None = 0,
-
-        /// <summary>
-        /// Пользователь вручную нажал кнопку "ПОДКЛЮЧИТЬСЯ"
-        /// </summary>
-        UserClicked = 1,
-
-        /// <summary>
-        /// Внутренняя попытка подключиться (например, обновление/сохранение каких-то параметров и т.д.)
-        /// </summary>
-        Internal = 2,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        SkipIfConnecting = 4
-    }
-
-
     public interface IFramework : IDisposable
     {
         event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults;
@@ -96,7 +74,7 @@ namespace Rock
         /// <returns></returns>
         Task<bool> Connect(
             Guid id,
-            ConnectFlags flags = ConnectFlags.None,
+            bool force = true,
             bool throwOnError = false);
 
         /// <summary>
@@ -108,7 +86,7 @@ namespace Rock
         /// <returns></returns>
         Task<bool> Connect(
             IBluetoothDevice device,
-            ConnectFlags flags = ConnectFlags.None,
+            bool force = true,
             bool throwOnError = false);
 
 
@@ -383,7 +361,7 @@ namespace Rock
         /// Повторно подключиться к устройству
         /// </summary>
         /// <returns></returns>
-        public async Task Reconnect(ConnectFlags flags = ConnectFlags.None, bool throwOnError = false)
+        public async Task Reconnect(bool throwOnError = false)
         {
             if (deviceMac == Guid.Empty)
             {
@@ -395,7 +373,6 @@ namespace Rock
 
             await Connect(
                 deviceMac,
-                flags: flags,
                 throwOnError: throwOnError);
         }
 
@@ -405,11 +382,11 @@ namespace Rock
         /// <param name="device"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Connect(IBluetoothDevice device, ConnectFlags context = ConnectFlags.None, bool throwOnError = false)
+        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false)
         {
             return Connect(
                 device.Id,
-                flags: context,
+                force: force,
                 throwOnError: throwOnError);
         }
 
@@ -431,10 +408,10 @@ namespace Rock
         /// </summary>
         /// <param name="deviceMac"></param>
         /// <returns></returns>
-        public async Task<bool> Connect(Guid deviceMac, ConnectFlags flags = ConnectFlags.None, bool throwOnError = false)
+        public async Task<bool> Connect(Guid deviceMac, bool force = true, bool throwOnError = false)
         {
             ///Не ждем завершения попытки подключения
-            if (flags.IsSet(ConnectFlags.SkipIfConnecting) && connectLock.CurrentCount == 0)
+            if (!force && connectLock.CurrentCount == 0)
             {
                 ConsoleLogger.WriteLine("[CONNECT] Skip connecting attempt - already connecting");
                 return true;
@@ -453,7 +430,7 @@ namespace Rock
 
 
                 gatts.Clear();
-                ConnectedDevice.SetState(DeviceState.Connecting, flags);
+                ConnectedDevice.SetState(DeviceState.Connecting);
 
 
                 bluetoothDevice?.Dispose();

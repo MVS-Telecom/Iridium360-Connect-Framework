@@ -28,7 +28,6 @@ namespace Rock
     {
         public IDevice ConnectedDevice { get; set; }
         public DeviceState State { get; set; }
-        public ConnectFlags Flags { get; set; }
 
     }
 
@@ -260,25 +259,20 @@ namespace Rock
 
 
         private DeviceState state = DeviceState.Disconnected;
-        private ConnectFlags flags = ConnectFlags.None;
 
         /// <summary>
         /// Состояние подключения телефона к устройству
         /// </summary>
-        internal void SetState(DeviceState state, ConnectFlags? flags = null)
+        internal void SetState(DeviceState state)
         {
             if (this.state != state)
             {
                 this.state = state;
 
-                if (flags != null)
-                    this.flags = flags.Value;
-
                 ConnectionChanged(this, new DeviceConnectionChangedEventArgs()
                 {
                     ConnectedDevice = this,
-                    State = state,
-                    Flags = this.flags
+                    State = state
                 });
 
 

@@ -25,7 +25,7 @@ namespace Rock.Exceptions
     /// </summary>
     public class DeviceConnectionException : RockException
     {
-        public DeviceConnectionException(string message, Exception innerException) : base(message, innerException) { }
+        public DeviceConnectionException(string message, Exception innerException = null) : base(message, innerException) { }
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ namespace Rock.Exceptions
     /// <summary>
     /// Устройство не разблокировано
     /// </summary>
-    public class DeviceIsLockedException: RockException
+    public class DeviceIsLockedException : RockException
     {
 
     }

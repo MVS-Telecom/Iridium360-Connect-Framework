@@ -134,7 +134,7 @@ namespace Rock.Bluetooth
         /// <summary>
         /// 
         /// </summary>
-        Task<bool> TurnOn();
+        Task<bool> TurnOn(bool force = true);
 
         /// <summary>
         /// Начать поиск
