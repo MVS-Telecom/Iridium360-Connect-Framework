@@ -94,7 +94,7 @@ namespace Rock
         Location Location { get; }
         List<DeviceParameter> Parameters { get; }
         string Firmware { get; }
-        string Hardware { get; }
+        //string Hardware { get; }
         int? Battery { get; }
 
 
