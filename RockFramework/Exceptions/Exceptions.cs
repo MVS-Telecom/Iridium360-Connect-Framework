@@ -25,7 +25,7 @@ namespace Rock.Exceptions
     /// </summary>
     public class DeviceConnectionException : RockException
     {
-        public DeviceConnectionException(string message, Exception innerException = null) : base(message, innerException) { }
+        public DeviceConnectionException(string message = null, Exception innerException = null) : base(message, innerException) { }
     }
 
     /// <summary>
