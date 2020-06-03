@@ -317,6 +317,11 @@ namespace Iridium360.Connect.Framework.Messaging
         ///// </summary>
         //public ushort? Id { get; private set; }
 
+
+        public override string ToString()
+        {
+            return $"{Text} -> {Subscriber}";
+        }
     }
 }
 
