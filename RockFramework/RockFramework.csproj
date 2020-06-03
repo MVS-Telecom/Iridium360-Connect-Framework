@@ -5,13 +5,21 @@
     <RootNamespace>Rock</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>Iridium360.Connect.Framework</PackageId>
-    <Version>0.0.0.1</Version>
+    <Version>0.0.1.1</Version>
     <Authors>MVS Telecom</Authors>
     <Product>Iridium360.Connect</Product>
     <RepositoryUrl>https://github.com/MVS-Telecom/Iridium360-Connect-Framework</RepositoryUrl>
+    <PackageIcon>nuget-logo.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.nuget\nuget-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
