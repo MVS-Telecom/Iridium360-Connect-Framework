@@ -56,10 +56,10 @@ namespace Iridium360.Connect.Framework.Messaging
             for (int i = 0; i < bits; i++)
                 array[i] = ReadBoolean();
 
-            uint[] _array = new uint[1];
+            int[] _array = new int[1];
             array.CopyTo(_array, 0);
 
-            uint value = _array[0];
+            uint value = (uint)_array[0];
 
             Trace();
 
