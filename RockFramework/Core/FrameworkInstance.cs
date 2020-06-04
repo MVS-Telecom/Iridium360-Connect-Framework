@@ -50,6 +50,7 @@ namespace Rock
         string GetString(string key, string defaultValue);
         short GetShort(string key, short defaultValue);
         void PutShort(string key, short value);
+        void Remove(string key);
     }
 
 
@@ -96,6 +97,11 @@ namespace Rock
         /// <returns></returns>
         Task Disconnect();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Task ForgetDevice();
 
 
         /// <summary>
@@ -351,6 +357,16 @@ namespace Rock
             await Task.Delay(500);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task ForgetDevice()
+        {
+            await Disconnect();
+            storage.Remove("device-pin");
+        }
 
 
         private IBluetoothDevice bluetoothDevice;
