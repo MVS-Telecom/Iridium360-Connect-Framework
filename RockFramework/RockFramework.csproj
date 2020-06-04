@@ -5,7 +5,7 @@
     <RootNamespace>Rock</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>Iridium360.Connect.Framework</PackageId>
-    <Version>0.0.1.2</Version>
+    <Version>0.0.1.3</Version>
     <Authors>MVS Telecom</Authors>
     <Product>Iridium360.Connect</Product>
     <RepositoryUrl>https://github.com/MVS-Telecom/Iridium360-Connect-Framework</RepositoryUrl>
