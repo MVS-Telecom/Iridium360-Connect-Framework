@@ -12,6 +12,8 @@ namespace Iridium360.Connect.Framework.Messaging
         private static Dictionary<MessageType, System.Type> knownMOTypes = new Dictionary<MessageType, System.Type>();
         private static Dictionary<MessageType, System.Type> knownMTTypes = new Dictionary<MessageType, System.Type>();
 
+        private const byte SIGNATURE = 0x12;
+
         protected Message()
         {
         }
@@ -40,6 +42,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 using (BinaryBitWriter writer2 = new BinaryBitWriter((Stream)stream2))
                 {
+                    writer2.Write(SIGNATURE);
                     writer2.Write((bool)(this.Direction == Iridium360.Connect.Framework.Messaging.Direction.MO));
                     writer2.Write((bool)(this.Composite == Iridium360.Connect.Framework.Messaging.Composite.Complex));
                     writer2.Write(false);
@@ -98,14 +101,17 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
                 {
+                    if (reader.ReadByte() != SIGNATURE)
+                        throw new FormatException("Invalid signature!");
+
                     var direction = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Direction.MO : Iridium360.Connect.Framework.Messaging.Direction.MT;
                     var composite = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Composite.Complex : Iridium360.Connect.Framework.Messaging.Composite.Simple;
                     bool flag = reader.ReadBoolean();
                     flag = reader.ReadBoolean();
                     flag = reader.ReadBoolean();
 
-                    var count = ((0 + (reader.ReadBoolean() ? ((ushort)0x400) : ((ushort)0)))
-                        + (reader.ReadBoolean() ? ((ushort)0x200) : ((ushort)0)))
+                    var count = (0 + (reader.ReadBoolean() ? ((ushort)0x400) : ((ushort)0)))
+                        + (reader.ReadBoolean() ? ((ushort)0x200) : ((ushort)0))
                         + (reader.ReadBoolean() ? ((ushort)0x100) : ((ushort)0));
 
                     int parts = 0;
