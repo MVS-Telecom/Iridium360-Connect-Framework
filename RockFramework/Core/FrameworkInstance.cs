@@ -1664,11 +1664,7 @@ namespace Rock
                 var buffer = new ByteBuffer(data);
                 int? battery = buffer.ReadInt32();
 
-                ///HACK: RockFLEET всегда возвращает 0. В нативном приложении батарейка для него вообще не отображается
-                if (battery == 0)
-                    battery = null;
-
-                ConnectedDevice.Battery = battery;
+                ConnectedDevice.Battery = (uint?)battery;
             }
             catch (Exception e)
             {

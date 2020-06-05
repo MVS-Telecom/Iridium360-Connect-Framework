@@ -21,7 +21,7 @@ namespace Rock
 
     public class BatteryUpdatedEventArgs : EventArgs
     {
-        public int? Value { get; set; }
+        public uint? Value { get; set; }
     }
 
     public class DeviceConnectionChangedEventArgs : EventArgs
@@ -94,7 +94,7 @@ namespace Rock
         List<DeviceParameter> Parameters { get; }
         string Firmware { get; }
         //string Hardware { get; }
-        int? Battery { get; }
+        uint? Battery { get; }
 
 
         DeviceState State { get; }
@@ -189,12 +189,12 @@ namespace Rock
         public List<DeviceParameter> Parameters { get; private set; } = new List<DeviceParameter>();
 
 
-        private int? battery;
+        private uint? battery;
 
         /// <summary>
         /// Заряд батарейки
         /// </summary>
-        public int? Battery
+        public uint? Battery
         {
             get
             {
@@ -202,6 +202,10 @@ namespace Rock
             }
             internal set
             {
+                ///HACK: RockFLEET всегда возвращает 0. В нативном приложении батарейка для него вообще не отображается
+                if (value == 0)
+                    value = null;
+
                 if (battery != value)
                 {
                     battery = value;
