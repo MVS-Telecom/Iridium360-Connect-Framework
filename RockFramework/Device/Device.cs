@@ -659,7 +659,7 @@ namespace Rock
                 throw new NullReferenceException($"Unknown device parameter `{parameterId}`");
 
             if (!parameter.IsAvailable)
-                throw new InvalidOperationException($"Parameter `{parameterId}` is not available");
+                throw new ParameterUnavailableException(parameterId);
 
             await this.Rock.ReadDeviceParameter(parameter.GattId, checkSuccess: true);
 

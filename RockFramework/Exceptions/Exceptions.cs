@@ -21,6 +21,14 @@ namespace Rock.Exceptions
 
 
     /// <summary>
+    /// Параметр не доступен (не поддерживается устройством или фреймворк еще не понял о его существовании - нужно повторить через пару секунд)
+    /// </summary>
+    public class ParameterUnavailableException : RockException
+    {
+        public ParameterUnavailableException(Parameter parameter, Exception innerException = null) : base($"Parameter `{parameter}` unavailable (unsupported or not ready)", innerException) { }
+    }
+
+    /// <summary>
     /// Не удалось подключиться к устройству
     /// </summary>
     public class DeviceConnectionException : RockException
