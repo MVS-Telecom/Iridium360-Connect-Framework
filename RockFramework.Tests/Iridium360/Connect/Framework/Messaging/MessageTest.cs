@@ -11,12 +11,38 @@ using Rock.Helpers;
 using Iridium360.Models;
 using Rock;
 using System.Text;
+using System.IO;
+using Iridium360.Connect.Framework.Messaging.Legacy;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
+    
+
+
     [TestClass]
     public class MessageTest
     {
+        [TestMethod]
+        public void PackLegacy()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            try
+            {
+                var buffer = new InMemoryBuffer();
+
+                //var bytes = "118B26010037393939393734303536323A46524F4D373939393937343035363228382E362E32302D31303A33352855544329293A20CFF0E8E2E5F2".ToByteArray();
+                var bytes1 = "118B300201206C6F6E6720492068617665206120676F6F64206964656120666F7220757320746F2067657420746F676574686572207769746820796F7520616E64207468652066616D696C792061726520646F696E672077656C6C20616E64207468617420796F752068617665206120776F6E64657266756C204368726973746D6173".ToByteArray();
+                var bytes2 = "118B30020037393939393734303536323A46524F4D373939393937343035363228382E362E32302D31323A31372855544329293A204B6964732061726520676F696E6720746F206861766520616E79206D6F726520706963747572657320686F77206C6F6E6720492068617665206120676F6F64206964656120666F7220757320746F2067657420746F676574686572207769746820796F7520616E64207468652066616D696C792061726520646F696E672077656C6C20616E64207468617420796F752068617665206120776F6E64657266756C204368726973746D6173204B6964732061726520676F696E6720746F206861766520616E79206D6F726520706963747572657320686F77".ToByteArray();
+
+                var m1 = Legacy_MessageMT.Unpack(buffer, bytes1);
+                var m2 = Legacy_MessageMT.Unpack(buffer, bytes2);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
 
         /// <summary>
         /// 
@@ -27,7 +53,7 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             try
             {
-                var buffer = "0104163501288AA2087699F76D0038001018D3046E5A950802BE".ToByteArray();
+                var buffer = "1201050537AD4A060152".ToByteArray();
                 var _message = MessageMO.Unpack(buffer);
 
                 if (_message == null)
@@ -76,7 +102,7 @@ namespace Iridium360.Connect.Framework.Messaging
         [TestMethod]
         public async Task Pack__WeatherMTTest()
         {
-            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.25390625&interval=6");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.255859375&interval=6");
             var s = await r.Content.ReadAsStringAsync();
 
 

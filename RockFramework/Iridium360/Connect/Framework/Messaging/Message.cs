@@ -14,6 +14,18 @@ namespace Iridium360.Connect.Framework.Messaging
 
         private const byte SIGNATURE = 0x12;
 
+
+        public static bool CheckSignature(byte[] bytes)
+        {
+            return CheckSignature(bytes[0]);
+        }
+
+        public static bool CheckSignature(byte _byte)
+        {
+            return _byte != SIGNATURE;
+        }
+
+
         protected Message()
         {
         }
@@ -101,7 +113,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
                 {
-                    if (reader.ReadByte() != SIGNATURE)
+                    if (!CheckSignature(reader.ReadByte()))
                         throw new FormatException("Invalid signature!");
 
                     var direction = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Direction.MO : Iridium360.Connect.Framework.Messaging.Direction.MT;
