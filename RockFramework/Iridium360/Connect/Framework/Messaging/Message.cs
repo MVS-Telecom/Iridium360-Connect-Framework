@@ -22,7 +22,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         public static bool CheckSignature(byte _byte)
         {
-            return _byte != SIGNATURE;
+            return _byte == SIGNATURE;
         }
 
 
