@@ -143,7 +143,7 @@ namespace Iridium360
             catch (HttpRequestException)
             {
                 ///Устройство не найдено или ошибка на сервере
-                if (result.HttpResponse.StatusCode == HttpStatusCode.NotFound || result.HttpResponse.StatusCode == HttpStatusCode.InternalServerError)
+                if (result.HttpResponse?.StatusCode == HttpStatusCode.NotFound || result.HttpResponse?.StatusCode == HttpStatusCode.InternalServerError)
                 {
                     return new i360DeviceStatus();
                 }
