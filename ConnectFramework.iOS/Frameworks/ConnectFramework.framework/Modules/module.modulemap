@@ -1,0 +1,6 @@
+framework module ConnectFramework {
+  umbrella header "ConnectFramework.h"
+
+  export *
+  module * { export * }
+}

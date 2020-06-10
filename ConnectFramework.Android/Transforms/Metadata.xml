@@ -1,0 +1,21 @@
+﻿<metadata>
+  <!--
+  This sample removes the class: android.support.v4.content.AsyncTaskLoader.LoadTask:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='AsyncTaskLoader.LoadTask']" />
+  
+  This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
+  -->
+  <!--<attr path="/api/package[@name='com.example.testandroidlib']/class[@name='MyClass']/method[@name='getNumberTen']" name="propertyName"></attr>
+  <attr path="class[@name='BasicFixedMonthChronology']" name="visibility">public</attr>-->
+  <!--<attr path="/api/package[@name='org.joda.time.chrono']/class[@name='BasicFixedMonthChronology']" name="visibility">public</attr>-->
+  <remove-node path="/api/package[@name='org.joda.time.convert']" />
+  <remove-node path="/api/package[@name='org.joda.time.field']" />
+  <remove-node path="/api/package[@name='org.joda.time.format']" />
+  <remove-node path="/api/package[@name='org.joda.time.tz']" />
+  <remove-node path="/api/package[@name='org.joda.time']" />
+
+  <remove-node path="/api/package[@name='uk.rock7.connect.firmware']/class[@name='FirmwareCacheRecord']" />
+  <remove-node path="/api/package[@name='uk.rock7.connect']/class[@name='DeviceLogIndex']" />
+  
+</metadata>
