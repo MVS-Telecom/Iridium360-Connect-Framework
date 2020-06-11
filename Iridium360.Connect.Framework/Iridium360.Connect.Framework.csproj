@@ -69,7 +69,6 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
@@ -81,7 +80,7 @@
 	<ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) and ('$(Platform)' == 'iPhone' or '$(Configuration)' == 'Release') ">
 	<ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj" />
   </ItemGroup>
   
