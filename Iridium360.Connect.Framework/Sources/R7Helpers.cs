@@ -116,7 +116,7 @@ namespace ConnectFramework.Shared
     /// <summary>
     /// 
     /// </summary>
-    public class R : R7DeviceResponseDelegate
+    internal class R : R7DeviceResponseDelegate
     {
         private R7ConnectFramework framework;
 
@@ -184,7 +184,7 @@ namespace ConnectFramework.Shared
 
 
 
-    public class M : R7DeviceMessagingDelegate
+    internal class M : R7DeviceMessagingDelegate
     {
         private R7ConnectFramework framework;
 
@@ -219,7 +219,7 @@ namespace ConnectFramework.Shared
         }
     }
 
-    public class D : R7DeviceDiscoveryDelegate
+    internal class D : R7DeviceDiscoveryDelegate
     {
         private R7ConnectFramework framework;
 

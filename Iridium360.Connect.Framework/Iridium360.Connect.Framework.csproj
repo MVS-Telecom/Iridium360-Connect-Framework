@@ -57,13 +57,13 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net45'))">
     <DefineConstants>$(DefineConstants);NETSTANDARD;PORTABLE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) and '$(Platform)' == 'iPhone'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone'">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;IPHONE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) and '$(Platform)' == 'iPhoneSimulator'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhoneSimulator'">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;SIMULATOR</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('MonoAndroid10'))">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
   </PropertyGroup>
 
@@ -76,29 +76,21 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="**\*.shared.cs" />
-  </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
   </ItemGroup>
   
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
 	<ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) and '$(Platform)' == 'iPhone' ">
-	<ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.iOS.csproj" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone' ">
+	<ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-	<Compile Include="Sources\**\*.cs" />
+	  <Compile Include="Sources\**\*.cs" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Remove="Sources\ConnectFramework.cs" />
-  </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
