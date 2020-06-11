@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>netstandard2.1;Xamarin.iOS10;MonoAndroid10.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;xamarin.ios10;monoandroid10.0;</TargetFrameworks>
 	
 	
     <!--Feel free to add as many targets as you need below
@@ -57,17 +57,15 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net45'))">
     <DefineConstants>$(DefineConstants);NETSTANDARD;PORTABLE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) and '$(Platform)' == 'iPhone'">
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;IPHONE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) and '$(Platform)' == 'iPhoneSimulator'">
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;SIMULATOR</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('MonoAndroid10'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
   </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(Platform)' == 'iPhone' ">
-    <DefineConstants>$(DefineConstants);IPHONE</DefineConstants>
-  </PropertyGroup>
-  
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
     <DebugSymbols>true</DebugSymbols>
