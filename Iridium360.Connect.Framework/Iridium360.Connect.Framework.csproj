@@ -56,15 +56,12 @@
   
   <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone'">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;IPHONE</DefineConstants>
-    <SetTargetFramework>TargetFramework=xamarin.ios10</SetTargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhoneSimulator'">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;SIMULATOR</DefineConstants>
-    <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-    <SetTargetFramework>TargetFramework=monoandroid10.0</SetTargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
