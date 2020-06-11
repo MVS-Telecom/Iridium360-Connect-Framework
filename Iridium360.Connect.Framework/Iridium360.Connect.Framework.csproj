@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>netstandard2.1;xamarin.ios10;monoandroid10.0;</TargetFrameworks>
+    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
 	
 	
     <!--Feel free to add as many targets as you need below
@@ -54,17 +54,17 @@
   </PropertyGroup>
   
   
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net45'))">
-    <DefineConstants>$(DefineConstants);NETSTANDARD;PORTABLE</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone'">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;IPHONE</DefineConstants>
+    <SetTargetFramework>TargetFramework=xamarin.ios10</SetTargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhoneSimulator'">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;SIMULATOR</DefineConstants>
+    <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
+    <SetTargetFramework>TargetFramework=monoandroid10.0</SetTargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
@@ -72,6 +72,7 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
