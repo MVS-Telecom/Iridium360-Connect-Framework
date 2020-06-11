@@ -96,6 +96,10 @@
   
   <ItemGroup>
     <None Remove="ConnectFramework.cs" />
+    <None Include="..\.nuget\nuget-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   
   <ItemGroup>
