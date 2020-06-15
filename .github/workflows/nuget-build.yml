@@ -18,7 +18,7 @@ jobs:
       # Publish
       - name: publish on version change
         id: publish_nuget
-        uses: mvs-telecom/publish-nuget@test
+        uses: mvs-telecom/publish-nuget@test2
         with:
           # Use `msbuild` instead of `dotnet`
           USE_MSBUILD: true
