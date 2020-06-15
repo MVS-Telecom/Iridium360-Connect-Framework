@@ -4,7 +4,11 @@
 
     <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
 	
-	
+	<!--
+		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
+	-->
+	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+
     <!--Feel free to add as many targets as you need below
     netstandard1.0;netstandard2.0;MonoAndroid90;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.WatchOS10;Xamarin.Mac20;Tizen40
     For UWP update the version number with a version number you have installed.
@@ -75,15 +79,7 @@
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
   </ItemGroup>
-  
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-	<ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj" />
-  </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) and ('$(Platform)' == 'iPhone' or '$(Configuration)' == 'Release') ">
-	<ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj" />
-  </ItemGroup>
-  
   <ItemGroup>
 	  <Compile Include="Sources\**\*.cs" />
   </ItemGroup>
@@ -104,5 +100,41 @@
   <ItemGroup>
     <Compile Include="ConnectFramework.cs" />
   </ItemGroup>
-
+  
+  <!--
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
+    <Reference Include="ConnectFramework.iOS">
+      <HintPath>Binding\ConnectFramework.iOS.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
+    <Reference Include="ConnectFramework.Android">
+      <HintPath>Binding\ConnectFramework.Android.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  -->
+  
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
+    <ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj" >
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
+	</ProjectReference>
+  </ItemGroup>
+  
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
+    <ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
+	</ProjectReference>	
+  </ItemGroup>
+  
+  
+	
+	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
+		</ItemGroup>
+	</Target>
+  
 </Project>
