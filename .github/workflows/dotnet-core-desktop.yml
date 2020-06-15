@@ -25,6 +25,6 @@ jobs:
     #  run: msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
     
     - name: Build
-      run: dotnet build Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
+      run: dotnet msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
       
     
