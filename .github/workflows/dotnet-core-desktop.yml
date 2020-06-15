@@ -22,7 +22,7 @@ jobs:
       run: nuget restore Iridium360.Connect.Framework.sln
       
     - name: MSBuild
-      run: msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
+      run: msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj /p:Configuration=Release
     
     #- name: Build
     #  run: dotnet build -c Release Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
