@@ -118,7 +118,7 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
     <ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj" >
 		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
+		<IncludeAssets>ConnectFramework.Android.dll</IncludeAssets>
 	</ProjectReference>
   </ItemGroup>
   
