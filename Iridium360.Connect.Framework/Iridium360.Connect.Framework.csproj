@@ -1,140 +1,175 @@
-<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-
-    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
-	
-	<!--
-		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
-	-->
-	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-
-    <!--Feel free to add as many targets as you need below
-    netstandard1.0;netstandard2.0;MonoAndroid90;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.WatchOS10;Xamarin.Mac20;Tizen40
-    For UWP update the version number with a version number you have installed.
-    -->
-    <AssemblyName>Iridium360.Connect.Framework</AssemblyName>
-    <RootNamespace>Iridium360.Connect.Framework</RootNamespace>
-    <PackageId>Iridium360.Connect.Framework</PackageId>
-    
-    <Product>Iridium360.Connect</Product>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-    <Version>0.0.1.4</Version>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
-    <DefineConstants>$(DefineConstants);</DefineConstants>
-    
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-
-    <LangVersion>latest</LangVersion>
-    <DebugType>portable</DebugType>
-    
-    <!--TODO: Fill these in-->
-    <PackageLicenseUrl>LINK TO LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://iridium360.ru</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/MVS-Telecom/Iridium360-Connect-Framework</RepositoryUrl>
-    <PackageReleaseNotes>RELEASE NOTES</PackageReleaseNotes>
-    <PackageIconUrl></PackageIconUrl>
-    <PackageTags></PackageTags>
-    
-    <Title>Iridium360.Connect.Framework</Title>
-    <Summary>Iridium360 Connect framework</Summary>
-    <Description></Description>
-    
-    
-    <Owners>MVS Telecom</Owners>
-    <Authors>MVS Telecom</Authors>
-    <Copyright></Copyright>
-
-    <!--When built in 2019 will remove extra references on pack-->
-    <DisableExtraReferences>true</DisableExtraReferences>
-    <Company>MVS Telecom</Company>
-    <PackageIcon>nuget-logo.png</PackageIcon>
-    
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-  
-  
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone'">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;IPHONE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhoneSimulator'">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;SIMULATOR</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
-    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-  </ItemGroup>
 
   <ItemGroup>
-	  <Compile Include="Sources\**\*.cs" />
+    <Compile Update="Sources\Bluetooth\Bluetooth.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\AcknowledgeMessageStatusCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\ActionCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\AlertCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\BaseCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\DeleteMessageCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\GetNextMessageCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\MessageChunk.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\PinCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Commands\SendMessageCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\BaseRunnable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\BinaryHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\ByteBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\CommandRunnable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\FrameworkInstance.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\IncomingBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\LocationParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Core\Queue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Device\Device.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Device\DeviceAccessory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Device\DeviceAccessoryParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Device\DeviceHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Device\DeviceParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Device\Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Exceptions\Exceptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Helpers\ArrayHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Helpers\ChecksumHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\BinaryBitReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\BinaryBitWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\ChatMessageMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Composite.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Direction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\EmptyMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\FreeTextMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Legacy\Legacy_MessageMT.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Message.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageMT.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageWithLocation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\PayloadMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\PingMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Subscriber.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\WeatherMO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\WeatherMT.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\i360ApiClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Models\i360DeviceStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Iridium360\Models\i360Weather.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Threading\ThreadWorker.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Util\EnumExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Util\Logger.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Sources\Util\Md5.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ConnectFramework.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="Sources\" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <None Remove="ConnectFramework.cs" />
-    <None Include="..\.nuget\nuget-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Include="ConnectFramework.cs" />
-  </ItemGroup>
-  
-  <!--
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
-    <Reference Include="ConnectFramework.iOS">
-      <HintPath>Binding\ConnectFramework.iOS.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-    <Reference Include="ConnectFramework.Android">
-      <HintPath>Binding\ConnectFramework.Android.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  -->
-  
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
-    <ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj" >
-		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-		<IncludeAssets>ConnectFramework.Android.dll</IncludeAssets>
-	</ProjectReference>
-  </ItemGroup>
-  
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
-    <ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj">
-		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
-	</ProjectReference>	
-  </ItemGroup>
-  
-  
-	
-	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-		<ItemGroup>
-			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
-		</ItemGroup>
-	</Target>
-  
 </Project>

@@ -1,0 +1,135 @@
+<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+
+  <PropertyGroup>
+
+    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
+	
+	<!--
+		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
+	-->
+	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+
+    <!--Feel free to add as many targets as you need below
+    netstandard1.0;netstandard2.0;MonoAndroid90;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.WatchOS10;Xamarin.Mac20;Tizen40
+    For UWP update the version number with a version number you have installed.
+    -->
+    <AssemblyName>Iridium360.Connect.Framework</AssemblyName>
+    <RootNamespace>Iridium360.Connect.Framework</RootNamespace>
+    <PackageId>Iridium360.Connect.Framework</PackageId>
+    
+    <Product>Iridium360.Connect</Product>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+    <Version>0.0.1.4</Version>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+    
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    
+    <!--TODO: Fill these in-->
+    <PackageLicenseUrl>LINK TO LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://iridium360.ru</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MVS-Telecom/Iridium360-Connect-Framework</RepositoryUrl>
+    <PackageReleaseNotes>RELEASE NOTES</PackageReleaseNotes>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageTags></PackageTags>
+    
+    <Title>Iridium360.Connect.Framework</Title>
+    <Summary>Iridium360 Connect framework</Summary>
+    <Description></Description>
+    
+    
+    <Owners>MVS Telecom</Owners>
+    <Authors>MVS Telecom</Authors>
+    <Copyright></Copyright>
+
+    <!--When built in 2019 will remove extra references on pack-->
+    <DisableExtraReferences>true</DisableExtraReferences>
+    <Company>MVS Telecom</Company>
+    <PackageIcon>nuget-logo.png</PackageIcon>
+    
+  </PropertyGroup>
+  
+  
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhone'">
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;IPHONE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios')) and '$(Platform)' == 'iPhoneSimulator'">
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS;SIMULATOR</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
+    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <IntermediateOutputPath>obj\Debug</IntermediateOutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType></DebugType>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants></DefineConstants>
+    <NoWarn></NoWarn>
+    <LangVersion>Default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <IntermediateOutputPath>obj\Release</IntermediateOutputPath>
+    <DebugType></DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <DocumentationFile></DocumentationFile>
+    <NoWarn></NoWarn>
+    <LangVersion>Default</LangVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\.nuget\nuget-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
+    <ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
+	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
+    <ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
+	</ProjectReference>	
+  </ItemGroup>
+
+
+	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
+  
+</Project>
