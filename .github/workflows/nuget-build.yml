@@ -20,7 +20,7 @@ jobs:
         uses: mvs-telecom/publish-nuget@test8
         with:
           # Use `msbuild` instead of `dotnet`
-          USE_MSBUILD: false
+          USE_MSBUILD: true
           
           # Filepath of the project to be packaged, relative to root of repository
           PROJECT_FILE_PATH: Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
