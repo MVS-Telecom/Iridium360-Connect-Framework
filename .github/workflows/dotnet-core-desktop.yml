@@ -54,5 +54,10 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.0
 
+    - name: Nuget restore
+      run: nuget restore Iridium360.Connect.Framework.Nuget.csproj
+      
     - name: MSBuild
       run: msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj
+      
+    
