@@ -527,11 +527,63 @@ namespace ConnectFramework.Shared
             await Reconnect(throwOnError: true);
             //await Unlock();
 
+            MessageStatusUpdatedEventArgs args = null;
+
+            const int attempts = 2;
+
+            for (int i = 1; i <= attempts; i++)
+            {
+                AutoResetEvent r = new AutoResetEvent(false);
+
+                await Task.Run(() =>
+                {
+                    var handler = new EventHandler<MessageStatusUpdatedEventArgs>((s, e) =>
+                    {
+                        if (e.MessageId == messageId)
+                        {
+                            args = e;
+                            r.Set();
+                        }
+                    });
+
+                    try
+                    {
+                        _MessageStatusUpdated += handler;
+
 #if ANDROID
-            comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
+                        comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
 #elif IOS
-            comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
+                        comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
 #endif
+
+                        r.WaitOne(TimeSpan.FromMinutes(15));
+
+                    }
+                    finally
+                    {
+                        _MessageStatusUpdated -= handler;
+                    }
+                });
+
+
+                ///Success
+                if (args?.Status == MessageStatus.ReceivedByDevice)
+                    return;
+
+
+                if (args == null)
+                    throw new MessageSendingException($"Message Id={messageId} transfer to device timeout");
+
+                if (args.Status == MessageStatus.ErrorToolong)
+                    throw new MessageSendingException($"Message Id={messageId} is too long");
+
+                if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
+                    throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
+
+                await Task.Delay(1000);
+
+            }
+
         }
 
 

@@ -4,7 +4,11 @@ using System.Text;
 
 namespace Rock.Exceptions
 {
-    public class RockException : Exception
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class RockException : Exception
     {
         public RockException(string message, Exception innerException) : base(message, innerException) { }
         public RockException(string message) : base(message) { }
@@ -12,6 +16,9 @@ namespace Rock.Exceptions
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class MessageSendingException : RockException
     {
         public MessageSendingException(string message, Exception innerException) : base(message, innerException) { }
