@@ -864,7 +864,10 @@ namespace ConnectFramework.Shared
 #if ANDROID
         public void CreditBalanceUpdated(int p0)
         {
-            throw new NotImplementedException();
+            Safety(() =>
+            {
+                logger.Log($"[R7] Credit balance updated = {p0}");
+            });
         }
 #endif
 
