@@ -161,9 +161,6 @@
     <Compile Update="Sources\Util\Md5.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="ConnectFramework.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sources\" />
