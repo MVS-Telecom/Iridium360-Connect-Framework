@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;</TargetFrameworks>
+    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;net48</TargetFrameworks>
 	
 	<!--
 		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
@@ -18,10 +18,10 @@
     <PackageId>Iridium360.Connect.Framework</PackageId>
     
     <Product>Iridium360.Connect</Product>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-    <Version>0.0.1.4</Version>
-    <PackageVersion>1.0.0.0</PackageVersion>
+    <AssemblyVersion>0.0.1.5</AssemblyVersion>
+    <AssemblyFileVersion>0.0.1.5</AssemblyFileVersion>
+    <Version>0.0.1.5</Version>
+    <PackageVersion>0.0.1.5</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -37,7 +37,7 @@
     <PackageLicenseUrl>LINK TO LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://iridium360.ru</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MVS-Telecom/Iridium360-Connect-Framework</RepositoryUrl>
-    <PackageReleaseNotes>RELEASE NOTES</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageIconUrl></PackageIconUrl>
     <PackageTags></PackageTags>
     
