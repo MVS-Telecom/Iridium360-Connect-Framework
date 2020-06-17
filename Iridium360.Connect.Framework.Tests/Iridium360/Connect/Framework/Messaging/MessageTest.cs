@@ -200,7 +200,6 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                 ChatMessageMO emo = ChatMessageMO.Create(new Subscriber(string.Empty, SubscriberNetwork.Portal)
                         , 123
                         , 56789
-                        , null
                         , "The markdown document123!@"
                         , 32.8192159, -56.1295223, null
                         );
@@ -261,7 +260,6 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                     , (ushort)(i * i)
                     , i
                     , (string)new string('t', i)
-                    , (string)new string('s', i)
                     );
                 var emo2 = (ChatMessageMO)MessageMO.Unpack(emo.Pack());
                 if (emo.Subscriber != emo2.Subscriber)
