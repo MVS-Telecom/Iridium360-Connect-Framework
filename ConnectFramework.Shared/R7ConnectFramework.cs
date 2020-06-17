@@ -229,68 +229,95 @@ namespace ConnectFramework.Shared
 
                 try
                 {
-#if DEBUG && ANDROID
-                    bool a = comms.IsUnlocked().BooleanValue();
-                    bool b = device.LockStatus == LockState.Unlocked;
+                    const int attempts = 2;
 
-                    if (a != b)
-                        Debugger.Break();
+                    for (int i = 1; i <= attempts; i++)
+                    {
+                        try
+                        {
+#if DEBUG && ANDROID
+                            bool a = comms.IsUnlocked().BooleanValue();
+                            bool b = device.LockStatus == LockState.Unlocked;
+
+                            if (a != b)
+                                Debugger.Break();
 #endif
 
-                    if (ConnectedDevice.LockStatus == LockState.Unlocked)
-                        return;
+                            if (ConnectedDevice.LockStatus == LockState.Unlocked)
+                                return;
 
-                    if (pin == null)
-                        pin = storage.GetShort("r7-device-pin", 1234);
+                            if (pin == null)
+                                pin = storage.GetShort("r7-device-pin", 1234);
 
-                    logger.Log($"[R7] Unlocking with `{pin}`");
+                            logger.Log($"[R7] Unlocking with `{pin}`");
 
-                    AutoResetEvent r = new AutoResetEvent(false);
 
-                    EventHandler<LockStatusUpdatedEventArgs> handler = (s, e) =>
-                    {
-                        r.Set();
-                    };
+                            AutoResetEvent r = new AutoResetEvent(false);
+                            bool _event = false;
 
-                    try
-                    {
-                        ConnectedDevice.DeviceLockStatusUpdated += handler;
+                            EventHandler<LockStatusUpdatedEventArgs> handler = (s, e) =>
+                            {
+                                _event = true;
+                                r.Set();
+                            };
 
-                        await Reconnect(throwOnError: true);
+                            try
+                            {
+                                ConnectedDevice.DeviceLockStatusUpdated += handler;
+
+                                await Reconnect(throwOnError: true);
 
 #if ANDROID
-                        comms.Unlock(pin.Value);
+                                comms.Unlock(pin.Value);
 #elif IOS
-                        comms.Unlock((nuint)pin);
+                                comms.Unlock((nuint)pin);
 #endif
 
-                        r.WaitOne(TimeSpan.FromSeconds(20));
+                                r.WaitOne(TimeSpan.FromSeconds(20));
 
 
-                        if (ConnectedDevice.IncorrectPin == true)
-                            throw new IncorrectPinException();
+                                if (ConnectedDevice.IncorrectPin == true)
+                                    throw new IncorrectPinException();
 
-                        if (ConnectedDevice.LockStatus != LockState.Unlocked)
-                            throw new DeviceIsLockedException();
+                                if (ConnectedDevice.LockStatus != LockState.Unlocked)
+                                    throw new DeviceIsLockedException();
 
-                        storage.PutShort("r7-device-pin", pin.Value);
-                        logger.Log("[R7] Unlock success");
+                                storage.PutShort("r7-device-pin", pin.Value);
+                                logger.Log("[R7] Unlock success");
+                            }
+                            finally
+                            {
+                                ConnectedDevice.DeviceLockStatusUpdated -= handler;
+                            }
+                        }
+                        catch (DeviceIsLockedException lockedException)
+                        {
+                            Debugger.Break();
+
+                            ///Делаем повторную попытку - ЭТО ВАЖНО
+                            if (i + 1 > attempts)
+                            {
+                                logger.Log("[R7] Unlock error");
+                                throw lockedException;
+                            }
+                            else
+                            {
+                                logger.Log("[R7] Unlock error - new attempt");
+                                await Task.Delay(1000);
+                            }
+
+                        }
+                        catch (Exception e)
+                        {
+                            Debugger.Break();
+                            logger.Log("[R7] Unlock error");
+                            throw e;
+                        }
                     }
-                    finally
-                    {
-                        ConnectedDevice.DeviceLockStatusUpdated -= handler;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debugger.Break();
-                    logger.Log("[R7] Unlock error");
-                    throw e;
                 }
                 finally
                 {
                     unlockLocker.Release();
-
                 }
 
             });
