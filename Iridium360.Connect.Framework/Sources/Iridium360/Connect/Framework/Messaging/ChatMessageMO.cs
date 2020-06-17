@@ -174,10 +174,9 @@ namespace Iridium360.Connect.Framework.Messaging
             ushort? id,
             ushort? conversation,
             string text,
-            string subject = null,
             double? lat = null,
             double? lon = null,
-            uint? alt = null)
+            int? alt = null)
         {
             if (to == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
@@ -187,7 +186,7 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Subscriber = to;
             emo1.Conversation = conversation;
             emo1.Text = text;
-            emo1.Subject = subject;
+            emo1.Subject = null;
             emo1.Lat = lat;
             emo1.Lon = lon;
             emo1.Alt = alt;
