@@ -594,8 +594,10 @@ namespace ConnectFramework.Shared
         {
             Safety(async () =>
             {
+#if IOS
                 await Enable();
                 await Task.Delay(500);
+#endif
                 comms.StartDiscovery();
             });
         }
