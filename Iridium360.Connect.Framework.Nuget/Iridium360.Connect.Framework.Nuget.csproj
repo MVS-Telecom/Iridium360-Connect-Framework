@@ -18,10 +18,10 @@
     <PackageId>Iridium360.Connect.Framework</PackageId>
     
     <Product>Iridium360.Connect</Product>
-    <AssemblyVersion>0.0.1.5</AssemblyVersion>
-    <AssemblyFileVersion>0.0.1.5</AssemblyFileVersion>
-    <Version>0.0.1.5</Version>
-    <PackageVersion>0.0.1.5</PackageVersion>
+    <AssemblyVersion>0.0.1.6</AssemblyVersion>
+    <AssemblyFileVersion>0.0.1.6</AssemblyFileVersion>
+    <Version>0.0.1.6</Version>
+    <PackageVersion>0.0.1.6</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -123,6 +123,10 @@
 		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
 		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
 	</ProjectReference>	
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Iridium360.Connect.Framework\Iridium360.Connect.Framework.csproj" />
   </ItemGroup>
 
 
