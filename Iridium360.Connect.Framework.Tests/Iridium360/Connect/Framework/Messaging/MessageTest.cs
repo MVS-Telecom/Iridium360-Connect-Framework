@@ -31,7 +31,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
 
                 //var bytes = "118B26010037393939393734303536323A46524F4D373939393937343035363228382E362E32302D31303A33352855544329293A20CFF0E8E2E5F2".ToByteArray();
                 var bytes1 = "119607010037393939373136383933384062792D736B792E6E65743AD2E5F1F220322031323A3237".ToByteArray();
-                
+
                 var m1 = Legacy_MessageMT.Unpack(buffer, bytes1);
             }
             catch (Exception e)
@@ -195,21 +195,23 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
         [TestMethod]
         public void Pack__ChatMessageMOTest2()
         {
-            ChatMessageMO emo = ChatMessageMO.Create(new Subscriber(string.Empty, SubscriberNetwork.Portal)
-                    , 123
-                    , 56789
-                    , null
-                    , "The markdown document and any attachments, such as images, will then be sent to your email address"
-                    , 32.8192159, -56.1295223
-                    );
+            try
+            {
+                ChatMessageMO emo = ChatMessageMO.Create(new Subscriber(string.Empty, SubscriberNetwork.Portal)
+                        , 123
+                        , 56789
+                        , null
+                        , "The markdown document123!@"
+                        , 32.8192159, -56.1295223, null
+                        );
 
-            var b = emo.Pack();
-            var emo2 = (ChatMessageMO)MessageMO.Unpack(b);
+                var b = emo.Pack();
+                var emo2 = (ChatMessageMO)MessageMO.Unpack(b);
+            }
+            catch (Exception e)
+            {
 
-
-            // var emo3 = (ChatMessageMO)MessageMO.Unpack("0104AD3542ABC631ADF0F41DA740180010A88437F124BF7D77669399CE1356CD93D344E1C49D13D94F64774E132A61D53C91FDE4A5CFE4345138A1825B88E324376338E1DDBC4D643F916939A1825B88E38455F324A713964E723AC95B3559DD1BCF132AB885384E4E35394D144EDC39C95B35494D3FA1825B9093FCF6DD994D663A4F58354F5A5A56132AB80539C96FDF9DD984D6F3840A6E218E135C5593D69593D8CCD53BC9E9D4F41380E143828FC3".ToByteArray());
-            var emo3 = (ChatMessageMO)MessageMO.Unpack("0104183501286A1E276E5E276A002800103811EA3E1260F890E0232D".ToByteArray());
-
+            }
 
         }
 
