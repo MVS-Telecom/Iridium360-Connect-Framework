@@ -592,8 +592,10 @@ namespace ConnectFramework.Shared
         /// </summary>
         public void StartDeviceSearch()
         {
-            Safety(() =>
+            Safety(async () =>
             {
+                await Enable();
+                await Task.Delay(500);
                 comms.StartDiscovery();
             });
         }
