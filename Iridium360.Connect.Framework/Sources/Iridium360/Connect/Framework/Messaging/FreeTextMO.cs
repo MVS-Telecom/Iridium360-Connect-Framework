@@ -1,6 +1,8 @@
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -91,6 +93,22 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
+        private static Page FindPage(char c)
+        {
+            if (page_en.IndexOf(c) > 0)
+                return Page.EN;
+
+            if (page_ru.IndexOf(c) > 0)
+                return Page.RU;
+
+            if (page_ru_ext.IndexOf(c) > 0)
+                return Page.RU_EXT;
+
+            if (page_sym.IndexOf(c) > 0)
+                return Page.SYM;
+
+            return Page.UNICODE_FORCE;
+        }
 
         private static byte InPage(char c, Page page)
         {
@@ -127,6 +145,12 @@ namespace Iridium360.Connect.Framework.Messaging
                     return (byte)index;
                 }
             }
+
+            if (page == Page.UNICODE_FORCE)
+            {
+                throw new NotSupportedException();
+            }
+
             return 0xff;
         }
 
@@ -136,51 +160,64 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             Page? page = null;
             StringBuilder builder = new StringBuilder();
+            byte[] bytes = new byte[] { };
+
             while (true)
             {
                 try
                 {
-                    int num = (((((0 + (reader.ReadBoolean() ? 1 : 0))
-                        + ((reader.ReadBoolean() ? 1 : 0) << 1))
-                        + ((reader.ReadBoolean() ? 1 : 0) << 2))
-                        + ((reader.ReadBoolean() ? 1 : 0) << 3))
-                        + ((reader.ReadBoolean() ? 1 : 0) << 4))
-                        + ((reader.ReadBoolean() ? 1 : 0) << 5);
-                    if (num < 8)
+                    if (page == Page.UNICODE_FORCE)
                     {
-                        page = (Page?)num;
+                        var b = reader.ReadByte();
 
-                        if (page == Page.END)
+                        if (b == (byte)Page.END)
                             break;
+
+                        Array.Resize(ref bytes, bytes.Length + 1);
+                        bytes[bytes.Length - 1] = b;
                     }
                     else
                     {
-                        ////Page? nullable3 = nullable;
-                        //if (nullable3.HasValue)
-                        //{
-                        switch (page)
+                        int num = (((((0 + (reader.ReadBoolean() ? 1 : 0))
+                            + ((reader.ReadBoolean() ? 1 : 0) << 1))
+                            + ((reader.ReadBoolean() ? 1 : 0) << 2))
+                            + ((reader.ReadBoolean() ? 1 : 0) << 3))
+                            + ((reader.ReadBoolean() ? 1 : 0) << 4))
+                            + ((reader.ReadBoolean() ? 1 : 0) << 5);
+
+                        if (num < 8)
                         {
-                            case Page.SYM:
-                                builder.Append(page_sym[num - 8]);
-                                break;
+                            page = (Page?)num;
 
-                            case Page.EN:
-                                builder.Append(page_en[num - 8]);
-                                break;
-
-                            case Page.RU:
-                                builder.Append(page_ru[num - 8]);
-                                break;
-
-                            case Page.RU_EXT:
-                                builder.Append(page_ru_ext[num - 8]);
-                                break;
-
-                            default:
+                            if (page == Page.END)
                                 break;
                         }
-                        //}
+                        else
+                        {
+                            switch (page)
+                            {
+                                case Page.SYM:
+                                    builder.Append(page_sym[num - 8]);
+                                    break;
+
+                                case Page.EN:
+                                    builder.Append(page_en[num - 8]);
+                                    break;
+
+                                case Page.RU:
+                                    builder.Append(page_ru[num - 8]);
+                                    break;
+
+                                case Page.RU_EXT:
+                                    builder.Append(page_ru_ext[num - 8]);
+                                    break;
+
+                                default:
+                                    throw new NotSupportedException();
+                            }
+                        }
                     }
+
                 }
                 catch (EndOfStreamException)
                 {
@@ -191,6 +228,11 @@ namespace Iridium360.Connect.Framework.Messaging
                     Debugger.Break();
                 }
             }
+
+
+            var bb = Encoding.UTF8.GetString(bytes);
+            builder.Append(bb);
+
             return builder.ToString();
         }
 
@@ -198,48 +240,33 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected static void Write(BinaryBitWriter writer, string text)
         {
-            Page? nullable = null;
-            foreach (char ch in text)
+            Page? currentPage = null;
+
+            for (int i = 0; i < text.Length; i++)
             {
-                byte num2 = 0xff;
-                if (nullable.HasValue && (0xff != (num2 = InPage(ch, nullable.Value))))
+                var ch = text[i];
+
+                Page page = FindPage(ch);
+
+                if (page == Page.UNICODE_FORCE)
                 {
-                    writer.Write6((byte)(num2 + 8));
+                    string str = text.Substring(i, text.Length - i);
+
+                    writer.Write6((byte)Page.UNICODE_FORCE);
+                    writer.Write(Encoding.UTF8.GetBytes(str));
+                    writer.Write((byte)Page.END);
+                    return;
                 }
-                else
-                {
-                    bool flag = true;
-                    Page[] pageArray = new Page[] { Page.EN, Page.RU, Page.RU_EXT, Page.SYM };
-                    int index = 0;
-                    while (true)
-                    {
-                        if (index < pageArray.Length)
-                        {
-                            Page page = pageArray[index];
-                            if (0xff == (num2 = InPage(ch, page)))
-                            {
-                                index++;
-                                continue;
-                            }
-                            Page? nullable2 = nullable;
-                            Page page2 = page;
-                            if (!((((Page)nullable2.GetValueOrDefault()) == page2) & nullable2.HasValue))
-                            {
-                                nullable = new Page?(page);
-                                writer.Write6((byte)nullable.Value);
-                            }
-                            writer.Write6((byte)(num2 + 8));
-                            flag = false;
-                        }
-                        if (flag)
-                        {
-                            Debugger.Break();
-                        }
-                        break;
-                    }
-                }
+
+                if (page != currentPage)
+                    writer.Write6((byte)page);
+
+                writer.Write6((byte)(InPage(ch, page) + 8));
+
+                currentPage = page;
             }
-            writer.Write6(0);
+            writer.Write6((byte)Page.END);
+
         }
 
         //public override MessageType Type =>
@@ -279,9 +306,10 @@ namespace Iridium360.Connect.Framework.Messaging
             EN,
             RU,
             RU_EXT,
+            UNICODE_FORCE,
             euro_latin,
             emodzi,
-            future_extension
+            future_extension,
         }
     }
 }
