@@ -292,11 +292,10 @@ namespace ConnectFramework.Shared
                         }
                         catch (DeviceIsLockedException lockedException)
                         {
-                            Debugger.Break();
-
                             ///Делаем повторную попытку - ЭТО ВАЖНО
                             if (i + 1 > attempts)
                             {
+                                Debugger.Break();
                                 logger.Log("[R7] Unlock error");
                                 throw lockedException;
                             }
