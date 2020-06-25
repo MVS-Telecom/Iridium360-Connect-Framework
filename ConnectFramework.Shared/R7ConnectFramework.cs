@@ -53,10 +53,11 @@ namespace ConnectFramework.Shared
         private R7Device device;
         private ILogger logger;
         private IStorage storage;
+        private IBluetoothHelper bluetoothHelper;
 
 
         private static R7ConnectFramework instance;
-        public static R7ConnectFramework GetInstance(IStorage storage, ILogger logger)
+        public static R7ConnectFramework GetInstance(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper)
         {
             lock (typeof(R7ConnectFramework))
             {
@@ -65,7 +66,7 @@ namespace ConnectFramework.Shared
 #if ANDROID
                     ConnectComms.Init(Application.Context);
 #endif
-                    instance = new R7ConnectFramework(storage, logger);
+                    instance = new R7ConnectFramework(storage, logger, bluetoothHelper);
                 }
 
                 return instance;
@@ -76,10 +77,11 @@ namespace ConnectFramework.Shared
         /// 
         /// </summary>
         /// <param name="logger"></param>
-        private R7ConnectFramework(IStorage storage, ILogger logger) : base()
+        private R7ConnectFramework(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper) : base()
         {
             this.logger = logger;
             this.storage = storage;
+            this.bluetoothHelper = bluetoothHelper;
 
 
 #if ANDROID
@@ -384,9 +386,6 @@ namespace ConnectFramework.Shared
         /// <returns></returns>
         internal Task<bool> Reconnect(bool throwOnError = true)
         {
-            if (deviceId == Guid.Empty)
-                throw new DeviceConnectionException();
-
             return Connect(deviceId, throwOnError: throwOnError);
         }
 
@@ -431,7 +430,7 @@ namespace ConnectFramework.Shared
         /// <param name="flags"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false)
+        public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1)
         {
             return Task.Run(async () =>
             {
@@ -441,42 +440,84 @@ namespace ConnectFramework.Shared
                 if (!force && connectLock.CurrentCount == 0)
                     return true;
 
-                await connectLock.WaitAsync();
-
-                deviceId = id;
-                device.SetState(DeviceState.Connecting);
-
                 try
                 {
-                    AutoResetEvent r = new AutoResetEvent(false);
+                    await connectLock.WaitAsync();
 
-                    EventHandler<DeviceConnectionChangedEventArgs> handler = (s, e) =>
+                    deviceId = id;
+
+
+                    ///Должен быть включен блютуз
+                    ///Пытаемся включить его программно, если не получается - выкидываем ошибку
+                    if (!bluetoothHelper.IsOn)
                     {
-                        r.Set();
-                    };
+                        var enabled = await bluetoothHelper.TurnOn(force: force);
 
-                    try
+                        if (!enabled)
+                            throw new BluetoothTurnedOffException();
+                    }
+
+
+                    device.SetState(DeviceState.Connecting);
+
+
+
+                    ///Подключаемся...
+                    List<Exception> exceptions = new List<Exception>();
+
+                    for (int i = 1; i <= attempts; i++)
                     {
-                        device.ConnectionChanged += handler;
+                        try
+                        {
+                            AutoResetEvent r = new AutoResetEvent(false);
 
-                        await Enable();
+                            EventHandler<DeviceConnectionChangedEventArgs> handler = (s, e) =>
+                            {
+                                r.Set();
+                            };
+
+                            try
+                            {
+                                device.ConnectionChanged += handler;
+
+                                await Enable();
 #if ANDROID
-                        comms.Connect(ToBluetoothAddress(id));
+                                comms.Connect(ToBluetoothAddress(id));
 #elif IOS
-                        comms.Connect(new Foundation.NSUuid(id.ToString()));
+                                comms.Connect(new Foundation.NSUuid(id.ToString()));
 #endif
-                        r.WaitOne(TimeSpan.FromSeconds(20));
+                                r.WaitOne(TimeSpan.FromSeconds(20));
+                            }
+                            finally
+                            {
+                                device.ConnectionChanged -= handler;
+                            }
+
+
+                            if (device.State == DeviceState.Connected)
+                                break;
+
+                        }
+                        catch (Exception e)
+                        {
+                            exceptions.Add(e);
+                        }
+
+
+                        if (i + 1 < attempts)
+                        {
+                            ///Ждем секунду в случае неудачи
+                            await Task.Delay(1000);
+                        }
                     }
-                    finally
-                    {
-                        device.ConnectionChanged -= handler;
-                    }
+
 
                     bool connected = device.State == DeviceState.Connected;
                     device.SetState(connected ? DeviceState.Connected : DeviceState.Disconnected);
 
+
                     if (!connected && throwOnError)
-                        throw new DeviceConnectionException();
+                        throw new DeviceConnectionException(null, new AggregateException(exceptions));
 
                     return connected;
                 }

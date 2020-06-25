@@ -54,6 +54,13 @@ namespace Rock
     }
 
 
+    public interface IBluetoothHelper
+    {
+        bool IsOn { get; }
+        Task<bool> TurnOn(bool force = false);
+    }
+
+
     public interface IFramework : IDisposable
     {
         event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults;
@@ -76,7 +83,8 @@ namespace Rock
         Task<bool> Connect(
             Guid id,
             bool force = true,
-            bool throwOnError = false);
+            bool throwOnError = false,
+            int attempts = 1);
 
         /// <summary>
         /// 
@@ -424,7 +432,7 @@ namespace Rock
         /// </summary>
         /// <param name="deviceMac"></param>
         /// <returns></returns>
-        public async Task<bool> Connect(Guid deviceMac, bool force = true, bool throwOnError = false)
+        public async Task<bool> Connect(Guid deviceMac, bool force = true, bool throwOnError = false, int attempts = 1)
         {
             ///Не ждем завершения попытки подключения
             if (!force && connectLock.CurrentCount == 0)

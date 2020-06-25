@@ -118,18 +118,12 @@ namespace Rock.Bluetooth
     /// <summary>
     /// 
     /// </summary>
-    public interface IBluetooth : IDisposable
+    public interface IBluetooth : IDisposable, IBluetoothHelper
     {
         event EventHandler<BluetoothStateChangedEventArgs> BluetoothStateChanged;
         event EventHandler<ScanResultsEventArgs> ScanResults;
         event EventHandler<EventArgs> ScanTimeout;
         event EventHandler<EventArgs> DeviceConnectionLost;
-
-
-        /// <summary>
-        /// Блютуз включен?
-        /// </summary>
-        bool IsOn { get; }
 
         /// <summary>
         /// 
