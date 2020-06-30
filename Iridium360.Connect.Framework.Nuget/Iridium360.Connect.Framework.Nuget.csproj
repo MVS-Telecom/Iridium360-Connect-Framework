@@ -18,10 +18,10 @@
     <PackageId>Iridium360.Connect.Framework</PackageId>
     
     <Product>Iridium360.Connect</Product>
-    <AssemblyVersion>0.0.1.6</AssemblyVersion>
-    <AssemblyFileVersion>0.0.1.6</AssemblyFileVersion>
-    <Version>0.0.1.6</Version>
-    <PackageVersion>0.0.1.6</PackageVersion>
+    <AssemblyVersion>0.0.1.8</AssemblyVersion>
+    <AssemblyFileVersion>0.0.1.8</AssemblyFileVersion>
+    <Version>0.0.1.8</Version>
+    <PackageVersion>0.0.1.8</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -126,12 +126,18 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Iridium360.Connect.Framework\Iridium360.Connect.Framework.Core.csproj" />
+	<ProjectReference Include="..\Iridium360.Connect.Framework\Iridium360.Connect.Framework.Core.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>Iridium360.Connect.Framework.Core.dll</IncludeAssets>
+	</ProjectReference>
   </ItemGroup>
+  
+  
 	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
 		<ItemGroup>
 			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
 		</ItemGroup>
 	</Target>
+	<Import Project="..\ConnectFramework.Shared\ConnectFramework.Shared.projitems" Label="Shared" />
   
 </Project>
