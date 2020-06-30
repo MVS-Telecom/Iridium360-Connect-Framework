@@ -92,6 +92,21 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
         }
 
 
+        [TestMethod]
+        public void ParseWeather()
+        {
+            try
+            {
+                var buffer = "1200055c8c4fddda039841d6ad3d801994dd5902a08100bab4044084a64b6b0034c8bab4044084b23b5b0044204097d60088d074690f80085997f600685076670f800606e8ce1e00159aeeac015021ebd21e0015caeeac019001015d5a03200379".ToByteArray();
+                var weather = MessageMT.Unpack(buffer);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+
         /// <summary>
         /// 
         /// </summary>

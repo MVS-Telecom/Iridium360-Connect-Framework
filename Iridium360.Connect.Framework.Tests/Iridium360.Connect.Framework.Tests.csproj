@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Iridium360.Connect.Framework\Iridium360.Connect.Framework.csproj" />
+    <ProjectReference Include="..\Iridium360.Connect.Framework\Iridium360.Connect.Framework.Core.csproj" />
   </ItemGroup>
 
 </Project>
