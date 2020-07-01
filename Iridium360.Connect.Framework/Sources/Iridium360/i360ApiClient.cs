@@ -1,17 +1,15 @@
-﻿using Iridium360.Models;
+﻿using Iridium360.Connect.Framework.Models;
+using Iridium360.Connect.Framework.Util;
 using Newtonsoft.Json;
-using Rock.Util;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Iridium360
+namespace Iridium360.Connect.Framework
 {
     internal class Result<T>
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rock.Helpers
+namespace Iridium360.Connect.Framework.Helpers
 {
     public static class Checksum
     {

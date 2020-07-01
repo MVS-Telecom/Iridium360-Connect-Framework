@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Iridium360.Connect.Framework;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rock.Exceptions
+namespace Iridium360.Connect.Framework.Exceptions
 {
 
     /// <summary>

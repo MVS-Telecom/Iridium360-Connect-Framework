@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Rock.Util
+namespace Iridium360.Connect.Framework.Util
 {
     public static class EnumExtensions
     {

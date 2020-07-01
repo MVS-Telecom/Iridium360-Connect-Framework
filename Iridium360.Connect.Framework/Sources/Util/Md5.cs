@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Rock.Util
+namespace Iridium360.Connect.Framework.Util
 {
     public static class Md5
     {

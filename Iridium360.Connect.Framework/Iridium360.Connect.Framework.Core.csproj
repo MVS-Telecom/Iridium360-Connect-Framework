@@ -6,76 +6,76 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Sources\Bluetooth\Bluetooth.cs">
+    <Compile Update="Sources\Abstractions\IBluetooth.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\AcknowledgeMessageStatusCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\AcknowledgeMessageStatusCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\ActionCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\ActionCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\AlertCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\AlertCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\BaseCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\BaseCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\DeleteMessageCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\DeleteMessageCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\GetNextMessageCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\GetNextMessageCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\MessageChunk.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\MessageChunk.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\PinCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\PinCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Commands\SendMessageCommand.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Commands\SendMessageCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\BaseRunnable.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\BaseRunnable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\BinaryHelper.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\BinaryHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\ByteBuffer.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\ByteBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\CommandRunnable.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\CommandRunnable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\FrameworkInstance.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\FrameworkInstance__EXPERIMENTAL.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\IncomingBuffer.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\IncomingBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\LocationParser.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\LocationParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Core\Queue.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Core\Queue.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Device\Device.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Device\Device.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Device\DeviceAccessory.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Device\DeviceAccessory.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Device\DeviceAccessoryParameter.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Device\DeviceAccessoryParameter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Device\DeviceHelper.cs">
+    <Compile Update="Sources\Implementation__EXPERIMENTAL\Device\DeviceHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Device\DeviceParameter.cs">
+    <Compile Update="Sources\Abstractions\DeviceParameter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Device\Enums.cs">
+    <Compile Update="Sources\Abstractions\Enums.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Sources\Exceptions\Exceptions.cs">
@@ -87,58 +87,58 @@
     <Compile Update="Sources\Helpers\ChecksumHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\BinaryBitReader.cs">
+    <Compile Update="Sources\Iridium360\Messaging\BinaryBitReader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\BinaryBitWriter.cs">
+    <Compile Update="Sources\Iridium360\Messaging\BinaryBitWriter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\ChatMessageMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\ChatMessageMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Composite.cs">
+    <Compile Update="Sources\Iridium360\Messaging\Composite.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Direction.cs">
+    <Compile Update="Sources\Iridium360\Messaging\Direction.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\EmptyMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\EmptyMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\FreeTextMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\FreeTextMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Legacy\Legacy_MessageMT.cs">
+    <Compile Update="Sources\Iridium360\Messaging\Legacy\Legacy_MessageMT.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Message.cs">
+    <Compile Update="Sources\Iridium360\Messaging\Message.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\MessageMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageMT.cs">
+    <Compile Update="Sources\Iridium360\Messaging\MessageMT.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageType.cs">
+    <Compile Update="Sources\Iridium360\Messaging\MessageType.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\MessageWithLocation.cs">
+    <Compile Update="Sources\Iridium360\Messaging\MessageWithLocation.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\PayloadMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\PayloadMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\PingMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\PingMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\Subscriber.cs">
+    <Compile Update="Sources\Iridium360\Messaging\Subscriber.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\WeatherMO.cs">
+    <Compile Update="Sources\Iridium360\Messaging\WeatherMO.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Iridium360\Connect\Framework\Messaging\WeatherMT.cs">
+    <Compile Update="Sources\Iridium360\Messaging\WeatherMT.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Sources\Iridium360\i360ApiClient.cs">
@@ -156,15 +156,12 @@
     <Compile Update="Sources\Util\EnumExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Util\Logger.cs">
+    <Compile Update="Sources\Abstractions\ILogger.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Sources\Util\Md5.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sources\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

@@ -4,15 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Rock;
-using Rock.Bluetooth;
-using Rock.Commands;
 using System.Diagnostics;
-using Rock.Helpers;
 using System.Linq;
-using Rock.Exceptions;
-using Rock.Core;
-using Rock.Util;
+using Iridium360.Connect.Framework;
+using Iridium360.Connect.Framework.Helpers;
+using Iridium360.Connect.Framework.Exceptions;
 
 #if IOS
 using Foundation;

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rock.Threading
+namespace Iridium360.Connect.Framework
 {
     /// <summary>
     /// Задача

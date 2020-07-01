@@ -7,13 +7,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Rock.Helpers;
-using Iridium360.Models;
-using Rock;
 using System.Text;
 using System.IO;
 using Iridium360.Connect.Framework.Messaging.Legacy;
 using Iridium360.Connect.Framework.Messaging;
+using Iridium360.Connect.Framework.Models;
+using Iridium360.Connect.Framework.Helpers;
 
 namespace Iridium360.Connect.Framework.Tests.Messaging
 {

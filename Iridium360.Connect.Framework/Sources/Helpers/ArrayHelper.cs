@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rock.Helpers
+namespace Iridium360.Connect.Framework.Helpers
 {
     public static class C0056cb
     {

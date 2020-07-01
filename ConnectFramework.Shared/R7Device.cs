@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Rock;
-using Rock.Commands;
-using Rock.Exceptions;
+using Iridium360.Connect.Framework;
+using Iridium360.Connect.Framework.Exceptions;
 
 #if IOS
 using Foundation;
+using ConnectFramework;
 #else
 using UK.Rock7.Connect.Device;
 #endif
@@ -38,7 +38,7 @@ namespace ConnectFramework.Shared
             });
         }
 
-        public List<Rock.DeviceParameter> Parameters { get; private set; }
+        public List<Iridium360.Connect.Framework.DeviceParameter> Parameters { get; private set; }
 
         public string Firmware => source?.Version;
 
@@ -181,7 +181,7 @@ namespace ConnectFramework.Shared
                             try
                             {
                                 var id = x.Identifier.ToR7().FromR7();
-                                return new Rock.DeviceParameter(framework, this, id);
+                                return new Iridium360.Connect.Framework.DeviceParameter(framework, this, id);
                             }
                             catch
                             {

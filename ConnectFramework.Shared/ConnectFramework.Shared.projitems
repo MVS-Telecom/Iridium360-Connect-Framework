@@ -18,7 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)R7Helpers.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ConnectFramework.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)FrameworkInstance.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

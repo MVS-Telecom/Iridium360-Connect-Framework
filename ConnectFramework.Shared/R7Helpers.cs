@@ -1,11 +1,10 @@
 ﻿#if ANDROID || IPHONE
 
 using System;
-using Rock;
-using Rock.Bluetooth;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Iridium360.Connect.Framework;
 
 #if IOS
 using Foundation;
@@ -79,7 +78,7 @@ namespace ConnectFramework.Shared
     }
 
 
-    public class R7BluetoothDevice : IBluetoothDevice
+    internal class R7BluetoothDevice : IBluetoothDevice
     {
         public object Native => throw new NotImplementedException();
         public Guid Id { get; private set; }

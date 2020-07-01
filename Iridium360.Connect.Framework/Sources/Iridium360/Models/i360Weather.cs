@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Rock;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Iridium360.Models
+
+namespace Iridium360.Connect.Framework.Models
 {
     /// <summary>
     /// 
