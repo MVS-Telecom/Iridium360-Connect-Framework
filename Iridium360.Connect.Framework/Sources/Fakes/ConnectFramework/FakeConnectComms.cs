@@ -1,4 +1,5 @@
-﻿using Iridium360.Connect.Framework.Messaging;
+﻿using Iridium360.Connect.Framework.Helpers;
+using Iridium360.Connect.Framework.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,14 @@ namespace Iridium360.Connect.Framework.Fakes
         public event EventHandler<BatteryUpdatedEventArgs> BatteryUpdated = delegate { };
         public event EventHandler<LocationUpdatedEventArgs> LocationUpdated = delegate { };
         public event EventHandler<EventArgs> DeviceInfoUpdated = delegate { };
+
+        public Guid Id => framework.deviceId;
+
+        public string Name { get; private set; }
+
+        public string Serial => RockstarHelper.GetSerialFromName(Name);
+
+        public DeviceType? DeviceType => RockstarHelper.GetTypeByName(Name);
 
         public Location Location => new Location(-27.128921, -109.366282);
 
@@ -51,29 +60,28 @@ namespace Iridium360.Connect.Framework.Fakes
         public bool? IncorrectPin { get; private set; }
 
 
+        private FrameworkInstance_FAKE framework;
 
-
-        private FrameworkInstance_FAKE rock;
-
-        public FakeConnectedDevice(FrameworkInstance_FAKE rock)
+        public FakeConnectedDevice(string name, FrameworkInstance_FAKE framework)
         {
-            this.rock = rock;
+            this.framework = framework;
+            this.Name = name;
 
             Parameters = new List<DeviceParameter>()
             {
-                new FakeDeviceParameter(rock, this, Parameter.TrackingStatus, TrackingStatus.On),
-                new FakeDeviceParameter(rock, this, Parameter.TrackingFrequency, TrackingFrequency.Frequency60min),
-                new FakeDeviceParameter(rock, this, Parameter.TrackingBurstFixPeriod, TrackingBurstFixPeriod.Period20min),
-                new FakeDeviceParameter(rock, this, Parameter.TrackingBurstTransmitPeriod, TrackingBurstTransmitPeriod.TrackingBurstTransmitPeriod60min),
-                new FakeDeviceParameter(rock, this, Parameter.IridiumStatus, IridiumStatus.Inactive),
-                new FakeDeviceParameter(rock, this, Parameter.GpsStatus, GpsStatus.Inactive),
+                new FakeDeviceParameter(framework, this, Parameter.TrackingStatus, TrackingStatus.On),
+                new FakeDeviceParameter(framework, this, Parameter.TrackingFrequency, TrackingFrequency.Frequency60min),
+                new FakeDeviceParameter(framework, this, Parameter.TrackingBurstFixPeriod, TrackingBurstFixPeriod.Period20min),
+                new FakeDeviceParameter(framework, this, Parameter.TrackingBurstTransmitPeriod, TrackingBurstTransmitPeriod.TrackingBurstTransmitPeriod60min),
+                new FakeDeviceParameter(framework, this, Parameter.IridiumStatus, IridiumStatus.Inactive),
+                new FakeDeviceParameter(framework, this, Parameter.GpsStatus, GpsStatus.Inactive),
             };
         }
 
 
         public Task Beep()
         {
-            return rock.Beep();
+            return framework.Beep();
         }
 
         public Task SaveDeviceParameter(Parameter parameter, Enum value)
@@ -191,6 +199,7 @@ namespace Iridium360.Connect.Framework.Fakes
         public event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated = delegate { };
         public event EventHandler<MessageReceivedEventArgs> _MessageReceived = delegate { };
 
+        internal Guid deviceId;
         public IDevice ConnectedDevice => device;
         public FakeConnectedDevice device { get; private set; }
 
@@ -199,7 +208,7 @@ namespace Iridium360.Connect.Framework.Fakes
         public FrameworkInstance_FAKE()
         {
             bluetooth = new FakeBluetooth();
-            device = new FakeConnectedDevice(this);
+            device = new FakeConnectedDevice(null, this);
         }
 
         public Task Beep()
@@ -214,6 +223,8 @@ namespace Iridium360.Connect.Framework.Fakes
         {
             try
             {
+                deviceId = id;
+
                 if (device.State == DeviceState.Connected)
                     return true;
 

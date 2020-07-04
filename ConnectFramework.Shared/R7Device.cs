@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Iridium360.Connect.Framework;
 using Iridium360.Connect.Framework.Exceptions;
+using Iridium360.Connect.Framework.Helpers;
 
 #if IOS
 using Foundation;
@@ -26,8 +27,39 @@ namespace ConnectFramework.Shared
         public event EventHandler<LocationUpdatedEventArgs> LocationUpdated = delegate { };
         public event EventHandler<EventArgs> DeviceInfoUpdated = delegate { };
 
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public Guid Id => framework.deviceId;
+
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public string Name => source?.Name;
+
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public string Serial => RockstarHelper.GetSerialFromName(Name);
+
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public DeviceType? DeviceType => RockstarHelper.GetTypeByName(Name);
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public Location Location { get; private set; }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="location"></param>
         internal void SetLocation(Location location)
         {
             Location = location;
@@ -38,12 +70,21 @@ namespace ConnectFramework.Shared
             });
         }
 
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public List<Iridium360.Connect.Framework.DeviceParameter> Parameters { get; private set; }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public string Firmware => source?.Version;
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public string Hardware => null;
-
 
         private LockState lockStatus = LockState.Unknown;
 

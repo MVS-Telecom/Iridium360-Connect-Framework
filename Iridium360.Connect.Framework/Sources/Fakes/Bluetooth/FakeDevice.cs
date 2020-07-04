@@ -5,7 +5,7 @@ using Iridium360.Connect.Framework.Helpers;
 
 namespace Iridium360.Connect.Framework.Fakes
 {
-    internal class FakeDevice : IBluetoothDevice
+    internal class FakeDevice : IFoundDevice
     {
         public object Native => null;
 
@@ -16,6 +16,10 @@ namespace Iridium360.Connect.Framework.Fakes
         public string Name { get; set; }
 
         public bool IsConnected => true;
+
+        public DeviceType? DeviceType => RockstarHelper.GetTypeBySerial(Serial);
+
+        public string Serial { get; set; }
 
         public FakeDevice(Guid id, string name)
         {

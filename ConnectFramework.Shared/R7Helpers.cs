@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Iridium360.Connect.Framework;
+using Iridium360.Connect.Framework.Helpers;
 
 #if IOS
 using Foundation;
@@ -78,23 +79,26 @@ namespace ConnectFramework.Shared
     }
 
 
-    internal class R7BluetoothDevice : IBluetoothDevice
+    internal class R7BluetoothDevice : IFoundDevice
     {
-        public object Native => throw new NotImplementedException();
+        public object Native => throw new NotSupportedException();
         public Guid Id { get; private set; }
         public string Mac { get; private set; }
         public string Name { get; private set; }
-        public bool IsConnected => throw new NotImplementedException();
+        public bool IsConnected => throw new NotSupportedException();
+        public DeviceType? DeviceType => RockstarHelper.GetTypeByName(Name);
+        public string Serial => RockstarHelper.GetSerialFromName(Name);
 
 
         public R7BluetoothDevice(string mac, string name)
         {
 #if ANDROID
             this.Id = Guid.Parse($"00000000-0000-0000-0000-{mac.Replace(":", "")}");
+            this.Mac = mac;
 #elif IOS
             this.Id = Guid.Parse(mac);
+            this.Mac = null;
 #endif
-            this.Mac = mac;
             this.Name = name;
         }
 
@@ -106,7 +110,7 @@ namespace ConnectFramework.Shared
 
         public Task<List<IGattService>> GetServicesAsync()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 

@@ -399,7 +399,7 @@ namespace ConnectFramework.Shared
 
 
         private static SemaphoreSlim connectLock = new SemaphoreSlim(1, 1);
-        private Guid deviceId;
+        internal Guid deviceId;
 
 
 
@@ -1287,7 +1287,7 @@ namespace ConnectFramework.Shared
         }
 
 
-        private List<IBluetoothDevice> devices = new List<IBluetoothDevice>();
+        private List<IFoundDevice> devices = new List<IFoundDevice>();
 
 #if ANDROID
         public void DiscoveryFoundDevice(string deviceIdentifier, string deviceName)

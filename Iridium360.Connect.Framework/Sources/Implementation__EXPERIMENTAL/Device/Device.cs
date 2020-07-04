@@ -15,6 +15,22 @@ namespace Iridium360.Connect.Framework.Implementations
         public event EventHandler<LocationUpdatedEventArgs> LocationUpdated = delegate { };
         public event EventHandler<EventArgs> DeviceInfoUpdated = delegate { };
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Guid Id => framework.deviceMac;
+
+
+        /// <summary>
+        /// Серийный номер
+        /// </summary>
+        public string Serial => Helpers.RockstarHelper.GetSerialFromName(name);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DeviceType? DeviceType => Helpers.RockstarHelper.GetTypeByName(name);
+
 
         /// <summary>
         /// 
@@ -231,21 +247,24 @@ namespace Iridium360.Connect.Framework.Implementations
             }
         }
 
+
         /// <summary>
-        /// Серийный номер
+        /// 
         /// </summary>
-        public string Serial
+        public string Name
         {
             get
             {
-                return serial;
+                return name;
             }
             internal set
             {
-                serial = value;
+                name = value;
                 DeviceInfoUpdated(this, new EventArgs());
             }
         }
+
+
 
 
         protected FrameworkInstance__EXPERIMENTAL framework;
@@ -254,7 +273,7 @@ namespace Iridium360.Connect.Framework.Implementations
 
 
 
-        private string serial;
+        private string name;
         private string firmware;
         private string hardware;
         private DeviceAccessory accessory;

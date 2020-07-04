@@ -44,7 +44,7 @@ namespace Iridium360.Connect.Framework
 
     public class DeviceSearchResultsEventArgs : EventArgs
     {
-        public List<IBluetoothDevice> Devices { get; set; }
+        public List<IFoundDevice> Devices { get; set; }
     }
 
 

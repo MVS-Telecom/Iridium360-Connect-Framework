@@ -57,7 +57,7 @@ namespace Iridium360.Connect.Framework.Fakes
 
                 ScanResults(this, new ScanResultsEventArgs()
                 {
-                    FoundDevices = new List<IBluetoothDevice>()
+                    FoundDevices = new List<IFoundDevice>()
                     {
                         FAKE_ROCKSTAR
                     }
@@ -68,7 +68,7 @@ namespace Iridium360.Connect.Framework.Fakes
 
                 ScanResults(this, new ScanResultsEventArgs()
                 {
-                    FoundDevices = new List<IBluetoothDevice>()
+                    FoundDevices = new List<IFoundDevice>()
                     {
                         FAKE_ROCKSTAR,
                         FAKE_ROCKFLEET,

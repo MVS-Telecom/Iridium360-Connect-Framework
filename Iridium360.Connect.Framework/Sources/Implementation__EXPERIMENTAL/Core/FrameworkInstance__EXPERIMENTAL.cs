@@ -45,7 +45,7 @@ namespace Iridium360.Connect.Framework.Implementations
         internal readonly string AppId;
 
 
-        private Guid deviceMac;
+        internal Guid deviceMac { get; private set; }
 
         /// <summary>
         /// Все найденные GATT характеристики устройства
@@ -178,7 +178,7 @@ namespace Iridium360.Connect.Framework.Implementations
         }
 
 
-        private List<IBluetoothDevice> rockstars = new List<IBluetoothDevice>();
+        private List<IFoundDevice> rockstars = new List<IFoundDevice>();
 
 
         private static readonly Regex RockStar = new Regex(@"^[2]\d{4}$", RegexOptions.Compiled);

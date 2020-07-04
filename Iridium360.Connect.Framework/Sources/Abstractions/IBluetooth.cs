@@ -13,10 +13,30 @@ namespace Iridium360.Connect.Framework
 
     public class ScanResultsEventArgs : EventArgs
     {
-        public List<IBluetoothDevice> FoundDevices { get; set; }
+        public List<IFoundDevice> FoundDevices { get; set; }
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IFoundDevice : IBluetoothDevice
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        DeviceType? DeviceType { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        string Serial { get; }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IBluetoothDevice : IDisposable
     {
         /// <summary>
@@ -28,7 +48,7 @@ namespace Iridium360.Connect.Framework
         /// Id устройства (то же что и MAC)
         /// </summary>
         Guid Id { get; }
-
+ 
         /// <summary>
         /// MAC-адрес устройства
         /// </summary>
@@ -50,6 +70,7 @@ namespace Iridium360.Connect.Framework
         /// <returns></returns>
         Task<List<IGattService>> GetServicesAsync();
     }
+
 
     /// <summary>
     /// 
