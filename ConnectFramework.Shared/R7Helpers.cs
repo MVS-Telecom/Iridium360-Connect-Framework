@@ -90,13 +90,13 @@ namespace ConnectFramework.Shared
         public string Serial => RockstarHelper.GetSerialFromName(Name);
 
 
-        public R7BluetoothDevice(string mac, string name)
+        public R7BluetoothDevice(string id, string name)
         {
 #if ANDROID
-            this.Id = Guid.Parse($"00000000-0000-0000-0000-{mac.Replace(":", "")}");
-            this.Mac = mac;
+            this.Id = Guid.Parse($"00000000-0000-0000-0000-{id.Replace(":", "")}");
+            this.Mac = id;
 #elif IOS
-            this.Id = Guid.Parse(mac);
+            this.Id = Guid.Parse(id);
             this.Mac = null;
 #endif
             this.Name = name;
