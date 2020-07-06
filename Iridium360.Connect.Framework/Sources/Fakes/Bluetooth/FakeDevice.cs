@@ -19,7 +19,7 @@ namespace Iridium360.Connect.Framework.Fakes
 
         public DeviceType? DeviceType => RockstarHelper.GetTypeBySerial(Serial);
 
-        public string Serial { get; set; }
+        public string Serial => RockstarHelper.GetSerialFromName(Name);
 
         public FakeDevice(Guid id, string name)
         {
