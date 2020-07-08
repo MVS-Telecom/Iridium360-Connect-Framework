@@ -18,10 +18,10 @@
     <PackageId>Iridium360.Connect.Framework</PackageId>
     
     <Product>Iridium360.Connect</Product>
-    <AssemblyVersion>0.0.1.14</AssemblyVersion>
-    <AssemblyFileVersion>0.0.1.14</AssemblyFileVersion>
-    <Version>0.0.1.14</Version>
-    <PackageVersion>0.0.1.14</PackageVersion>
+    <AssemblyVersion>0.0.1.15</AssemblyVersion>
+    <AssemblyFileVersion>0.0.1.15</AssemblyFileVersion>
+    <Version>0.0.1.15</Version>
+    <PackageVersion>0.0.1.15</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
