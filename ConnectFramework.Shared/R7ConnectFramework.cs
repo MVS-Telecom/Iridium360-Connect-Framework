@@ -579,72 +579,88 @@ namespace ConnectFramework.Shared
         }
 
 
+        private static SemaphoreSlim sendLock = new SemaphoreSlim(1, 1);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
         /// <param name="messageId"></param>
         /// <returns></returns>
-        public async Task SendRawMessageWithDataAndIdentifier(byte[] data, ushort messageId)
+        public async Task<ushort> SendData(byte[] data)
         {
-            await Reconnect(throwOnError: true);
-            //await Unlock();
+            await sendLock.WaitAsync();
 
-            MessageStatusUpdatedEventArgs args = null;
-
-            const int attempts = 2;
-
-            for (int i = 1; i <= attempts; i++)
+            try
             {
-                AutoResetEvent r = new AutoResetEvent(false);
+                await Reconnect(throwOnError: true);
+                //await Unlock();
 
-                await Task.Run(() =>
+                ushort messageId = (ushort)storage.GetShort("message-id", 1);
+
+                MessageStatusUpdatedEventArgs args = null;
+
+                const int attempts = 2;
+
+                for (int i = 1; i <= attempts; i++)
                 {
-                    var handler = new EventHandler<MessageStatusUpdatedEventArgs>((s, e) =>
+                    AutoResetEvent r = new AutoResetEvent(false);
+
+                    await Task.Run(() =>
                     {
-                        if (e.MessageId == messageId)
+                        var handler = new EventHandler<MessageStatusUpdatedEventArgs>((s, e) =>
                         {
-                            args = e;
-                            r.Set();
+                            if (e.MessageId == messageId)
+                            {
+                                args = e;
+                                r.Set();
+                            }
+                        });
+
+                        try
+                        {
+                            _MessageStatusUpdated += handler;
+
+#if ANDROID
+                            comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
+#elif IOS
+                            comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
+#endif
+
+                            r.WaitOne(TimeSpan.FromMinutes(15));
+
+                        }
+                        finally
+                        {
+                            _MessageStatusUpdated -= handler;
                         }
                     });
 
-                    try
+
+                    ///Success
+                    if (args?.Status == MessageStatus.ReceivedByDevice)
                     {
-                        _MessageStatusUpdated += handler;
-
-#if ANDROID
-                        comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
-#elif IOS
-                        comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
-#endif
-
-                        r.WaitOne(TimeSpan.FromMinutes(15));
-
+                        storage.PutShort("message-id", (short)(messageId + 1));
+                        return messageId;
                     }
-                    finally
-                    {
-                        _MessageStatusUpdated -= handler;
-                    }
-                });
 
+                    if (args == null)
+                        throw new MessageSendingException($"Message Id={messageId} transfer to device timeout");
 
-                ///Success
-                if (args?.Status == MessageStatus.ReceivedByDevice)
-                    return;
+                    if (args.Status == MessageStatus.ErrorToolong)
+                        throw new MessageSendingException($"Message Id={messageId} is too long");
 
+                    if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
+                        throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
 
-                if (args == null)
-                    throw new MessageSendingException($"Message Id={messageId} transfer to device timeout");
+                    await Task.Delay(1000);
+                }
 
-                if (args.Status == MessageStatus.ErrorToolong)
-                    throw new MessageSendingException($"Message Id={messageId} is too long");
-
-                if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
-                    throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
-
-                await Task.Delay(1000);
-
+                throw new MessageSendingException($"Message Id={messageId} transfer to error");
+            }
+            finally
+            {
+                sendLock.Release();
             }
 
         }
@@ -1228,7 +1244,7 @@ namespace ConnectFramework.Shared
                 var args = new MessageReceivedEventArgs()
                 {
                     Handled = false,
-                    MessageId = (short)messageId,
+                    MessageId = (short)(messageId + 10000),
                     Payload = data
                 };
 

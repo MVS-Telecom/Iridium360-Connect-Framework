@@ -1105,7 +1105,7 @@ namespace Iridium360.Connect.Framework.Implementations
 
                         var args = new MessageReceivedEventArgs()
                         {
-                            MessageId = command.MessageId.Value,
+                            MessageId = (short)(command.MessageId.Value + 10000),
                             Payload = command.Payload,
                             Handled = false
                         };
@@ -1662,7 +1662,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <param name="data"></param>
         /// <param name="messageId"></param>
         /// <returns></returns>
-        public async Task SendRawMessageWithDataAndIdentifier(byte[] data, ushort messageId)
+        public async Task<ushort> SendData(byte[] data)
         {
             if (!IsConnected)
                 throw new MessageSendingException("Device is not connected");
@@ -1673,7 +1673,13 @@ namespace Iridium360.Connect.Framework.Implementations
             if (data.Length > 338)
                 throw new MessageSendingException("Message payload is too long");
 
+            ushort messageId = (ushort)storage.GetShort("message-id", 1);
+
             await PostCommandAsync(new SendMessageCommand(AppId, KeyIndex, (short)messageId, data));
+
+            storage.PutShort("message-id", (short)(messageId + 1));
+
+            return messageId;
         }
 
 

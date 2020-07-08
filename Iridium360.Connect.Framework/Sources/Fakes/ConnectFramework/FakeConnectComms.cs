@@ -278,8 +278,12 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
-        public Task SendRawMessageWithDataAndIdentifier(byte[] data, ushort messageId)
+        private ushort messageId = 0;
+
+        public Task<ushort> SendData(byte[] data)
         {
+            ushort _messageId = messageId;
+
             return Task.Run(async () =>
             {
                 await Task.Delay(1000);
@@ -291,7 +295,7 @@ namespace Iridium360.Connect.Framework.Fakes
 
                       _MessageStatusUpdated(this, new MessageStatusUpdatedEventArgs()
                       {
-                          MessageId = (short)messageId,
+                          MessageId = (short)_messageId,
                           Status = MessageStatus.Transmitted,
                           Handled = false
                       });
@@ -305,10 +309,13 @@ namespace Iridium360.Connect.Framework.Fakes
                       _MessageReceived(this, new MessageReceivedEventArgs()
                       {
                           Payload = b,
-                          MessageId = (short)(1000 + messageId),
+                          MessageId = (short)(10000 + _messageId),
                           Handled = false
                       });
                   });
+
+                messageId++;
+                return _messageId;
             });
         }
 

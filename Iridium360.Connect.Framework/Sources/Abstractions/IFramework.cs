@@ -149,6 +149,6 @@ namespace Iridium360.Connect.Framework
         /// <param name="bytes"></param>
         /// <param name="shortId"></param>
         /// <returns></returns>
-        Task SendRawMessageWithDataAndIdentifier(byte[] data, ushort messageId);
+        Task<ushort> SendData(byte[] data);
     }
 }
