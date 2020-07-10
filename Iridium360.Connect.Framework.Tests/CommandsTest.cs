@@ -1,10 +1,8 @@
-﻿using Rock.Commands;
+﻿using Iridium360.Connect.Framework.Helpers;
+using Iridium360.Connect.Framework.Implementations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rock.Helpers;
-using System.Text;
-using System.Linq;
-using Rock.Core;
 using System;
+using System.Linq;
 
 namespace Iridium360.Connect.Framework.Tests
 {

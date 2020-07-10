@@ -13,12 +13,28 @@ using Iridium360.Connect.Framework.Messaging.Legacy;
 using Iridium360.Connect.Framework.Messaging;
 using Iridium360.Connect.Framework.Models;
 using Iridium360.Connect.Framework.Helpers;
+using Iridium360.Connect.Framework.Util;
 
 namespace Iridium360.Connect.Framework.Tests.Messaging
 {
     [TestClass]
     public class MessageTest
     {
+        [TestMethod]
+        public void Bysky()
+        {
+            try
+            {
+                var bytes = ChatMessageMO.Create(new Subscriber("79153925491", SubscriberNetwork.Bysky), null, null, "hello world!", 12.66, -34.66, 567, ShortGuid.Decode("GxkdPRKzT1zNcWnAAtf13X")).Pack();
+                var m = MessageMO.Unpack(bytes) as ChatMessageMO;
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
+
+
         [TestMethod]
         public void PackLegacy()
         {
