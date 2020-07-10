@@ -1,0 +1,122 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+
+  <PropertyGroup>
+
+    <TargetFrameworks>netstandard2.0;net48</TargetFrameworks>
+	
+	<!--
+		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
+	-->
+	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+
+    <!--Feel free to add as many targets as you need below
+    netstandard1.0;netstandard2.0;MonoAndroid90;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.WatchOS10;Xamarin.Mac20;Tizen40
+    For UWP update the version number with a version number you have installed.
+    -->
+    <AssemblyName>Iridium360.Connect.Framework</AssemblyName>
+    <RootNamespace>Iridium360.Connect.Framework</RootNamespace>
+    <PackageId>Iridium360.Connect.Framework.Simulator</PackageId>
+    
+    <Product>Iridium360.Connect</Product>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+    
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    
+    <!--TODO: Fill these in-->
+    <PackageLicenseUrl>LINK TO LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://iridium360.ru</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MVS-Telecom/Iridium360-Connect-Framework</RepositoryUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageTags></PackageTags>
+    
+    <Title>Iridium360.Connect.Framework</Title>
+    <Summary>Iridium360 Connect framework</Summary>
+    <Description></Description>
+    
+    
+    <Owners>MVS Telecom</Owners>
+    <Authors>MVS Telecom</Authors>
+    <Copyright></Copyright>
+
+    <!--When built in 2019 will remove extra references on pack-->
+    <DisableExtraReferences>true</DisableExtraReferences>
+    <Company>MVS Telecom</Company>
+    <PackageIcon>nuget-logo.png</PackageIcon>
+    <FileVersion>0.0.1.17</FileVersion>
+    <Version>0.0.1.17</Version>
+    <AssemblyVersion>0.0.1.17</AssemblyVersion>
+    
+  </PropertyGroup>
+  
+
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <IntermediateOutputPath>obj\Debug</IntermediateOutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType></DebugType>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>SIMULATOR</DefineConstants>
+    <NoWarn></NoWarn>
+    <LangVersion>Default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <IntermediateOutputPath>obj\Release</IntermediateOutputPath>
+    <DebugType></DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>SIMULATOR</DefineConstants>
+    <DocumentationFile></DocumentationFile>
+    <NoWarn></NoWarn>
+    <LangVersion>Default</LangVersion>
+  </PropertyGroup>
+ 
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\.nuget\nuget-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  
+  <ItemGroup>
+	<ProjectReference Include="..\Iridium360.Connect.Framework\Iridium360.Connect.Framework.Core.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>Iridium360.Connect.Framework.Core.dll</IncludeAssets>
+	</ProjectReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  
+  
+	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
+	<Import Project="..\ConnectFramework.Shared\ConnectFramework.Shared.projitems" Label="Shared" />
+  
+</Project>
