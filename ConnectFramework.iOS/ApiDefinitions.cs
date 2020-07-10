@@ -5,10 +5,12 @@ using CoreLocation;
 using Foundation;
 using ObjCRuntime;
 
+
 namespace ConnectFramework
-{
+{ 
 	// @interface DeviceParameter : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface DeviceParameter
 	{
 		// @property (assign, nonatomic) NSUInteger identifier;
@@ -87,6 +89,7 @@ namespace ConnectFramework
 
 	// @interface DeviceParameterGroup : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface DeviceParameterGroup
 	{
 		// @property (readonly, nonatomic) NSArray<DeviceParameter *> * parameters;
@@ -116,6 +119,7 @@ namespace ConnectFramework
 
 	// @interface ConnectDevice : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface ConnectDevice
 	{
 		// @property (readonly, nonatomic) NSString * name;
@@ -197,6 +201,7 @@ namespace ConnectFramework
 
 	// @interface DeviceLogIndex : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface DeviceLogIndex
 	{
 		// @property (retain, nonatomic) NSString * date;
@@ -467,6 +472,7 @@ namespace ConnectFramework
 
 	// @interface ConnectComms : NSObject <CBCentralManagerDelegate, CBPeripheralDelegate>
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface ConnectComms : ICBCentralManagerDelegate, ICBPeripheralDelegate
 	{
 		[Wrap ("WeakDiscoveryDelegate")]
@@ -917,6 +923,7 @@ namespace ConnectFramework
 
 	// @interface DeviceAccessory : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface DeviceAccessory
 	{
 		// @property (readonly, nonatomic) NSArray * params;
@@ -930,6 +937,7 @@ namespace ConnectFramework
 
 	// @interface DeviceAccessoryParameter : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface DeviceAccessoryParameter
 	{
 		// @property (readonly, nonatomic) NSNumber * index;
@@ -959,6 +967,7 @@ namespace ConnectFramework
 
 	// @interface FirmwareCacheRecord : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface FirmwareCacheRecord
 	{
 		// @property (retain, nonatomic) NSString * type;
@@ -1022,6 +1031,7 @@ namespace ConnectFramework
 
 	// @interface FirmwareUpdater : NSObject <R7DeviceFileTransferDelegate>
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface FirmwareUpdater : IR7DeviceFileTransferDelegate
 	{
 		// -(void)check:(FirmwareUpdaterCheckCallback)callback;
@@ -1087,6 +1097,7 @@ namespace ConnectFramework
 
 	// @interface FirmwareCache : NSObject
 	[BaseType (typeof(NSObject))]
+	[Protocol]
 	interface FirmwareCache
 	{
 		// -(void)update:(id<CachedFirmwareUpdater>)callback;
@@ -1110,6 +1121,7 @@ namespace ConnectFramework
 
 	// @interface R7GenericDevice : ConnectDevice
 	[BaseType (typeof(ConnectDevice))]
+	[Protocol]
 	interface R7GenericDevice
 	{
 		// @property (readonly, nonatomic) DeviceAccessory * accessory;
