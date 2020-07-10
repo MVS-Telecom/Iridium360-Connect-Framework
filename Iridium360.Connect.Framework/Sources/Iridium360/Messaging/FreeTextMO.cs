@@ -1,3 +1,4 @@
+using Iridium360.Connect.Framework.Util;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -74,9 +75,9 @@ namespace Iridium360.Connect.Framework.Messaging
             HasConversation = 2,
             HasText = 4,
             HasSubject = 8,
-            HasLocation = 0x10,
-            HasId = 0x20,
-            Reserver_2 = 0x40,
+            HasLocation = 16,
+            HasId = 32,
+            HasByskyToken = 64,
             Reserver_3 = 0x80
         }
 
@@ -297,6 +298,11 @@ namespace Iridium360.Connect.Framework.Messaging
         /// 
         /// </summary>
         public ushort? Id { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ShortGuid? ByskyToken { get; protected set; }
 
 
         private enum Page

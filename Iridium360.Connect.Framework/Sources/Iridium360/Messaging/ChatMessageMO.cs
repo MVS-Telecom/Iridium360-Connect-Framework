@@ -1,3 +1,4 @@
+using Iridium360.Connect.Framework.Util;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -62,6 +63,10 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 flags |= Flags.HasText;
             }
+            if (base.ByskyToken != null)
+            {
+                flags |= Flags.HasByskyToken;
+            }
             //
             // --->
             //
@@ -89,6 +94,10 @@ namespace Iridium360.Connect.Framework.Messaging
             if (flags.HasFlag(Flags.HasText))
             {
                 Write(writer, base.Text);
+            }
+            if (flags.HasFlag(Flags.HasByskyToken))
+            {
+                writer.Write(base.ByskyToken.Value.Guid.ToByteArray());
             }
         }
 
@@ -121,6 +130,10 @@ namespace Iridium360.Connect.Framework.Messaging
             if (flags.HasFlag(Flags.HasText))
             {
                 base.Text = Read(reader);
+            }
+            if (flags.HasFlag(Flags.HasByskyToken))
+            {
+                base.ByskyToken = new ShortGuid(reader.ReadBytes(16));
             }
         }
 
@@ -175,7 +188,8 @@ namespace Iridium360.Connect.Framework.Messaging
             string text,
             double? lat = null,
             double? lon = null,
-            int? alt = null)
+            int? alt = null,
+            ShortGuid? byskyToken = null)
         {
             if (to == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
@@ -189,6 +203,7 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Lat = lat;
             emo1.Lon = lon;
             emo1.Alt = alt;
+            emo1.ByskyToken = byskyToken;
             return emo1;
         }
 
@@ -226,6 +241,10 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 flags |= Flags.HasLocation;
             }
+            if (ByskyToken != null)
+            {
+                flags |= Flags.HasByskyToken;
+            }
             //
             // --->
             //
@@ -258,6 +277,10 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 WriteLocation(writer);
             }
+            if (flags.HasFlag(Flags.HasByskyToken))
+            {
+                writer.Write(base.ByskyToken.Value.Guid.ToByteArray());
+            }
         }
 
         protected override void unpack(BinaryBitReader reader)
@@ -289,6 +312,10 @@ namespace Iridium360.Connect.Framework.Messaging
             if (flags.HasFlag(Flags.HasLocation))
             {
                 ReadLocation(reader);
+            }
+            if (flags.HasFlag(Flags.HasByskyToken))
+            {
+                base.ByskyToken = new ShortGuid(reader.ReadBytes(16));
             }
         }
 
