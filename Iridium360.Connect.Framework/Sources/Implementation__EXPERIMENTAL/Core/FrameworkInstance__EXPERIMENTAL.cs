@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 [assembly: InternalsVisibleTo("Iridium360.Connect.Framework")]
 [assembly: InternalsVisibleTo("Iridium360.Connect.iOS")]
 [assembly: InternalsVisibleTo("Iridium360.Connect.Android")]
+[assembly: InternalsVisibleTo("Iridium360.Connect.Framework.Tests")]
 namespace Iridium360.Connect.Framework.Implementations
 {
     /// <summary>
@@ -1680,6 +1681,17 @@ namespace Iridium360.Connect.Framework.Implementations
             storage.PutShort("message-id", (short)(messageId + 1));
 
             return messageId;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task GetReceivedMessages()
+        {
+            await Reconnect(throwOnError: true);
+            await PostCommandAsync(new GetNextMessageCommand(AppId, KeyIndex));
         }
 
 

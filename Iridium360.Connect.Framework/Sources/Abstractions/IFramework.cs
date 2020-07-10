@@ -138,6 +138,11 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         Task Beep();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        Task GetReceivedMessages();
+
 
         void StartDeviceSearch();
         void StopDeviceSearch();

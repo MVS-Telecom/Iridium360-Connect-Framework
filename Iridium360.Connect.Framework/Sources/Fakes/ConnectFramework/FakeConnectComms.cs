@@ -204,9 +204,11 @@ namespace Iridium360.Connect.Framework.Fakes
         public FakeConnectedDevice device { get; private set; }
 
         private FakeBluetooth bluetooth;
+        private IStorage storage;
 
-        public FrameworkInstance_FAKE()
+        public FrameworkInstance_FAKE(IStorage storage)
         {
+            this.storage = storage;
             bluetooth = new FakeBluetooth();
             device = new FakeConnectedDevice(null, this);
         }
@@ -278,11 +280,10 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
-        private ushort messageId = 0;
 
         public Task<ushort> SendData(byte[] data)
         {
-            ushort _messageId = messageId;
+            ushort _messageId = (ushort)storage.GetShort("message-id", 0);
 
             return Task.Run(async () =>
             {
@@ -314,7 +315,7 @@ namespace Iridium360.Connect.Framework.Fakes
                       });
                   });
 
-                messageId++;
+                storage.PutShort("message-id", (short)(_messageId + 1));
                 return _messageId;
             });
         }
@@ -336,6 +337,15 @@ namespace Iridium360.Connect.Framework.Fakes
             DeviceSearchResults(this, new DeviceSearchResultsEventArgs()
             {
                 Devices = e.FoundDevices
+            });
+        }
+
+
+        public Task GetReceivedMessages()
+        {
+            return Task.Run(async () =>
+            {
+                await Task.Delay(300);
             });
         }
     }

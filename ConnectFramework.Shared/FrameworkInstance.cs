@@ -38,9 +38,9 @@ namespace Iridium360.Connect.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public static IFramework GetInstance_FAKE()
+        public static IFramework GetInstance_FAKE(IStorage storage)
         {
-            return new global::Iridium360.Connect.Framework.Fakes.FrameworkInstance_FAKE();
+            return new global::Iridium360.Connect.Framework.Fakes.FrameworkInstance_FAKE(storage);
         }
     }
 }

@@ -666,6 +666,18 @@ namespace ConnectFramework.Shared
         }
 
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task GetReceivedMessages()
+        {
+            await Reconnect();
+            comms.RequestNextMessage();
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
