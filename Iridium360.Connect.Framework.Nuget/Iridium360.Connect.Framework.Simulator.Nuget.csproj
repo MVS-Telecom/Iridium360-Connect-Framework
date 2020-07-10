@@ -39,7 +39,7 @@
     
     <Title>Iridium360.Connect.Framework</Title>
     <Summary>Iridium360 Connect framework</Summary>
-    <Description></Description>
+    <Description>This framework allows you to connect your Android or iOS device to i360RockSTAR tracker. THIS NUGET IS ONLY FOR DEVELOPMENT/DEBUGGING PURPOSES - IT CAN'T WORKS WITH A REAL TRACKER</Description>
     
     
     <Owners>MVS Telecom</Owners>
