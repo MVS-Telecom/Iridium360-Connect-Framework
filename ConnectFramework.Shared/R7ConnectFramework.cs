@@ -547,7 +547,7 @@ namespace ConnectFramework.Shared
             catch (Exception e)
             {
                 Debugger.Break();
-                throw e;
+                return default(T);
             }
         }
 
