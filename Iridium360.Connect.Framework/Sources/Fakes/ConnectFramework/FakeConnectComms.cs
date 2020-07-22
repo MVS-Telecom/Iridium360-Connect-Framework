@@ -69,10 +69,13 @@ namespace Iridium360.Connect.Framework.Fakes
 
             Parameters = new List<DeviceParameter>()
             {
-                new FakeDeviceParameter(framework, this, Parameter.TrackingStatus, TrackingStatus.On),
-                new FakeDeviceParameter(framework, this, Parameter.TrackingFrequency, TrackingFrequency.Frequency60min),
+                new FakeDeviceParameter(framework, this, Parameter.MailboxCheckStatus, MailboxCheckStatus.Off),
+                new FakeDeviceParameter(framework, this, Parameter.MailboxCheckFrequency, MailboxCheckFrequency.Frequency120min),
+
+                new FakeDeviceParameter(framework, this, Parameter.TrackingStatus, TrackingStatus.Off),
+                new FakeDeviceParameter(framework, this, Parameter.TrackingFrequency, TrackingFrequency.Frequency2min),
                 new FakeDeviceParameter(framework, this, Parameter.TrackingBurstFixPeriod, TrackingBurstFixPeriod.Period20min),
-                new FakeDeviceParameter(framework, this, Parameter.TrackingBurstTransmitPeriod, TrackingBurstTransmitPeriod.TrackingBurstTransmitPeriod60min),
+                new FakeDeviceParameter(framework, this, Parameter.TrackingBurstTransmitPeriod, TrackingBurstTransmitPeriod.TrackingBurstTransmitPeriod15min),
                 new FakeDeviceParameter(framework, this, Parameter.IridiumStatus, IridiumStatus.Inactive),
                 new FakeDeviceParameter(framework, this, Parameter.GpsStatus, GpsStatus.Inactive),
             };

@@ -974,19 +974,19 @@ namespace Iridium360.Connect.Framework
     [Translation("$=mailbox_check_frequency$$")]
     public enum MailboxCheckFrequency
     {
-        [Translation("$=time_5min$$")] Frequency5min,
-        [Translation("$=time_10min$$")] Frequency10min,
-        [Translation("$=time_15min$$")] Frequency15min,
-        [Translation("$=time_20min$$")] Frequency20min,
-        [Translation("$=time_30min$$")] Frequency30min,
-        [Translation("$=time_60min$$")] Frequency60min,
-        [Translation("$=time_90min$$")] Frequency90min,
-        [Translation("$=time_120min$$")] Frequency120min,
-        [Translation("$=time_180min$$")] Frequency180min,
-        [Translation("$=time_240min$$")] Frequency240min,
-        [Translation("$=time_360min$$")] Frequency360min,
-        [Translation("$=time_480min$$")] Frequency480min,
-        [Translation("$=time_720min$$")] Frequency720min
+        [Value(5 * 60)] [Translation("$=time_5min$$")] Frequency5min,
+        [Value(10 * 60)] [Translation("$=time_10min$$")] Frequency10min,
+        [Value(15 * 60)] [Translation("$=time_15min$$")] Frequency15min,
+        [Value(20 * 60)] [Translation("$=time_20min$$")] Frequency20min,
+        [Value(30 * 60)] [Translation("$=time_30min$$")] Frequency30min,
+        [Value(60 * 60)] [Translation("$=time_60min$$")] Frequency60min,
+        [Value(90 * 60)] [Translation("$=time_90min$$")] Frequency90min,
+        [Value(120 * 60)] [Translation("$=time_120min$$")] Frequency120min,
+        [Value(180 * 60)] [Translation("$=time_180min$$")] Frequency180min,
+        [Value(240 * 60)] [Translation("$=time_240min$$")] Frequency240min,
+        [Value(360 * 60)] [Translation("$=time_360min$$")] Frequency360min,
+        [Value(480 * 60)] [Translation("$=time_480min$$")] Frequency480min,
+        [Value(720 * 60)] [Translation("$=time_720min$$")] Frequency720min
     }
 
     [Translation("$=mailbox_check_status$$")]
