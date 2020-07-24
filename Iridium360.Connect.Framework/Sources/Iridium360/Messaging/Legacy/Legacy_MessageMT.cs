@@ -34,6 +34,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         public uint Id { get; private set; }
         public uint Index { get; private set; }
         public uint TotalParts { get; private set; }
+        public uint ReadyParts { get; private set; }
         public bool Complete { get; private set; }
 
         public string Address { get; private set; }
@@ -88,6 +89,8 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                     if (part.TotalParts > 1)
                     {
                         var count = partsBuffer.GetPartsCount(part.Id);
+
+                        part.ReadyParts = count + 1;
 
                         if (count + 1 == part.TotalParts)
                         {
