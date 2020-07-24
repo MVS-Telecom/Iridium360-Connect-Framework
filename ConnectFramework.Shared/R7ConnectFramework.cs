@@ -732,14 +732,18 @@ namespace ConnectFramework.Shared
 #endif
 
                 ///Запрашиваем новое значение с устройства чтобы убедиться что оно сохранилось
+                ///
+#if ANDROID
                 (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+#elif IOS
+                comms.CurrentDevice.Request(_parameter.EnumToInt());
+#endif
 
                 ///Ждем получения этого значения
                 await WaitForParameterChanged(_parameter, _value, throwOnError: true);
 
             });
         }
-
 
 
         /// <summary>
@@ -773,7 +777,11 @@ namespace ConnectFramework.Shared
                             var _parameter = a.Identifier.ToR7();
 
                             ///Запрашиваем параметр с устройства
+#if ANDROID
                             (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+#elif IOS
+                            comms.CurrentDevice.Request(_parameter.EnumToInt());
+#endif
 
                             ///Ждем изменения параметра
                             bool updated = await WaitForParameterAny(_parameter, throwOnError: false);
@@ -784,7 +792,13 @@ namespace ConnectFramework.Shared
                                 await Unlock();
 
                                 ///После успешной разблокировки делаем повторную попытку чтения
+
+#if ANDROID
                                 (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+#elif IOS
+                                comms.CurrentDevice.Request(_parameter.EnumToInt());
+#endif
+
                                 await WaitForParameterAny(_parameter, throwOnError: true);
                             }
                         }

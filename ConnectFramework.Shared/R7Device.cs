@@ -152,7 +152,8 @@ namespace ConnectFramework.Shared
 
         private DeviceState state;
         private R7ConnectFramework framework;
-        private R7GenericDevice source => framework.comms.CurrentDevice as R7GenericDevice;
+        private ConnectDevice source => framework.comms.CurrentDevice;
+
 
         public R7Device(R7ConnectFramework framework)
         {
