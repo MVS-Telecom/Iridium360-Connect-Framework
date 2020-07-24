@@ -112,6 +112,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                     }
                     else
                     {
+                        part.ReadyParts = 1;
                         part.Complete = true;
                     }
 
