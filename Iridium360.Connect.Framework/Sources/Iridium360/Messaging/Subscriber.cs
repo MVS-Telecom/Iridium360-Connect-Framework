@@ -39,7 +39,7 @@ namespace Iridium360.Connect.Framework.Messaging
         [Suffix("group")]
         Group = 4,
 
-        [Suffix("by-sky.net")]
+        [Suffix("bysky")]
         Bysky = 5,
     }
 
