@@ -166,7 +166,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         }
 
 
-        public static Legacy_MessageMT Unpack(IPartsBuffer partsBuffer, byte[] buffer)
+        public static Legacy_MessageMT Unpack(byte[] buffer, IPartsBuffer partsBuffer = null)
         {
             using (MemoryStream stream = new MemoryStream(buffer))
             {
@@ -192,6 +192,9 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
 
                     if (part.TotalParts > 1)
                     {
+                        if (partsBuffer == null)
+                            partsBuffer = new RealmPartsBuffer();
+
                         var count = partsBuffer.GetPartsCount(part.Id);
 
                         part.ReadyParts = count + 1;
@@ -213,6 +216,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                         {
                             partsBuffer.SavePart(part);
                         }
+
                     }
                     else
                     {
@@ -292,4 +296,8 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
             }
         }
     }
+
+
+
+
 }
