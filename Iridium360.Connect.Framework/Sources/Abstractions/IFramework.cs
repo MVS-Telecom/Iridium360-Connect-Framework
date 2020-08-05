@@ -38,6 +38,7 @@ namespace Iridium360.Connect.Framework
     {
         public short MessageId { get; set; }
         public MessageStatus Status { get; set; }
+        public string Message { get; set; }
         public bool Handled { get; set; } = false;
     }
 
