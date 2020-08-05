@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Iridium360.Connect.Framework.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Iridium360.Connect.Framework.Messaging.Legacy
 {
@@ -38,7 +41,108 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         public bool Complete { get; private set; }
 
         public string Address { get; private set; }
-        public string Text { get; private set; }
+        public string RawText { get; private set; }
+
+
+
+        /// <summary>
+        /// FROM79153905090(12.05.20-10:45(UTC)): sms text
+        /// </summary>
+        static Regex SMS = new Regex(@"^FROM.*\({1}.*\){1}:(?<text>.*)$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// From:example@mail.com|Sub:this is subject|this is text
+        /// </summary>
+        static Regex EMAIL = new Regex(@"^From:{1}.*\|{1}Sub\:{1}(?<sub>.*)\|{1}(?<text>.*)$", RegexOptions.Compiled);
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string GetText()
+        {
+            string text = null;
+
+
+            ///SMS
+            try
+            {
+                text = SMS.Match(RawText.Trim()).Groups["text"]?.Value?.Trim();
+            }
+            catch
+            {
+            }
+
+
+            //EMAIL
+            if (string.IsNullOrEmpty(text))
+            {
+                try
+                {
+                    string subject = EMAIL.Match(RawText.Trim()).Groups["sub"]?.Value?.Trim();
+                    string body = EMAIL.Match(RawText.Trim()).Groups["text"]?.Value?.Trim();
+
+                    if (!string.IsNullOrEmpty(subject))
+                        text = $"[{subject}] {body}";
+                    else
+                        text = $"{body}";
+                }
+                catch
+                {
+                }
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                Debugger.Break();
+                text = RawText.Trim();
+            }
+
+            return text;
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Subscriber? GetSubscriber()
+        {
+            try
+            {
+                var number = Address.Trim();
+                var network = SubscriberNetwork.Mobile;
+
+                if (CheckEmail(number))
+                    network = SubscriberNetwork.Email;
+                else if (RockstarHelper.GetTypeBySerial(number) != null)
+                    network = SubscriberNetwork.Rockstar;
+
+                return new Subscriber(number, network);
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+                return null;
+            }
+        }
+
+
+        private static bool CheckEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
 
         public static bool CheckSignature(byte[] bytes)
@@ -125,7 +229,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                         var parts = text.Split(new string[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
 
                         part.Address = parts[0];
-                        part.Text = parts[1];
+                        part.RawText = parts[1];
                     }
 
                     return part;
