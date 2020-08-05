@@ -34,6 +34,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
             return new RealmConfiguration(BUFFER_DATABASE_NAME)
             {
                 SchemaVersion = 5,
+                ObjectClasses = new Type[] { typeof(Part) },
                 MigrationCallback = (migration, oldSchemaVersion) =>
                 {
                 }
