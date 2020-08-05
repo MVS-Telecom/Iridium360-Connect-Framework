@@ -32,6 +32,11 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         Weather = 5,
 
+        /// <summary>
+        /// Проверка новых сообщений
+        /// </summary>
+        CheckMessages = 6
+
     }
 }
 
