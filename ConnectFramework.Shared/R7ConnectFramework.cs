@@ -659,7 +659,10 @@ namespace ConnectFramework.Shared
 
 
                     if (args.Status == MessageStatus.ErrorCapability)
+                    {
+                        Debugger.Break();
                         await Disconnect();
+                    }
 
 
                     await Task.Delay(1000);
