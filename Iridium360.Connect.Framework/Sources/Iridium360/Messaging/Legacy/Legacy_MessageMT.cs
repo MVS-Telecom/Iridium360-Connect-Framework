@@ -63,6 +63,10 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         /// <returns></returns>
         public string GetText()
         {
+            if (!Complete)
+                throw new InvalidOperationException("Not all packet parts are received");
+
+
             string text = null;
 
 
@@ -111,6 +115,9 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         /// <returns></returns>
         public Subscriber? GetSubscriber()
         {
+            if (!Complete)
+                throw new InvalidOperationException("Not all packet parts are received");
+
             try
             {
                 var number = Address.Trim();

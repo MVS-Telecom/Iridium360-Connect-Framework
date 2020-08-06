@@ -627,8 +627,12 @@ namespace ConnectFramework.Shared
                             comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
 #endif
 
-                            r.WaitOne(TimeSpan.FromMinutes(15));
+                            r.WaitOne(TimeSpan.FromSeconds(10));
 
+                        }
+                        catch (Exception e)
+                        {
+                            Debugger.Break();
                         }
                         finally
                         {
@@ -1322,7 +1326,8 @@ namespace ConnectFramework.Shared
                 {
                     Handled = false,
                     MessageId = (short)messageId,
-                    Status = _status
+                    Status = _status,
+                    Message = status.ToString(),
                 };
 
                 _MessageStatusUpdated(this, args);
