@@ -653,10 +653,16 @@ namespace ConnectFramework.Shared
                     if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
                         throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
 
+
+                    if (args.Status == MessageStatus.ErrorCapability)
+                        await Disconnect();
+
+
                     await Task.Delay(1000);
                 }
 
                 throw new MessageSendingException($"Message Id={messageId} transfer to error");
+
             }
             finally
             {
