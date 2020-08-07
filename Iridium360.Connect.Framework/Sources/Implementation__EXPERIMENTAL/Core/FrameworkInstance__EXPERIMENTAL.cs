@@ -130,7 +130,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <summary>
         /// 
         /// </summary>
-        public async void StartDeviceSearch()
+        public async Task StartDeviceSearch()
         {
             try
             {

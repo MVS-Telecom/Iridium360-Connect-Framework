@@ -694,16 +694,19 @@ namespace ConnectFramework.Shared
         /// <summary>
         /// 
         /// </summary>
-        public void StartDeviceSearch()
+        public async Task StartDeviceSearch()
         {
-            Safety(async () =>
-            {
+            var enabled = await bluetoothHelper.TurnOn(force: true);
+
+            if (!enabled)
+                throw new BluetoothTurnedOffException();
+
 #if IOS
-                await Enable();
-                await Task.Delay(500);
+            await Enable();
+            await Task.Delay(500);
 #endif
-                comms.StartDiscovery();
-            });
+
+            comms.StartDiscovery();
         }
 
 

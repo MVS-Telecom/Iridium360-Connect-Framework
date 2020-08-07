@@ -323,8 +323,10 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
-        public void StartDeviceSearch()
+        public async Task StartDeviceSearch()
         {
+            await Task.Yield();
+
             bluetooth.ScanResults += Bluetooth_ScanResults;
             bluetooth.StartLeScan();
         }

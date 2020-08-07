@@ -145,7 +145,7 @@ namespace Iridium360.Connect.Framework
         Task GetReceivedMessages();
 
 
-        void StartDeviceSearch();
+        Task StartDeviceSearch();
         void StopDeviceSearch();
 
 
