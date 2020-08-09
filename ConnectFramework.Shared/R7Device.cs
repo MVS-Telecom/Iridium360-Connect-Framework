@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Iridium360.Connect.Framework;
 using Iridium360.Connect.Framework.Exceptions;
 using Iridium360.Connect.Framework.Helpers;
+using IDeviceParameter = Iridium360.Connect.Framework.IDeviceParameter;
 
 #if IOS
 using Foundation;
@@ -74,7 +75,7 @@ namespace ConnectFramework.Shared
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public List<IDeviceParameter> Parameters { get; private set; }
+        public List<Iridium360.Connect.Framework.IDeviceParameter> Parameters { get; private set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -219,7 +220,7 @@ namespace ConnectFramework.Shared
                 {
                     Parameters = source
                         .Parameters()
-                        .Select(x => (IDeviceParameter)new R7DeviceParameter(framework, this, x))
+                        .Select(x => (Iridium360.Connect.Framework.IDeviceParameter)new R7DeviceParameter(framework, this, x))
                         .ToList();
 
                     DeviceInfoUpdated(this, new EventArgs());

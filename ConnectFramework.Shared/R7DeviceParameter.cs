@@ -1,4 +1,8 @@
-﻿using Android.Runtime;
+﻿#if ANDROID
+using Android.Runtime;
+using UK.Rock7.Connect.Device;
+#elif IOS
+#endif
 using Iridium360.Connect.Framework;
 using Iridium360.Connect.Framework.Exceptions;
 using System;
@@ -7,9 +11,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UK.Rock7.Connect.Device;
 using Iridium360.Connect.Framework.Util;
-
+using Foundation;
 
 namespace ConnectFramework.Shared
 {
@@ -27,7 +30,17 @@ namespace ConnectFramework.Shared
         {
             get
             {
+#if ANDROID
                 var options = new Android.Runtime.JavaDictionary<int, string>(source.Options.Handle, Android.Runtime.JniHandleOwnership.DoNotRegister).ToDictionary(t => t.Key, t => t.Value);
+#elif IOS
+                var keys = source.Options.Keys;
+                var values = source.Options.Values;
+                var options = new Dictionary<int, string>();
+
+                for (int i = 0; i < keys.Length; i++)
+                    options.Add((int)(NSNumber)keys[i], (NSString)values[i]);
+#endif
+
 
                 return options.Keys
                     .OrderBy(x => x)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Iridium360.Connect.Framework;
 using Iridium360.Connect.Framework.Helpers;
+using System.Diagnostics;
 
 #if IOS
 using Foundation;
@@ -36,11 +37,19 @@ namespace ConnectFramework.Shared
 
         public static R7GenericDeviceParameter ToR7(this Parameter parameter)
         {
+            try
+            {
 #if ANDROID
-            return R7GenericDeviceParameter.Values().SingleOrDefault(x => x.Ordinal() == (int)parameter);
+                return R7GenericDeviceParameter.Values().SingleOrDefault(x => x.Ordinal() == (int)parameter);
 #elif IOS
-            return (R7GenericDeviceParameter)Enum.Parse(typeof(R7GenericDeviceParameter), parameter.ToString());
+                return (R7GenericDeviceParameter)Enum.Parse(typeof(R7GenericDeviceParameter), parameter.ToString());
 #endif
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+                throw;
+            }
         }
 
         public static Parameter FromR7(this R7GenericDeviceParameter parameter)
@@ -50,11 +59,12 @@ namespace ConnectFramework.Shared
 #if ANDROID
                 return (Parameter)(int)parameter.Ordinal();
 #elif IOS
-                return (Parameter)Enum.Parse(typeof(Parameter), parameter.ToString());
+                return (Parameter)Enum.Parse(typeof(Parameter), parameter.ToString(), ignoreCase: true);
 #endif
             }
             catch (Exception e)
             {
+                Debugger.Break();
                 ///Не нашелся параметр в "нашем" энаме
                 throw;
             }
