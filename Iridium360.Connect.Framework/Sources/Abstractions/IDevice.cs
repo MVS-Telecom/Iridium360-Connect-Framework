@@ -26,7 +26,7 @@ namespace Iridium360.Connect.Framework
 
     public class ParameterChangedEventArgs : EventArgs
     {
-        public DeviceParameter Parameter { get; set; }
+        public IDeviceParameter Parameter { get; set; }
     }
 
 
@@ -90,7 +90,7 @@ namespace Iridium360.Connect.Framework
         /// <summary>
         /// 
         /// </summary>
-        List<DeviceParameter> Parameters { get; }
+        List<IDeviceParameter> Parameters { get; }
 
         /// <summary>
         /// 

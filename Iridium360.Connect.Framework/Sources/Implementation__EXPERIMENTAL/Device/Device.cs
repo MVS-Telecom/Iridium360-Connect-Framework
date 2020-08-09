@@ -76,7 +76,7 @@ namespace Iridium360.Connect.Framework.Implementations
 
 
 
-        public List<DeviceParameter> Parameters { get; private set; } = new List<DeviceParameter>();
+        public List<IDeviceParameter> Parameters { get; private set; } = new List<IDeviceParameter>();
 
 
         private uint? battery;
@@ -287,42 +287,42 @@ namespace Iridium360.Connect.Framework.Implementations
 
         private void OnFirmwareChanged(string firmware)
         {
-            DeviceParameter deviceParameter = new DeviceParameter(framework, this, Parameter.GpsStatus);
+            __DeviceParameter deviceParameter = new __DeviceParameter(framework, this, Parameter.GpsStatus);
             Parameters.Add(deviceParameter);
 
-            DeviceParameter deviceParameter2 = new DeviceParameter(framework, this, Parameter.IridiumStatus);
+            __DeviceParameter deviceParameter2 = new __DeviceParameter(framework, this, Parameter.IridiumStatus);
             Parameters.Add(deviceParameter2);
 
-            DeviceParameter deviceParameter3 = new DeviceParameter(framework, this, Parameter.PowerStatus);
+            __DeviceParameter deviceParameter3 = new __DeviceParameter(framework, this, Parameter.PowerStatus);
             Parameters.Add(deviceParameter3);
 
             if (this.IsSupported(DeviceCapability.ActivitySense))
             {
-                DeviceParameter deviceParameter4 = new DeviceParameter(framework, this, Parameter.TrackingActivitySenseStatus);
+                __DeviceParameter deviceParameter4 = new __DeviceParameter(framework, this, Parameter.TrackingActivitySenseStatus);
                 Parameters.Add(deviceParameter4);
-                DeviceParameter deviceParameter5 = new DeviceParameter(framework, this, Parameter.TrackingActivitySenseThreshold);
+                __DeviceParameter deviceParameter5 = new __DeviceParameter(framework, this, Parameter.TrackingActivitySenseThreshold);
                 Parameters.Add(deviceParameter5);
             }
             else
             {
-                DeviceParameter deviceParameter6 = new DeviceParameter(framework, this, Parameter.TrackingActivitySenseStatus);
+                __DeviceParameter deviceParameter6 = new __DeviceParameter(framework, this, Parameter.TrackingActivitySenseStatus);
                 Parameters.Add(deviceParameter6);
-                DeviceParameter deviceParameter7 = new DeviceParameter(framework, this, Parameter.TrackingActivitySenseLowThreshold);
+                __DeviceParameter deviceParameter7 = new __DeviceParameter(framework, this, Parameter.TrackingActivitySenseLowThreshold);
                 Parameters.Add(deviceParameter7);
-                DeviceParameter deviceParameter8 = new DeviceParameter(framework, this, Parameter.TrackingActivitySenseHighThreshold);
+                __DeviceParameter deviceParameter8 = new __DeviceParameter(framework, this, Parameter.TrackingActivitySenseHighThreshold);
                 Parameters.Add(deviceParameter8);
             }
-            DeviceParameter deviceParameter9 = new DeviceParameter(framework, this, Parameter.TrackingBurstFixPeriod);
+            __DeviceParameter deviceParameter9 = new __DeviceParameter(framework, this, Parameter.TrackingBurstFixPeriod);
             if (!this.IsSupported(DeviceCapability.RevisedFrequency))
             {
                 deviceParameter9.removeValueOption(TrackingBurstFixPeriod.Period20min);
             }
             Parameters.Add(deviceParameter9);
-            DeviceParameter deviceParameter10 = new DeviceParameter(framework, this, Parameter.TrackingBurstTransmitPeriod);
+            __DeviceParameter deviceParameter10 = new __DeviceParameter(framework, this, Parameter.TrackingBurstTransmitPeriod);
             Parameters.Add(deviceParameter10);
-            DeviceParameter deviceParameter11 = new DeviceParameter(framework, this, Parameter.TrackingStatus);
+            __DeviceParameter deviceParameter11 = new __DeviceParameter(framework, this, Parameter.TrackingStatus);
             Parameters.Add(deviceParameter11);
-            DeviceParameter deviceParameter12 = new DeviceParameter(framework, this, Parameter.TrackingFrequency);
+            __DeviceParameter deviceParameter12 = new __DeviceParameter(framework, this, Parameter.TrackingFrequency);
 
 #if RELEASE
             //DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeContextualReporting) ? context.getText(R.string.satellite_frequency).toString() : context.getText(R.string.frequency).toString());
@@ -357,36 +357,36 @@ namespace Iridium360.Connect.Framework.Implementations
             Parameters.Add(deviceParameter12);
             if (this.IsSupported(DeviceCapability.ContextualReporting))
             {
-                DeviceParameter deviceParameter13 = new DeviceParameter(framework, this, Parameter.DistressFrequency);
+                __DeviceParameter deviceParameter13 = new __DeviceParameter(framework, this, Parameter.DistressFrequency);
                 if (!this.IsSupported(DeviceCapability.FastCellular))
                 {
                     deviceParameter13.removeValueOption(DistressFrequency.DistressFrequency15sec);
                     deviceParameter13.removeValueOption(DistressFrequency.DistressFrequency30sec);
                 }
                 Parameters.Add(deviceParameter13);
-                DeviceParameter deviceParameter14 = new DeviceParameter(framework, this, Parameter.DistressBurstFixPeriod);
+                __DeviceParameter deviceParameter14 = new __DeviceParameter(framework, this, Parameter.DistressBurstFixPeriod);
                 Parameters.Add(deviceParameter14);
-                DeviceParameter deviceParameter15 = new DeviceParameter(framework, this, Parameter.DistressBurstTransmitPeriod);
+                __DeviceParameter deviceParameter15 = new __DeviceParameter(framework, this, Parameter.DistressBurstTransmitPeriod);
                 Parameters.Add(deviceParameter15);
 
                 if (framework.IsGprsAttached)
                 {
-                    DeviceParameter deviceParameter16 = new DeviceParameter(framework, this, Parameter.CellularFrequency);
+                    __DeviceParameter deviceParameter16 = new __DeviceParameter(framework, this, Parameter.CellularFrequency);
                     if (!this.IsSupported(DeviceCapability.FastCellular))
                     {
                         deviceParameter16.removeValueOption(CellularFrequency.CellularFrequency15sec);
                         deviceParameter16.removeValueOption(CellularFrequency.CellularFrequency30sec);
                     }
                     Parameters.Add(deviceParameter16);
-                    DeviceParameter deviceParameter17 = new DeviceParameter(framework, this, Parameter.CellularBurstFixPeriod);
+                    __DeviceParameter deviceParameter17 = new __DeviceParameter(framework, this, Parameter.CellularBurstFixPeriod);
                     Parameters.Add(deviceParameter17);
-                    DeviceParameter deviceParameter18 = new DeviceParameter(framework, this, Parameter.CellularBurstTransmitPeriod);
+                    __DeviceParameter deviceParameter18 = new __DeviceParameter(framework, this, Parameter.CellularBurstTransmitPeriod);
                     Parameters.Add(deviceParameter18);
                 }
             }
             if (this.IsSupported(DeviceCapability.Notify))
             {
-                DeviceParameter deviceParameter19 = new DeviceParameter(framework, this, Parameter.Notify);
+                __DeviceParameter deviceParameter19 = new __DeviceParameter(framework, this, Parameter.Notify);
                 if (!this.IsYB())
                 {
                     deviceParameter19.removeValueOption(AlertsNotify.AlertsNotifyVisual);
@@ -394,39 +394,39 @@ namespace Iridium360.Connect.Framework.Implementations
                 }
                 Parameters.Add(deviceParameter19);
             }
-            DeviceParameter deviceParameter20 = new DeviceParameter(framework, this, Parameter.AlertsCollisionDuration);
+            __DeviceParameter deviceParameter20 = new __DeviceParameter(framework, this, Parameter.AlertsCollisionDuration);
             Parameters.Add(deviceParameter20);
-            DeviceParameter deviceParameter21 = new DeviceParameter(framework, this, Parameter.AlertsCollisionStatus);
+            __DeviceParameter deviceParameter21 = new __DeviceParameter(framework, this, Parameter.AlertsCollisionStatus);
             Parameters.Add(deviceParameter21);
-            DeviceParameter deviceParameter22 = new DeviceParameter(framework, this, Parameter.AlertsCollisionThreshold);
+            __DeviceParameter deviceParameter22 = new __DeviceParameter(framework, this, Parameter.AlertsCollisionThreshold);
             Parameters.Add(deviceParameter22);
-            DeviceParameter deviceParameter23 = new DeviceParameter(framework, this, Parameter.AlertsGeofenceDistance);
+            __DeviceParameter deviceParameter23 = new __DeviceParameter(framework, this, Parameter.AlertsGeofenceDistance);
             Parameters.Add(deviceParameter23);
-            DeviceParameter deviceParameter24 = new DeviceParameter(framework, this, Parameter.AlertsGeofenceCentre);
+            __DeviceParameter deviceParameter24 = new __DeviceParameter(framework, this, Parameter.AlertsGeofenceCentre);
             Parameters.Add(deviceParameter24);
-            DeviceParameter deviceParameter25 = new DeviceParameter(framework, this, Parameter.AlertsGeofenceCheckFrequency);
+            __DeviceParameter deviceParameter25 = new __DeviceParameter(framework, this, Parameter.AlertsGeofenceCheckFrequency);
             Parameters.Add(deviceParameter25);
-            DeviceParameter deviceParameter26 = new DeviceParameter(framework, this, Parameter.AlertsGeofenceStatus);
+            __DeviceParameter deviceParameter26 = new __DeviceParameter(framework, this, Parameter.AlertsGeofenceStatus);
             if (!this.IsSupported(DeviceCapability.Polyfence))
             {
                 deviceParameter26.removeValueOption(AlertsGeofenceStatus.AlertsGeofenceStatusOnPolyfence);
             }
 
             Parameters.Add(deviceParameter26);
-            DeviceParameter deviceParameter27 = new DeviceParameter(framework, this, Parameter.AlertsPowerLossStatus);
+            __DeviceParameter deviceParameter27 = new __DeviceParameter(framework, this, Parameter.AlertsPowerLossStatus);
             Parameters.Add(deviceParameter27);
-            DeviceParameter deviceParameter28 = new DeviceParameter(framework, this, Parameter.AlertsTemperatureCheckFrequency);
+            __DeviceParameter deviceParameter28 = new __DeviceParameter(framework, this, Parameter.AlertsTemperatureCheckFrequency);
             Parameters.Add(deviceParameter28);
-            DeviceParameter deviceParameter29 = new DeviceParameter(framework, this, Parameter.AlertsHotTemperature);
+            __DeviceParameter deviceParameter29 = new __DeviceParameter(framework, this, Parameter.AlertsHotTemperature);
             Parameters.Add(deviceParameter29);
-            DeviceParameter deviceParameter30 = new DeviceParameter(framework, this, Parameter.AlertsColdTemperature);
+            __DeviceParameter deviceParameter30 = new __DeviceParameter(framework, this, Parameter.AlertsColdTemperature);
             Parameters.Add(deviceParameter30);
-            DeviceParameter deviceParameter31 = new DeviceParameter(framework, this, Parameter.AlertsTemperatureStatus);
+            __DeviceParameter deviceParameter31 = new __DeviceParameter(framework, this, Parameter.AlertsTemperatureStatus);
             Parameters.Add(deviceParameter31);
 
             if (this.IsSupported(DeviceCapability.ExternalPowerAvailability))
             {
-                DeviceParameter deviceParameter32 = new DeviceParameter(framework, this, Parameter.ExternalPowerAvailability);
+                __DeviceParameter deviceParameter32 = new __DeviceParameter(framework, this, Parameter.ExternalPowerAvailability);
                 if (!this.IsSupported(DeviceCapability.ActivationMode))
                 {
                     deviceParameter32.removeValueOption(ExternalPowerAvailiability.ExternalPowerAvailiabilityUnlimitedActivate);
@@ -439,11 +439,11 @@ namespace Iridium360.Connect.Framework.Implementations
             //            {
             //                if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeMobWatcher))
             //                {
-            //                    DeviceParameter deviceParameter33 = new DeviceParameter(Parameter.ExternalMobWatcher);
+            //                    __DeviceParameter deviceParameter33 = new __DeviceParameter(Parameter.ExternalMobWatcher);
             //                    parameters.Add(deviceParameter33);
             //                    this.f497h.Add(deviceParameter33);
             //                }
-            //                DeviceParameter deviceParameter34 = new DeviceParameter(Parameter.ExternalStatus);
+            //                __DeviceParameter deviceParameter34 = new __DeviceParameter(Parameter.ExternalStatus);
 
             //                if (!DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeMaximet))
             //                {
@@ -467,15 +467,15 @@ namespace Iridium360.Connect.Framework.Implementations
             //                }
             //                parameters.Add(deviceParameter34);
             //                this.f497h.Add(deviceParameter34);
-            //                DeviceParameter deviceParameter35 = new DeviceParameter(Parameter.ExternalSampleRate);
+            //                __DeviceParameter deviceParameter35 = new __DeviceParameter(Parameter.ExternalSampleRate);
             //                parameters.Add(deviceParameter35);
             //                this.f497h.Add(deviceParameter35);
-            //                DeviceParameter deviceParameter36 = new DeviceParameter(Parameter.ExternalBaudRate);
+            //                __DeviceParameter deviceParameter36 = new __DeviceParameter(Parameter.ExternalBaudRate);
             //                parameters.Add(deviceParameter36);
             //                this.f497h.Add(deviceParameter36);
             //                if (DeviceHelper.IsCapabilitySupported(this, DeviceCapability.DeviceCapabilityTypeInputSensitivity))
             //                {
-            //                    DeviceParameter deviceParameter37 = new DeviceParameter(Parameter.InputSensitivity);
+            //                    __DeviceParameter deviceParameter37 = new __DeviceParameter(Parameter.InputSensitivity);
             //                    parameters.Add(deviceParameter37);
             //                    this.f497h.Add(deviceParameter37);
             //                }
@@ -484,35 +484,35 @@ namespace Iridium360.Connect.Framework.Implementations
 
             if (this.IsSupported(DeviceCapability.Gprs) && framework.IsGprsAttached)
             {
-                DeviceParameter deviceParameter38 = new DeviceParameter(framework, this, Parameter.GprsStrategy);
+                __DeviceParameter deviceParameter38 = new __DeviceParameter(framework, this, Parameter.GprsStrategy);
                 Parameters.Add(deviceParameter38);
-                DeviceParameter deviceParameter39 = new DeviceParameter(framework, this, Parameter.GprsMsisdn);
+                __DeviceParameter deviceParameter39 = new __DeviceParameter(framework, this, Parameter.GprsMsisdn);
                 Parameters.Add(deviceParameter39);
-                DeviceParameter deviceParameter40 = new DeviceParameter(framework, this, Parameter.GprsSim);
+                __DeviceParameter deviceParameter40 = new __DeviceParameter(framework, this, Parameter.GprsSim);
                 Parameters.Add(deviceParameter40);
-                DeviceParameter deviceParameter41 = new DeviceParameter(framework, this, Parameter.GprsSignal);
+                __DeviceParameter deviceParameter41 = new __DeviceParameter(framework, this, Parameter.GprsSignal);
                 Parameters.Add(deviceParameter41);
-                DeviceParameter deviceParameter42 = new DeviceParameter(framework, this, Parameter.GprsStatus);
+                __DeviceParameter deviceParameter42 = new __DeviceParameter(framework, this, Parameter.GprsStatus);
                 Parameters.Add(deviceParameter42);
-                DeviceParameter deviceParameter43 = new DeviceParameter(framework, this, Parameter.GprsLocation);
+                __DeviceParameter deviceParameter43 = new __DeviceParameter(framework, this, Parameter.GprsLocation);
                 Parameters.Add(deviceParameter43);
             }
 
-            DeviceParameter deviceParameter44 = new DeviceParameter(framework, this, Parameter.GPSEarlyWakeup);
+            __DeviceParameter deviceParameter44 = new __DeviceParameter(framework, this, Parameter.GPSEarlyWakeup);
             Parameters.Add(deviceParameter44);
-            DeviceParameter deviceParameter45 = new DeviceParameter(framework, this, Parameter.GPSMode);
+            __DeviceParameter deviceParameter45 = new __DeviceParameter(framework, this, Parameter.GPSMode);
             Parameters.Add(deviceParameter45);
-            DeviceParameter deviceParameter46 = new DeviceParameter(framework, this, Parameter.GPSFixesBeforeAccept);
+            __DeviceParameter deviceParameter46 = new __DeviceParameter(framework, this, Parameter.GPSFixesBeforeAccept);
             Parameters.Add(deviceParameter46);
-            DeviceParameter deviceParameter47 = new DeviceParameter(framework, this, Parameter.GPSHotStatus);
+            __DeviceParameter deviceParameter47 = new __DeviceParameter(framework, this, Parameter.GPSHotStatus);
             Parameters.Add(deviceParameter47);
-            DeviceParameter deviceParameter48 = new DeviceParameter(framework, this, Parameter.GpxLoggingPeriod);
+            __DeviceParameter deviceParameter48 = new __DeviceParameter(framework, this, Parameter.GpxLoggingPeriod);
             Parameters.Add(deviceParameter48);
-            DeviceParameter deviceParameter49 = new DeviceParameter(framework, this, Parameter.GpxLoggingStatus);
+            __DeviceParameter deviceParameter49 = new __DeviceParameter(framework, this, Parameter.GpxLoggingStatus);
             Parameters.Add(deviceParameter49);
-            DeviceParameter deviceParameter50 = new DeviceParameter(framework, this, Parameter.MailboxCheckFrequency);
+            __DeviceParameter deviceParameter50 = new __DeviceParameter(framework, this, Parameter.MailboxCheckFrequency);
             Parameters.Add(deviceParameter50);
-            DeviceParameter deviceParameter51 = new DeviceParameter(framework, this, Parameter.MailboxCheckStatus);
+            __DeviceParameter deviceParameter51 = new __DeviceParameter(framework, this, Parameter.MailboxCheckStatus);
             Parameters.Add(deviceParameter51);
 
             if (framework.IsGprsAttached && this.IsSupported(DeviceCapability.GprsConfig))
@@ -535,7 +535,7 @@ namespace Iridium360.Connect.Framework.Implementations
 
             if (this.IsSupported(DeviceCapability.TransmissionFormat))
             {
-                DeviceParameter deviceParameter52 = new DeviceParameter(framework, this, Parameter.TransmissionFormat);
+                __DeviceParameter deviceParameter52 = new __DeviceParameter(framework, this, Parameter.TransmissionFormat);
                 Parameters.Add(deviceParameter52);
             }
         }
@@ -550,7 +550,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <returns></returns>
         public async Task UpdateParameter(Parameter parameterId)
         {
-            DeviceParameter parameter = GetParameter(parameterId);
+            IDeviceParameter parameter = GetParameter(parameterId);
 
             if (parameter == null)
                 throw new NullReferenceException($"Unknown device parameter `{parameterId}`");
@@ -614,7 +614,7 @@ namespace Iridium360.Connect.Framework.Implementations
 
 
             ///Обновляем кэшированное значение, если новое значение успешно сохранилось 
-            parameter.UpdateCachedValue(bytes);
+            ((BaseDeviceParameter)parameter).UpdateCachedValue(bytes);
         }
 
 
@@ -623,7 +623,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private DeviceParameter GetParameter(Parameter id)
+        private IDeviceParameter GetParameter(Parameter id)
         {
             return this.Parameters.FirstOrDefault(x => x.Id == id);
         }
@@ -633,7 +633,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// </summary>
         /// <param name="gatt"></param>
         /// <returns></returns>
-        internal DeviceParameter GetParameter(Guid gatt)
+        internal IDeviceParameter GetParameter(Guid gatt)
         {
             return this.Parameters.FirstOrDefault(x => x.GattId == gatt);
         }
@@ -646,7 +646,7 @@ namespace Iridium360.Connect.Framework.Implementations
         {
             this.Parameters.ForEach(p =>
             {
-                p.IsAvailable = identifiers.Contains(p.GattId);
+                ((__DeviceParameter)p).IsAvailable = identifiers.Contains(p.GattId);
             });
         }
 
@@ -658,14 +658,14 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <param name="data"></param>
         internal void OnParameterUpdated(Guid gatt, byte[] data)
         {
-            DeviceParameter parameter = GetParameter(gatt);
+            IDeviceParameter parameter = GetParameter(gatt);
 
             if (parameter == null)
                 throw new NullReferenceException("Unknown device parameter");
 
             try
             {
-                bool changed = parameter.UpdateCachedValue(data);
+                bool changed = ((BaseDeviceParameter)parameter).UpdateCachedValue(data);
 
                 if (changed)
                 {

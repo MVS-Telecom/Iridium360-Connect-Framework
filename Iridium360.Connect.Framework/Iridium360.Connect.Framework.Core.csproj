@@ -72,7 +72,7 @@
     <Compile Update="Sources\Implementation__EXPERIMENTAL\Device\DeviceHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Sources\Abstractions\DeviceParameter.cs">
+    <Compile Update="Sources\Abstractions\IDeviceParameter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Sources\Abstractions\Enums.cs">

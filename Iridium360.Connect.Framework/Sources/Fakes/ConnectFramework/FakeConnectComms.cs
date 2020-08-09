@@ -1,4 +1,5 @@
 ﻿using Iridium360.Connect.Framework.Helpers;
+using Iridium360.Connect.Framework.Implementations;
 using Iridium360.Connect.Framework.Messaging;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Iridium360.Connect.Framework.Fakes
 {
-    internal class FakeDeviceParameter : DeviceParameter
+    internal class FakeDeviceParameter : __DeviceParameter
     {
-        public FakeDeviceParameter(IFramework Rock, IDevice device, Parameter id, Enum value) : base(Rock, device, id)
+        public FakeDeviceParameter(IFramework framework, IDevice device, Parameter id, Enum value) : base(framework, device, id)
         {
             UpdateCachedValue(new byte[] { Convert.ToByte(value) });
         }
@@ -35,7 +36,7 @@ namespace Iridium360.Connect.Framework.Fakes
 
         public Location Location => new Location(-27.128921, -109.366282);
 
-        public List<DeviceParameter> Parameters { get; set; }
+        public List<IDeviceParameter> Parameters { get; set; }
 
         public string Firmware { get; set; }
 
@@ -67,7 +68,7 @@ namespace Iridium360.Connect.Framework.Fakes
             this.framework = framework;
             this.Name = name;
 
-            Parameters = new List<DeviceParameter>()
+            Parameters = new List<IDeviceParameter>()
             {
                 new FakeDeviceParameter(framework, this, Parameter.MailboxCheckStatus, MailboxCheckStatus.On),
                 new FakeDeviceParameter(framework, this, Parameter.MailboxCheckFrequency, MailboxCheckFrequency.Frequency120min),
@@ -92,7 +93,7 @@ namespace Iridium360.Connect.Framework.Fakes
             return Task.Run(async () =>
             {
                 await Task.Delay(200);
-                Parameters.SingleOrDefault(x => x.Id == parameter).UpdateCachedValue(new byte[] { Convert.ToByte(value) });
+                ((BaseDeviceParameter)Parameters.SingleOrDefault(x => x.Id == parameter)).UpdateCachedValue(new byte[] { Convert.ToByte(value) });
             });
         }
 

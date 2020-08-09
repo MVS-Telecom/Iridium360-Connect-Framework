@@ -9,27 +9,99 @@ using System.Threading.Tasks;
 
 namespace Iridium360.Connect.Framework
 {
-    [DebuggerDisplay("{Id} -> {CachedValue}")]
-    public class DeviceParameter
+    public interface IDeviceParameter
     {
-        public readonly Parameter Id;
-        private int? cachedValue;
+        /// <summary>
+        /// 
+        /// </summary>
+        Parameter Id { get; }
 
         /// <summary>
-        /// Значение параметра (кэшированное)
+        /// 
         /// </summary>
-        public Enum CachedValue
-        {
-            get
-            {
-                var type = Id.GetAttribute<ValuesAttribute>()?.Value;
+        Guid GattId { get; }
 
-                if (type == null || cachedValue == null)
-                    return null;
+        /// <summary>
+        /// 
+        /// </summary>
+        bool HasCachedValue { get; }
 
-                return Enum.GetValues(type).Cast<Enum>().FirstOrDefault(x => Convert.ToInt32(x) == cachedValue.Value);
-            }
-        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Enum CachedValue { get; }
+
+
+        /// <summary>
+        /// Название группы, к которой относится параметр
+        /// </summary>
+        Group? Group { get; }
+
+        /// <summary>
+        /// Позиция в группе
+        /// </summary>
+        int OrderInGroup { get; }
+
+        /// <summary>
+        /// Параметр можно изменять
+        /// </summary>
+        bool IsReadonly { get; }
+
+        /// <summary>
+        /// Описание параметра
+        /// </summary>
+        string Description { get; }
+
+        /// <summary>
+        /// Параметр доступен (можно прочитать/записать)
+        /// </summary>
+        bool IsAvailable { get; }
+
+        /// <summary>
+        /// Значение параметра не нужно очищать при отключении от устройства
+        /// </summary>
+        bool IsPersisted { get; }
+
+        /// <summary>
+        /// Это событие - значение не сохраняется
+        /// </summary>
+        bool IsEvent { get; }
+
+        /// <summary>
+        /// Возможные значения параметра
+        /// </summary>
+        List<Enum> Options { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        bool IsSwitch { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        bool IsCheck { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        bool IsList { get; }
+    }
+
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DebuggerDisplay("{Id} -> {CachedValue}")]
+    internal abstract class BaseDeviceParameter : IDeviceParameter
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public Parameter Id { get; private set; }
 
 
         /// <summary>
@@ -39,19 +111,20 @@ namespace Iridium360.Connect.Framework
         {
             get
             {
-                return RawValue != null && RawValue.Length == 1 && RawValue[0] != byte.MaxValue;
+                return cachedValue != null && cachedValue != byte.MaxValue;
             }
         }
 
+        protected abstract byte? cachedValue { get; }
 
         /// <summary>
-        /// 
+        /// Значение параметра (кэшированное)
         /// </summary>
-        public byte[] RawValue
+        public Enum CachedValue
         {
             get
             {
-                return cachedValueBytes;
+                return Enum.GetValues(type).Cast<Enum>().FirstOrDefault(x => Convert.ToInt32(x) == cachedValue);
             }
         }
 
@@ -94,7 +167,7 @@ namespace Iridium360.Connect.Framework
         /// <summary>
         /// Возможные значения параметра
         /// </summary>
-        public List<Enum> Options { get; private set; } = new List<Enum>();
+        public abstract List<Enum> Options { get; }
 
         /// <summary>
         /// 
@@ -114,29 +187,29 @@ namespace Iridium360.Connect.Framework
         /// <summary>
         /// Id GATT характеристики по которой происходит чтение/запись параметра
         /// </summary>
-        public readonly Guid GattId;
+        public Guid GattId { get; private set; }
 
 
 
-        private Hashtable options = new Hashtable();
         private DateTime cachedTime;
         protected byte[] cachedValueBytes = new byte[0];
-        private IFramework Rock;
+        private IFramework framework;
         private IDevice device;
+        protected Type type;
 
 
-        public DeviceParameter(IFramework Rock, IDevice device, Parameter id)
+        public BaseDeviceParameter(IFramework framework, IDevice device, Parameter id)
         {
-            this.Rock = Rock;
-            this.device = device;
             this.Id = id;
+            this.framework = framework;
+            this.device = device;
+            this.type = Id.GetAttribute<ValuesAttribute>()?.Value;
 
-            string gatt = id.GetAttribute<GattCharacteristicAttribute>()?.Value;
+            string gatt = Id.GetAttribute<GattCharacteristicAttribute>()?.Value;
 
             if (!string.IsNullOrEmpty(gatt))
                 this.GattId = Guid.Parse(gatt);
-            //else
-                //Debugger.Break();
+
 
             IsReadonly = id.HasAttribute<ReadonlyAttribute>();
             Group = id.GetAttribute<GroupAttribute>()?.Key;
@@ -149,68 +222,16 @@ namespace Iridium360.Connect.Framework
             IsCheck = id.HasAttribute<CheckAttribute>();
             IsList = id.HasAttribute<ListAttribute>();
 
-            var type = id.GetAttribute<ValuesAttribute>()?.Value;
+            //var type = id.GetAttribute<ValuesAttribute>()?.Value;
 
-            if (type != null)
-            {
-                Options = Enum.GetValues(type)
-                    .OfType<Enum>()
-                    .Where(x => !x.HasAttribute<HiddenAttribute>())
-                    .OrderBy(x => x.GetAttribute<OrderAttribute>()?.Value ?? int.MaxValue)
-                    .ToList();
-            }
-        }
-
-        public Task SaveValue(Enum value)
-        {
-            return device.SaveDeviceParameter(this.Id, value);
-        }
-
-        public void removeValueOption(Enum value)
-        {
-            this.Options.Remove(value);
-        }
-
-        public DateTime getCachedTime()
-        {
-            return this.cachedTime;
-        }
-
-
-        public byte[] getCachedValueBytes()
-        {
-            return this.cachedValueBytes;
-        }
-
-
-        public Hashtable getOptions()
-        {
-            return this.options;
-        }
-
-        public List<Enum> getOptionsIndex()
-        {
-            return this.Options;
-        }
-
-        public bool isCachedValueUsable()
-        {
-            return this.cachedValue.HasValue && this.cachedValue != 999;
-        }
-
-        public string labelForValue(int value)
-        {
-            return (string)this.options[value];
-        }
-
-        public void setOptions(Hashtable options)
-        {
-            this.options = options;
-        }
-
-        public void setOptionsIndex(List<Enum> optionsIndex)
-        {
-            this.Options = optionsIndex;
+            //if (type != null)
+            //{
+            //    Options = Enum.GetValues(type)
+            //        .OfType<Enum>()
+            //        .Where(x => !x.HasAttribute<HiddenAttribute>())
+            //        .OrderBy(x => x.GetAttribute<OrderAttribute>()?.Value ?? int.MaxValue)
+            //        .ToList();
+            //}
         }
 
 
@@ -219,7 +240,7 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         /// <param name="value"></param>
         /// <returns>Изменился?</returns>
-        public bool UpdateCachedValue(byte[] value)
+        internal virtual bool UpdateCachedValue(byte[] value)
         {
             if (IsEvent)
             {
@@ -241,7 +262,6 @@ namespace Iridium360.Connect.Framework
             bool changed = value?.FirstOrDefault() != cachedValue;
 
             this.cachedValueBytes = value;
-            this.cachedValue = value?.FirstOrDefault();
             this.cachedTime = DateTime.Now;
 
             if (changed)

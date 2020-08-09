@@ -1,0 +1,50 @@
+﻿using Android.Runtime;
+using Iridium360.Connect.Framework;
+using Iridium360.Connect.Framework.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UK.Rock7.Connect.Device;
+using Iridium360.Connect.Framework.Util;
+
+
+namespace ConnectFramework.Shared
+{
+    [DebuggerDisplay("{Id} -> {CachedValue}")]
+    internal class R7DeviceParameter : BaseDeviceParameter
+    {
+
+        protected override byte? cachedValue => (source.CachedValue >= 0 && source.CachedValue < byte.MaxValue) ? (byte)source.CachedValue : (byte?)null;
+
+
+        /// <summary>
+        /// Возможные значения параметра
+        /// </summary>
+        public override List<Enum> Options
+        {
+            get
+            {
+                var options = new Android.Runtime.JavaDictionary<int, string>(source.Options.Handle, Android.Runtime.JniHandleOwnership.DoNotRegister).ToDictionary(t => t.Key, t => t.Value);
+
+                return options.Keys
+                    .OrderBy(x => x)
+                    .Select(x => (Enum)Enum.ToObject(type, x))
+                    .Where(x => !x.HasAttribute<HiddenAttribute>())
+                    .OrderBy(x => x.GetAttribute<OrderAttribute>()?.Value ?? int.MaxValue)
+                    .ToList();
+            }
+        }
+
+
+        private readonly DeviceParameter source;
+
+        public R7DeviceParameter(R7ConnectFramework framework, R7Device device, DeviceParameter source) : base(framework, device, source.Identifier.ToR7().FromR7())
+        {
+            this.source = source;
+        }
+
+    }
+}

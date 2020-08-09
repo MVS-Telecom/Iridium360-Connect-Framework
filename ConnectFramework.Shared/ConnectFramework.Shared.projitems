@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)R7Device.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)R7DeviceParameter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)R7Helpers.cs">
       <SubType>Code</SubType>
     </Compile>

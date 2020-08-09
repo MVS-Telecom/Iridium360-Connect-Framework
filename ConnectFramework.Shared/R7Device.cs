@@ -74,7 +74,7 @@ namespace ConnectFramework.Shared
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public List<Iridium360.Connect.Framework.DeviceParameter> Parameters { get; private set; }
+        public List<IDeviceParameter> Parameters { get; private set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -217,20 +217,9 @@ namespace ConnectFramework.Shared
 
                 if (state == DeviceState.Connected)
                 {
-                    Parameters = source.Parameters()
-                        .Select(x =>
-                        {
-                            try
-                            {
-                                var id = x.Identifier.ToR7().FromR7();
-                                return new Iridium360.Connect.Framework.DeviceParameter(framework, this, id);
-                            }
-                            catch
-                            {
-                                return null;
-                            }
-                        })
-                        .Where(x => x != null)
+                    Parameters = source
+                        .Parameters()
+                        .Select(x => (IDeviceParameter)new R7DeviceParameter(framework, this, x))
                         .ToList();
 
                     DeviceInfoUpdated(this, new EventArgs());
@@ -311,6 +300,10 @@ namespace ConnectFramework.Shared
         public void OnParameterChanged(DeviceParameter p)
 #endif
         {
+            if (State != DeviceState.Connected)
+                throw new NotConnectedException();
+
+
             var id = p.Identifier.ToR7().FromR7().EnumToInt();
             var parameter = Parameters.SingleOrDefault(x => (int)x.Id == (int)id);
 
@@ -319,7 +312,7 @@ namespace ConnectFramework.Shared
 
             try
             {
-                bool changed = parameter.UpdateCachedValue(new byte[] { (byte)p.CachedValue });
+                bool changed = ((BaseDeviceParameter)parameter).UpdateCachedValue(new byte[] { (byte)p.CachedValue });
 
                 if (changed)
                 {
