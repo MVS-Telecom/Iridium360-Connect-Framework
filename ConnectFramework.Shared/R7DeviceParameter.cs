@@ -2,6 +2,7 @@
 using Android.Runtime;
 using UK.Rock7.Connect.Device;
 #elif IOS
+using Foundation;
 #endif
 using Iridium360.Connect.Framework;
 using Iridium360.Connect.Framework.Exceptions;
@@ -12,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Iridium360.Connect.Framework.Util;
-using Foundation;
+
 
 namespace ConnectFramework.Shared
 {
