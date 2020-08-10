@@ -745,15 +745,22 @@ namespace ConnectFramework.Shared
 
                 var __parameter = comms.CurrentDevice.ParameterForIdentifier(_parameter.EnumToInt());
 
+#if IOS
                 if (__parameter == null || !__parameter.Available)
                     throw new InvalidOperationException($"Parameter `{parameter}` unavailable on this device");
+#elif ANDROID
+                if (__parameter == null || !__parameter.Available.BooleanValue())
+                    throw new InvalidOperationException($"Parameter `{parameter}` unavailable on this device");
+#endif
 
-
+#if IOS
                 var option = __parameter.Options.SingleOrDefault(x => ((NSNumber)x.Key).Int32Value == _value);
+#elif ANDROID
+                var option = new Android.Runtime.JavaDictionary<int?, string>(__parameter.Options.Handle, Android.Runtime.JniHandleOwnership.DoNotRegister).ToDictionary(t => t.Key, t => t.Value).SingleOrDefault(x => x.Key == _value);
+#endif
 
                 if (option.Key == null)
                     throw new InvalidOperationException($"Option `{value}` for `{parameter}` unavailable on this device");
-
 
 
 #if ANDROID
