@@ -20,10 +20,6 @@ namespace ConnectFramework.Shared
     [DebuggerDisplay("{Id} -> {CachedValue}")]
     internal class R7DeviceParameter : BaseDeviceParameter
     {
-
-        protected override byte? cachedValue => (source.CachedValue >= 0 && source.CachedValue < byte.MaxValue) ? (byte)source.CachedValue : (byte?)null;
-
-
         /// <summary>
         /// Возможные значения параметра
         /// </summary>

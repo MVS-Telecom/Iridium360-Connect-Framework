@@ -115,7 +115,20 @@ namespace Iridium360.Connect.Framework
             }
         }
 
-        protected abstract byte? cachedValue { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected byte? cachedValue
+        {
+            get
+            {
+                return (bytes?.Length > 0 && bytes?.FirstOrDefault() >= 0 && bytes?.FirstOrDefault() < byte.MaxValue)
+                    ? bytes.FirstOrDefault()
+                    : (byte?)null;
+            }
+        }
+
 
         /// <summary>
         /// Значение параметра (кэшированное)
@@ -191,8 +204,8 @@ namespace Iridium360.Connect.Framework
 
 
 
-        private DateTime cachedTime;
-        protected byte[] cachedValueBytes = new byte[0];
+        private DateTime? cachedTime;
+        protected byte[] bytes = new byte[0];
         private IFramework framework;
         private IDevice device;
         protected Type type;
@@ -238,9 +251,9 @@ namespace Iridium360.Connect.Framework
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="new"></param>
         /// <returns>Изменился?</returns>
-        internal virtual bool UpdateCachedValue(byte[] value)
+        internal bool UpdateCachedValue(byte[] @new)
         {
             if (IsEvent)
             {
@@ -248,20 +261,20 @@ namespace Iridium360.Connect.Framework
                 return true;
             }
 
-            if (value != null && value.Length != 1)
+            if (@new != null && @new.Length != 1)
             {
-                throw new Exception($"Length of value for parameter is {value.Length}");
+                throw new Exception($"Length of value for parameter is {@new.Length}");
             }
 
-            if (value?.FirstOrDefault() == byte.MaxValue)
+            if (@new?.FirstOrDefault() == byte.MaxValue)
             {
                 throw new DeviceIsLockedException();
             }
 
 
-            bool changed = value?.FirstOrDefault() != cachedValue;
+            bool changed = @new?.FirstOrDefault() != cachedValue;
 
-            this.cachedValueBytes = value;
+            this.bytes = @new;
             this.cachedTime = DateTime.Now;
 
             if (changed)

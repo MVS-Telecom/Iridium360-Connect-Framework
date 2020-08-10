@@ -9,6 +9,7 @@ using Iridium360.Connect.Framework;
 using Iridium360.Connect.Framework.Exceptions;
 using Iridium360.Connect.Framework.Helpers;
 using IDeviceParameter = Iridium360.Connect.Framework.IDeviceParameter;
+using System.Diagnostics;
 
 #if IOS
 using Foundation;
@@ -295,10 +296,11 @@ namespace ConnectFramework.Shared
         /// 
         /// </summary>
         /// <param name="p"></param>
+        /// <returns>Changed?</returns>
 #if ANDROID
-        public void OnParameterChanged(UK.Rock7.Connect.Device.DeviceParameter p)
+        public bool OnParameterChanged(UK.Rock7.Connect.Device.DeviceParameter p)
 #elif IOS
-        public void OnParameterChanged(DeviceParameter p)
+        public bool OnParameterChanged(DeviceParameter p)
 #endif
         {
             if (State != DeviceState.Connected)
@@ -309,7 +311,10 @@ namespace ConnectFramework.Shared
             var parameter = Parameters.SingleOrDefault(x => (int)x.Id == (int)id);
 
             if (parameter == null)
-                return;
+            {
+                Debugger.Break();
+                return false;
+            }
 
             try
             {
@@ -323,10 +328,13 @@ namespace ConnectFramework.Shared
                     });
                 }
 
+                return changed;
+
             }
             catch (DeviceIsLockedException e)
             {
                 SetLockStatus(LockState.Locked);
+                return false;
             }
         }
 

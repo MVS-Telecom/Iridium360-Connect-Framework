@@ -883,6 +883,12 @@ namespace ConnectFramework.Shared
                             r.Set();
                     };
 
+                    EventHandler<DeviceParameter> handler1 = (s, e) =>
+                    {
+                        if (e.Identifier.ToR7().EnumToInt() == parameter.EnumToInt())
+                            r.Set();
+                    };
+
                     EventHandler<LockStatusUpdatedEventArgs> handler2 = (s, e) =>
                     {
                         if (e.New != LockState.Unlocked)
@@ -891,6 +897,7 @@ namespace ConnectFramework.Shared
 
                     try
                     {
+                        __DeviceParameterUpdated += handler1;
                         ConnectedDevice.ParameterChanged += handler;
                         ConnectedDevice.DeviceLockStatusUpdated += handler2;
                         r.WaitOne(TimeSpan.FromSeconds(10));
@@ -915,6 +922,7 @@ namespace ConnectFramework.Shared
                     }
                     finally
                     {
+                        __DeviceParameterUpdated -= handler1;
                         ConnectedDevice.ParameterChanged -= handler;
                         ConnectedDevice.DeviceLockStatusUpdated -= handler2;
                     }
@@ -946,8 +954,8 @@ namespace ConnectFramework.Shared
                     if (current == null)
                         throw new Exception();
 
-                    if (Convert.ToInt32(current.CachedValue) == value)
-                        return true;
+                    //if (Convert.ToInt32(current.CachedValue) == value)
+                        //return true;
 
                     AutoResetEvent r = new AutoResetEvent(false);
 
@@ -1101,6 +1109,7 @@ namespace ConnectFramework.Shared
 #endif
 
 
+        private EventHandler<DeviceParameter> __DeviceParameterUpdated = delegate { };
 
 
         public void DeviceParameterUpdated(DeviceParameter p0)
@@ -1109,6 +1118,8 @@ namespace ConnectFramework.Shared
             {
                 logger.Log($"[R7] Device parameter changed `{p0.Label}` [{p0.Characteristic}] -> `{p0.CachedValue}`");
                 device.OnParameterChanged(p0);
+
+                __DeviceParameterUpdated(this, p0);
             });
         }
 
