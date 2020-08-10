@@ -1,4 +1,6 @@
-﻿#if ANDROID
+﻿#if ANDROID || IPHONE
+
+#if ANDROID
 using Android.Runtime;
 using UK.Rock7.Connect.Device;
 #elif IOS
@@ -58,3 +60,6 @@ namespace ConnectFramework.Shared
 
     }
 }
+
+
+#endif
