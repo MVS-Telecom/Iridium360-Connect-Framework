@@ -653,10 +653,12 @@ namespace ConnectFramework.Shared
                     if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
                         throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
 
+
                     await Task.Delay(1000);
                 }
 
                 throw new MessageSendingException($"Message Id={messageId} transfer to error");
+
             }
             finally
             {
@@ -722,8 +724,23 @@ namespace ConnectFramework.Shared
                 await Reconnect();
                 await Unlock();
 
+
                 var _parameter = parameter.ToR7();
                 var _value = Convert.ToInt32(value);
+
+
+                var __parameter = comms.CurrentDevice.ParameterForIdentifier(_parameter.EnumToInt());
+
+                if (__parameter == null || !__parameter.Available)
+                    throw new InvalidOperationException($"Parameter `{parameter}` unavailable on this device");
+
+
+                var option = __parameter.Options.SingleOrDefault(x => ((NSNumber)x.Key).Int32Value == _value);
+
+                if (option.Key == null)
+                    throw new InvalidOperationException($"Option `{value}` for `{parameter}` unavailable on this device");
+
+
 
 #if ANDROID
                 (comms.CurrentDevice as R7GenericDevice).UpdateParameter(_parameter, _value);
