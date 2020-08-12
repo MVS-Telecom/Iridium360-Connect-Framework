@@ -16,8 +16,17 @@ namespace Iridium360.Connect.Framework.Messaging
             if (Direction != Direction.MO)
                 throw new InvalidOperationException();
 
-            writer.Write((float)Lat, true, 7, 9);
-            writer.Write((float)Lon, true, 8, 9);
+            if (Version >= ProtocolVersion.LocationFix)
+            {
+                writer.Write((float)Lat, true, 7, 13);
+                writer.Write((float)Lon, true, 8, 13);
+            }
+            else
+            {
+                writer.Write((float)Lat, true, 7, 9);
+                writer.Write((float)Lon, true, 8, 9);
+            }
+
 
             if (Alt != null)
             {
@@ -32,8 +41,17 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected void ReadLocation(BinaryBitReader reader)
         {
-            Lat = reader.ReadFloat(true, 7, 9);
-            Lon = reader.ReadFloat(true, 8, 9);
+            if (Version >= ProtocolVersion.LocationFix)
+            {
+                Lat = reader.ReadFloat(true, 7, 13);
+                Lon = reader.ReadFloat(true, 8, 13);
+            }
+            else
+            {
+                Lat = reader.ReadFloat(true, 7, 9);
+                Lon = reader.ReadFloat(true, 8, 9);
+            }
+
 
             bool hasAlt = reader.ReadBoolean();
 
