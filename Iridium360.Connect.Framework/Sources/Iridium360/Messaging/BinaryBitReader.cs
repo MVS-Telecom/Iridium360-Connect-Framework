@@ -137,12 +137,12 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             bool negative = false;
 
-            float b = ReadUInt(bits);
-            float a = ReadUInt(decimalBits);
+            double b = ReadUInt(bits);
+            double a = ReadUInt(decimalBits);
 
-            a /= (float)Math.Pow(2, decimalBits);
+            a /= Math.Pow(2, decimalBits);
 
-            float value = a + b;
+            double value = a + b;
 
             if (signed)
             {
@@ -154,7 +154,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
             Trace();
 
-            return value;
+            return (float)value;
         }
 
 
