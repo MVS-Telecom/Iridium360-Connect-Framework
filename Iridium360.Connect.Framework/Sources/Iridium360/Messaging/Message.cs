@@ -57,9 +57,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     writer2.Write(SIGNATURE);
                     writer2.Write((bool)(this.Direction == Iridium360.Connect.Framework.Messaging.Direction.MO));
                     writer2.Write((bool)(this.Composite == Iridium360.Connect.Framework.Messaging.Composite.Complex));
-                    writer2.Write(false);
-                    writer2.Write(false);
-                    writer2.Write(false);
+                    writer2.Write((uint)this.Version, 3);
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 4) == 4));
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 2) == 2));
                     writer2.Write((bool)((((this.Length & 0x700) >> 8) & 1) == 1));
@@ -118,9 +116,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     var direction = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Direction.MO : Iridium360.Connect.Framework.Messaging.Direction.MT;
                     var composite = reader.ReadBoolean() ? Iridium360.Connect.Framework.Messaging.Composite.Complex : Iridium360.Connect.Framework.Messaging.Composite.Simple;
-                    bool flag = reader.ReadBoolean();
-                    flag = reader.ReadBoolean();
-                    flag = reader.ReadBoolean();
+                    var version = reader.ReadUInt(3);
 
                     var count = (0 + (reader.ReadBoolean() ? ((ushort)0x400) : ((ushort)0)))
                         + (reader.ReadBoolean() ? ((ushort)0x200) : ((ushort)0))
@@ -152,6 +148,7 @@ namespace Iridium360.Connect.Framework.Messaging
                             var type = knownTypes.Where(t => t.Key == messageType).FirstOrDefault();
                             Message message = (Message)Activator.CreateInstance(type.Value, true);
 
+                            message.Version = (ProtocolVersion)version;
                             message.Composite = composite;
                             message.Group = (byte)group;
                             message.Part = (byte)part;
@@ -180,6 +177,14 @@ namespace Iridium360.Connect.Framework.Messaging
         public abstract Iridium360.Connect.Framework.Messaging.Direction Direction { get; }
 
         public virtual Iridium360.Connect.Framework.Messaging.Composite Composite { get; private set; }
+
+        public enum ProtocolVersion : byte
+        {
+            First = 0,
+            LocationFix = 1,
+        }
+
+        public ProtocolVersion Version { get; private set; } = ProtocolVersion.LocationFix;
 
         public byte Group { get; private set; }
 
