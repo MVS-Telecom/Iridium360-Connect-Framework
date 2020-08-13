@@ -147,6 +147,11 @@ namespace Iridium360.Connect.Framework
         event EventHandler<EventArgs> DeviceConnectionLost;
 
         /// <summary>
+        /// Смартфон поддерживает Bluetoth Low Energy?
+        /// </summary>
+        bool IsLeSupported { get; }
+
+        /// <summary>
         /// 
         /// </summary>
         Task<bool> TurnOn(bool force = true);

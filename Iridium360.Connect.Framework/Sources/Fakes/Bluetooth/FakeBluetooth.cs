@@ -14,6 +14,8 @@ namespace Iridium360.Connect.Framework.Fakes
 
         public bool IsOn => true;
 
+        public bool IsLeSupported => true;
+
 
         public Task ConnectToDeviceAsync(IBluetoothDevice device)
         {
