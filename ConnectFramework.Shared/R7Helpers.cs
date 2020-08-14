@@ -106,6 +106,9 @@ namespace ConnectFramework.Shared
             this.Id = Guid.Parse($"00000000-0000-0000-0000-{id.Replace(":", "")}");
             this.Mac = id;
 #elif IOS
+            if (id.Length != Guid.Empty.ToString().Length)
+                id = $"00000000-0000-0000-0000-{id.Replace(":", "")}";
+
             this.Id = Guid.Parse(id);
             this.Mac = null;
 #endif

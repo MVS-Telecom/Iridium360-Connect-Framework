@@ -745,7 +745,7 @@ namespace ConnectFramework.Shared
             var fix = e.FoundDevices.Where(x => x.Mac.ToUpper().StartsWith("68:0A:E2")).ToList();
 
             foreach (var d in fix)
-                DiscoveryFoundDevice(d.Mac, d.Name);
+                __DiscoveryFoundDevice(d.Mac, d.Name);
         }
 
 
@@ -1413,6 +1413,12 @@ namespace ConnectFramework.Shared
         public void DiscoveryFoundDevice(Foundation.NSUuid deviceIdentifier, string deviceName)
 #endif
         {
+            __DiscoveryFoundDevice(deviceIdentifier.ToString(), deviceName);
+        }
+
+
+        public void __DiscoveryFoundDevice(string deviceIdentifier, string deviceName)
+        {
             Safety(() =>
             {
                 if (devices.Any(x => x.Id.ToString() == deviceIdentifier.ToString()))
@@ -1426,6 +1432,7 @@ namespace ConnectFramework.Shared
                 });
             });
         }
+
 
 
         public void DiscoveryStarted()
