@@ -707,6 +707,10 @@ namespace ConnectFramework.Shared
 #endif
 
             comms.StartDiscovery();
+
+            //HACK
+            bluetoothHelper.StartLeScan();
+            bluetoothHelper.ScanResults += BluetoothHelper_ScanResults;
         }
 
 
@@ -719,8 +723,30 @@ namespace ConnectFramework.Shared
             {
                 comms.StopDiscovery();
             });
+
+
+            Safety(() =>
+            {
+                bluetoothHelper.StopLeScan();
+                bluetoothHelper.ScanResults -= BluetoothHelper_ScanResults;
+            });
         }
 
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BluetoothHelper_ScanResults(object sender, ScanResultsEventArgs e)
+        {
+            var fix = e.FoundDevices.Where(x => x.Mac.ToUpper().StartsWith("68:0A:E2")).ToList();
+
+            foreach (var d in fix)
+                DiscoveryFoundDevice(d.Mac, d.Name);
+        }
 
 
 
@@ -955,7 +981,7 @@ namespace ConnectFramework.Shared
                         throw new Exception();
 
                     //if (Convert.ToInt32(current.CachedValue) == value)
-                        //return true;
+                    //return true;
 
                     AutoResetEvent r = new AutoResetEvent(false);
 
@@ -1389,6 +1415,9 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
+                if (devices.Any(x => x.Id.ToString() == deviceIdentifier.ToString()))
+                    return;
+
                 devices.Add(new R7BluetoothDevice(deviceIdentifier.ToString(), deviceName));
 
                 DeviceSearchResults(this, new DeviceSearchResultsEventArgs()

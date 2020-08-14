@@ -68,8 +68,11 @@ namespace Iridium360.Connect.Framework
 
     public interface IBluetoothHelper
     {
+        event EventHandler<ScanResultsEventArgs> ScanResults;
         bool IsOn { get; }
         Task<bool> TurnOn(bool force = false);
+        void StartLeScan();
+        void StopLeScan();
     }
 
 
