@@ -285,7 +285,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 var group = (byte)storage.GetShort("r7-group-id", 1);
 
                 var packets = message.Pack(group);
-                logger.Log($"[MESSAGE] Sending message Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
+                logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
 
                 foreach (var packet in packets)
                     logger.Log($"   => 0x{packet.Payload.ToHexString()}");
