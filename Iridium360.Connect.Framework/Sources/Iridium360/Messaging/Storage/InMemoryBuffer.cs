@@ -8,6 +8,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
     public class InMemoryBuffer : IPacketBuffer
     {
         private List<Packet> packets = new List<Packet>();
+        private List<Message> messages = new List<Message>();
 
         public List<Packet> GetPackets(uint messageId)
         {
@@ -62,12 +63,18 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
 
         public Message GetMessageByGroup(uint group)
         {
-            throw new NotImplementedException();
+            lock (typeof(InMemoryBuffer))
+            {
+                return messages.SingleOrDefault(x => x.Group == group);
+            }
         }
 
         public void SaveMessage(Message message)
         {
-            throw new NotImplementedException();
+            lock (typeof(InMemoryBuffer))
+            {
+                messages.Add(message);
+            }
         }
     }
 }
