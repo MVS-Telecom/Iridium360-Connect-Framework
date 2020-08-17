@@ -126,7 +126,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     {
                         Debugger.Break();
 
-                        logger.Log($"[MESSAGE] Legacy message received Id={legacy.Group} Index={legacy.Index} Progress={legacy.ReadyParts}/{legacy.TotalParts} -> COMPLETED");
+                        logger.Log($"[MESSAGE] Legacy message received Group={legacy.Group} Index={legacy.Index} Progress={legacy.ReadyParts}/{legacy.TotalParts} -> COMPLETED");
 
                         var subscriber = legacy.GetSubscriber();
                         var text = legacy.GetText();
@@ -140,7 +140,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     }
                     else
                     {
-                        logger.Log($"[MESSAGE] Legacy message received Id={legacy.Group} Index={legacy.Index} Progress={legacy.ReadyParts}/{legacy.TotalParts} -> INCOMPLETE - waiting for next parts");
+                        logger.Log($"[MESSAGE] Legacy message received Group={legacy.Group} Index={legacy.Index} Progress={legacy.ReadyParts}/{legacy.TotalParts} -> INCOMPLETE - waiting for next parts");
                         Debugger.Break();
                     }
                 }
@@ -154,6 +154,8 @@ namespace Iridium360.Connect.Framework.Messaging
                     {
                         Debugger.Break();
 
+                        logger.Log($"[MESSAGE] Message received Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> COMPLETED");
+
                         MessageReceived(this, new MessageReceivedEventArgs()
                         {
                             Message = message
@@ -161,7 +163,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     }
                     else
                     {
-                        logger.Log($"[MESSAGE] Message received Id={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> INCOMPLETE - waiting for next parts");
+                        logger.Log($"[MESSAGE] Message received Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> INCOMPLETE - waiting for next parts");
                         Debugger.Break();
                     }
                 }
@@ -228,7 +230,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 ///Кол-во отправленных чатей сообщения
                 var transmittedCount = buffer
-                    .GetPackets(packet.Group)
+                    .GetPackets(packet.Group, packet.Direction)
                     .Where(x => x.Status >= PacketStatus.Transmitted)
                     .Count();
 
@@ -239,7 +241,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 ///Все части отправлены == сообщение передано
                 if (transmittedCount == packet.TotalParts)
                 {
-                    var message = buffer.GetMessageByGroup(packet.Group);
+                    var message = buffer.GetMessageByGroup(packet.Group, packet.Direction);
 
                     if (message == null)
                         throw new NullReferenceException($"Message with group `{packet.Group}` not found");
@@ -253,7 +255,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     });
 
                     ///Удаляем пакеты -> они отправлены и больше не нужны
-                    buffer.DeletePackets(packet.Group);
+                    buffer.DeletePackets(packet.Group, packet.Direction);
                 }
                 else
                 {
@@ -294,7 +296,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 ///Передаем пакеты на устройство
                 foreach (var packet in packets)
                 {
-                    bool exist = buffer.GetPackets((uint)message.Group).Any(x => x.Index == message.Index);
+                    bool exist = buffer.GetPackets((uint)message.Group, PacketDirection.Outbound).Any(x => x.Index == message.Index);
 
 
                     if (!exist)

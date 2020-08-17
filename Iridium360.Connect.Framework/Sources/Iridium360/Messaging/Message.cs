@@ -128,6 +128,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 payloads.Add(new Packet()
                 {
                     Id = null,
+                    Direction = this.Direction == Direction.MO ? PacketDirection.Outbound : PacketDirection.Inbound,
                     Index = this.Index,
                     Group = this.Group,
                     TotalParts = this.TotalParts,
@@ -208,21 +209,23 @@ namespace Iridium360.Connect.Framework.Messaging
                             message.TotalParts = (byte)parts;
                             message.Payload = payload;
 
-                            partsBuffer.SavePacket(new Packet()
+                            var packet = new Packet()
                             {
                                 Id = $"{message.Group}:{message.Index}",
+                                Direction = direction == Direction.MO ? PacketDirection.Outbound : PacketDirection.Inbound,
                                 Index = message.Index,
                                 Group = message.Group,
                                 TotalParts = message.TotalParts,
                                 Payload = message.Payload,
-                            });
+                            };
+                            partsBuffer.SavePacket(packet);
 
-                            message.ReadyParts = (byte)partsBuffer.GetPacketCount(message.Group);
+                            message.ReadyParts = (byte)partsBuffer.GetPacketCount(message.Group, packet.Direction);
 
                             if (message.Complete)
                             {
                                 var __parts = partsBuffer
-                                    .GetPackets(message.Group)
+                                    .GetPackets(message.Group, packet.Direction)
                                     .OrderBy(x => x.Index)
                                     .Select(x => x.Payload)
                                     .ToList();
@@ -237,7 +240,7 @@ namespace Iridium360.Connect.Framework.Messaging
                                     }
                                 }
 
-                                partsBuffer.DeletePackets(message.Group);
+                                partsBuffer.DeletePackets(message.Group, packet.Direction);
                             }
 
                             return message;
