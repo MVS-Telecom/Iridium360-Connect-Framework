@@ -315,11 +315,14 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             get
             {
-                if ((knownMTTypes?.Count ?? 0) == 0)
+                lock (typeof(MessageType))
                 {
-                    fetchKnownTypes(Direction.MT, ref knownMTTypes);
+                    if ((knownMTTypes?.Count ?? 0) == 0)
+                    {
+                        fetchKnownTypes(Direction.MT, ref knownMTTypes);
+                    }
+                    return knownMTTypes;
                 }
-                return knownMTTypes;
             }
         }
 
