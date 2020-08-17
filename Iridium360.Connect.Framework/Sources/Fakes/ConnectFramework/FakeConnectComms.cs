@@ -286,14 +286,17 @@ namespace Iridium360.Connect.Framework.Fakes
 
         private DateTime time = DateTime.MinValue;
 
-        public Task<ushort> SendData(byte[] data)
+        public async Task<ushort> SendData(byte[] data)
         {
             ushort _messageId = (ushort)storage.GetShort("message-id", 0);
+            var ___messageId = _messageId + 1;
 
-
-            return Task.Run(async () =>
+            return await Task.Run(async () =>
             {
                 await Task.Delay(1000);
+
+                storage.PutShort("message-id", (short)___messageId);
+
 
                 _ = Task.Run(async () =>
                 {
@@ -317,32 +320,21 @@ namespace Iridium360.Connect.Framework.Fakes
                     });
 
 
-                    return;
-
-                    await Task.Delay(5000);
+                    await Task.Delay(delay.Add(TimeSpan.FromSeconds(6)));
 
 
-                    var m = MessageMO.Unpack(data) as ChatMessageMO;
-                    var packets = ChatMessageMT.Create(m.Subscriber, 0, 0, $"[response] {m.Text}").Pack();
+                    //var m = MessageMO.Unpack(data) as ChatMessageMO;
 
 
-
-                    var ___messageId = _messageId;
-
-                    foreach (var p in packets)
+                    PacketReceived(this, new PacketReceivedEventArgs()
                     {
-                        PacketReceived(this, new PacketReceivedEventArgs()
-                        {
-                            Payload = p.Payload,
-                            MessageId = (short)(10000 + ___messageId),
-                            Handled = false
-                        });
+                        Payload = data,
+                        MessageId = (short)(10000 + ___messageId),
+                        Handled = false
+                    });
 
-                    }
+
                 });
-
-
-                storage.PutShort("message-id", (short)(_messageId + 1));
 
                 return _messageId;
             });
