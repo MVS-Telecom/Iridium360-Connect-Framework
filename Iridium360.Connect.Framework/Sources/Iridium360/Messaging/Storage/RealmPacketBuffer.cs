@@ -229,11 +229,13 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                 {
 
 #if DEBUG
-                    var __part = realm.All<Part>().SingleOrDefault(x => x.Id == packet.Id && x.Group == packet.Group && x.Direction == (int)packet.Direction);
-                    if (__part != null)
+                    var __part = realm.Find<Part>(packet.Id);
+                    var __part2 = realm.All<Part>().SingleOrDefault(x => x.Group == packet.Group && x.Index == packet.Index && x.Direction == (int)packet.Direction);
+
+                    if (__part != null || __part2 != null)
                     {
                         Debugger.Break();
-                        throw new InvalidOperationException($"Packet with group `{packet.Group}` already saved in buffer");
+                        //throw new InvalidOperationException($"Packet with group `{packet.Group}` already saved in buffer");
                     }
 #endif
 

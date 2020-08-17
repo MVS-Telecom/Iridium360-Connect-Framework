@@ -127,6 +127,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 payloads.Add(new Packet()
                 {
+                    ///Заполнится дальше
                     Id = null,
                     Direction = this.Direction == Direction.MO ? PacketDirection.Outbound : PacketDirection.Inbound,
                     Index = this.Index,
@@ -151,10 +152,10 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="direction"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        protected static Message Unpack(Dictionary<MessageType, Type> knownTypes, byte[] buffer, IPacketBuffer partsBuffer = null)
+        protected static Message Unpack(Dictionary<MessageType, Type> knownTypes, byte[] buffer, IPacketBuffer packetBuffer = null)
         {
-            if (partsBuffer == null)
-                partsBuffer = new RealmPacketBuffer();
+            if (packetBuffer == null)
+                packetBuffer = new RealmPacketBuffer();
 
 
             using (MemoryStream stream = new MemoryStream(buffer))
@@ -211,20 +212,20 @@ namespace Iridium360.Connect.Framework.Messaging
 
                             var packet = new Packet()
                             {
-                                Id = $"{message.Group}:{message.Index}",
+                                Id = $"{message.Group}@{message.Index}@{(int)message.Direction}",
                                 Direction = direction == Direction.MO ? PacketDirection.Outbound : PacketDirection.Inbound,
                                 Index = message.Index,
                                 Group = message.Group,
                                 TotalParts = message.TotalParts,
                                 Payload = message.Payload,
                             };
-                            partsBuffer.SavePacket(packet);
+                            packetBuffer.SavePacket(packet);
 
-                            message.ReadyParts = (byte)partsBuffer.GetPacketCount(message.Group, packet.Direction);
+                            message.ReadyParts = (byte)packetBuffer.GetPacketCount(message.Group, packet.Direction);
 
                             if (message.Complete)
                             {
-                                var __parts = partsBuffer
+                                var __parts = packetBuffer
                                     .GetPackets(message.Group, packet.Direction)
                                     .OrderBy(x => x.Index)
                                     .Select(x => x.Payload)
@@ -240,7 +241,7 @@ namespace Iridium360.Connect.Framework.Messaging
                                     }
                                 }
 
-                                partsBuffer.DeletePackets(message.Group, packet.Direction);
+                                packetBuffer.DeletePackets(message.Group, packet.Direction);
                             }
 
                             return message;

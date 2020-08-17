@@ -23,12 +23,49 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
     [TestClass]
     public class MessageTest
     {
+
+        [TestMethod]
+        public void Test222()
+        {
+            try
+            {
+                File.Delete(PacketBufferHelper.GetBufferDbPath());
+            }
+            catch { }
+
+
+            var buffer = new RealmPacketBuffer();
+
+
+            var list = new List<byte[]>()
+            {
+                "1207010403043103A1432B03990B6B2B03A14B6B2B03099B03A1432B03210BCB03397B2B9B037973034902B94B636303B8A156252EC8680096".ToByteArray(),
+                "128701040204447B935B03795B0309732303197B6B6B4B9B9B4B7B734B733B0329733B4B732B2B930309732303490209932B03397B4B733B0381FFCC6404A1432B03390B6B2B0379730399AA73230BCB0381FFC40C84FFC45484FFC40C84FFC45484FFC42C0481FFC42C84FFC4140481FFC4140451AB9BA303B90B73A32B2303A17B03612BA303C97BAB0359737BBB03A1430BA3034902410BB32B030903397B7B2303312B2B634B733B0309137BABA303A1434B9B0379732B03497303A1432B03817B9B4BA34B7B730309732303B97BAB632303614B5B2B03A17B0359737BBB03493303C97BAB03410BB32B030973CB0389AB2B9BA34B7B739B0381632B0B9B2B03312B2B630331932B2B03A17B03197B73A30B1BA303692B0309A3030973CB03A14B6B2B03099B03A1432B03210BCB03397B2B9B037973034902B94B636303112B03A1432B932B0309A341".ToByteArray(),
+                "1287010401044403B97BAB632303614B5B2B03A17B0359737BBB03493303C97BAB03410BB32B030973CB0389AB2B9BA34B7B739B0381632B0B9B2B03312B2B630331932B2B03A17B03197B73A30B1BA303692B0309A3030973CB03A14B6B2B03099B03A1432B03210BCB03397B2B9B037973034902B94B636303112B03A1432B932B0309A303A1432B03990B6B2B03A14B6B2B03099B03A1432B03210BCB03397B2B9B037973034902B94B636303112B03A1432B932B0B9A433B9903C97BAB03190B7303392BA303A1432B03990B6B2B03099B03610B9BA303C92B0B9303A17B03112B03A1432B932B0311CB030903190B93030973230321934BB32B03110B1B5B03A1432B03712BC3A303A17B03C97BAB03499B03A17B03392BA30349A303217B732B0311CB0331924B230BCB0309732303197B6B6B4B9B9B4B7B734B733B03912B837B93A303A17B03B9FB".ToByteArray(),
+            };
+
+            ChatMessageMO message = null;
+
+            foreach (var bytes in list)
+                message = (ChatMessageMO)MessageMO.Unpack(bytes, buffer);
+
+
+        }
+
+
         [TestMethod]
         public void Location__()
         {
             try
             {
-                var buffer = new InMemoryBuffer();
+                try
+                {
+                    File.Delete(PacketBufferHelper.GetBufferDbPath());
+                }
+                catch { }
+
+
+                var buffer = new RealmPacketBuffer();
                 string text = @"Shovel works with all types of exchanges. 
 In this example, I've set up exchanges as direct exchanges which use routing keys. 
 However, if you have fanout exchanges, those will work as well—but you won't indicate a routing key when setting up the shovel for the exchange.
@@ -37,12 +74,20 @@ This shovel connects to our Compose for RabbitMQ exchange compose-exchange with 
 Ive also created two queues to send messages to: compose - queue in the Compose instance and messages - queue in the Messages for RabbitMQ instance. 
 Since the shovel is sending messages to the two exchanges, the queues have been bound to the exchanges so that the messages are received and queued up.";
 
-                var packets = ChatMessageMO.Create(Subscriber.Create("79999740562", SubscriberNetwork.Mobile), null, null, text, -27.126073, -109.278857, 816).Pack(78);
-                var totalLength = packets.Select(x => x.Length - 8).Sum();
+                var __a = ChatMessageMT.Create(Subscriber.Create("hello@world.com", SubscriberNetwork.Email), null, null, text);
+                var __b = ChatMessageMO.Create(Subscriber.Create("79153925491", SubscriberNetwork.Mobile), null, null, text);
 
-                var m2 = MessageMO.Unpack(packets[1], buffer) as ChatMessageMO;
-                var m1 = MessageMO.Unpack(packets[0], buffer) as ChatMessageMO;
-                var m3 = MessageMO.Unpack(packets[2], buffer) as ChatMessageMO;
+                var a = __a.Pack(56);
+                var b = __b.Pack(56);
+
+                var totalLength = a.Select(x => x.Payload.Length - 8).Sum();
+
+                var m1_ = MessageMO.Unpack(b[1].Payload, buffer) as ChatMessageMO;
+                var m2 = MessageMT.Unpack(a[1].Payload, buffer) as ChatMessageMT;
+                var m1 = MessageMT.Unpack(a[0].Payload, buffer) as ChatMessageMT;
+                var m2_ = MessageMO.Unpack(b[0].Payload, buffer) as ChatMessageMO;
+                var m3 = MessageMT.Unpack(a[2].Payload, buffer) as ChatMessageMT;
+                var m3_ = MessageMO.Unpack(b[2].Payload, buffer) as ChatMessageMO;
 
                 if (!m3.Complete)
                     throw new Exception();
@@ -335,13 +380,13 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
 
 
 
-        IMessageMT __Unpack(List<byte[]> packets)
+        IMessageMT __Unpack(List<Packet> packets)
         {
             var buffer = new InMemoryBuffer();
             IMessageMT message = null;
 
             foreach (var p in packets)
-                message = MessageMT.Unpack(p, buffer);
+                message = MessageMT.Unpack(p.Payload, buffer);
 
             return message;
         }

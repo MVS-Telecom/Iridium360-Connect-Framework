@@ -187,7 +187,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
 
                     partsBuffer.SavePacket(new Packet()
                     {
-                        Id = $"{message.Group}:{message.Index}",
+                        Id = $"{message.Group}@{message.Index}@{(int)PacketDirection.Inbound}",
                         Index = message.Index,
                         Group = message.Group,
                         TotalParts = message.TotalParts,
