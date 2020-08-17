@@ -278,6 +278,10 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         public string Text { get; protected set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte[] Media { get; protected set; }
 
         /// <summary>
         /// 

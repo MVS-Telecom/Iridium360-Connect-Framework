@@ -24,8 +24,8 @@ namespace Iridium360.Connect.Framework.Implementations
     {
         public event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults = delegate { };
         public event EventHandler<EventArgs> SearchTimeout = delegate { };
-        public event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated = delegate { };
-        public event EventHandler<MessageReceivedEventArgs> _MessageReceived = delegate { };
+        public event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated = delegate { };
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived = delegate { };
 
 
 
@@ -1104,14 +1104,14 @@ namespace Iridium360.Connect.Framework.Implementations
                             throw new ArgumentNullException("Message payload is null or empty");
 
 
-                        var args = new MessageReceivedEventArgs()
+                        var args = new PacketReceivedEventArgs()
                         {
                             MessageId = (short)(command.MessageId.Value + 10000),
                             Payload = command.Payload,
                             Handled = false
                         };
 
-                        _MessageReceived(this, args);
+                        PacketReceived(this, args);
 
 
 
@@ -1131,13 +1131,13 @@ namespace Iridium360.Connect.Framework.Implementations
                         if (command.MessageId == null)
                             throw new ArgumentNullException("Message id is null");
 
-                        var args = new MessageStatusUpdatedEventArgs()
+                        var args = new PacketStatusUpdatedEventArgs()
                         {
                             MessageId = command.MessageId.Value,
                             Status = MessageStatus.ReceivedByDevice,
                         };
 
-                        _MessageStatusUpdated(this, args);
+                        PacketStatusUpdated(this, args);
 
                         if (args.Handled)
                         {
@@ -1396,13 +1396,13 @@ namespace Iridium360.Connect.Framework.Implementations
 
                 if (status.AppId == this.AppId && status.Key == this.KeyIndex)
                 {
-                    var args = new MessageStatusUpdatedEventArgs()
+                    var args = new PacketStatusUpdatedEventArgs()
                     {
                         MessageId = status.MessageId.Value,
                         Status = MessageStatus.Transmitted,
                         Handled = false
                     };
-                    _MessageStatusUpdated(this, args);
+                    PacketStatusUpdated(this, args);
 
                     if (args.Handled)
                     {
@@ -1411,13 +1411,13 @@ namespace Iridium360.Connect.Framework.Implementations
                 }
                 else if (status.Key == DEFAULT_KEY_INDEX)
                 {
-                    var args = new MessageStatusUpdatedEventArgs()
+                    var args = new PacketStatusUpdatedEventArgs()
                     {
                         MessageId = status.MessageId.Value,
                         Status = MessageStatus.Transmitted,
                         Handled = false
                     };
-                    _MessageStatusUpdated(this, args);
+                    PacketStatusUpdated(this, args);
 
                     if (args.Handled)
                     {
