@@ -18,7 +18,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// </summary>
         /// <param name="group"></param>
         /// <returns></returns>
-        Message GetMessageByGroup(uint group);
+        Message GetMessageByGroup(uint group, PacketDirection direction);
 
         /// <summary>
         /// 
@@ -31,14 +31,14 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        uint GetPacketCount(uint groupId);
+        uint GetPacketCount(uint groupId, PacketDirection direction);
 
         /// <summary>
         /// Получить все сохраненные пакеты сообщения
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        List<Packet> GetPackets(uint groupId);
+        List<Packet> GetPackets(uint groupId, PacketDirection direction);
 
         /// <summary>
         /// Сохранить пакет
@@ -50,7 +50,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// Удалить все пакеты сообщения
         /// </summary>
         /// <param name="groupId"></param>
-        void DeletePackets(uint groupId);
+        void DeletePackets(uint groupId, PacketDirection direction);
 
         /// <summary>
         /// Отметить, что пакет отправлен
@@ -99,7 +99,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         {
             return new RealmConfiguration(BUFFER_DATABASE_NAME)
             {
-                SchemaVersion = 5,
+                SchemaVersion = 6,
                 ObjectClasses = new Type[] { typeof(MessageRealm), typeof(Part) },
                 MigrationCallback = (migration, oldSchemaVersion) =>
                 {

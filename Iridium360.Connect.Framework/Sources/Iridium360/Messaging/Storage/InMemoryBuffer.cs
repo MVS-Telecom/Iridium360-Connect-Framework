@@ -9,19 +9,19 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
     {
         private List<Packet> packets = new List<Packet>();
 
-        public List<Packet> GetPackets(uint messageId)
+        public List<Packet> GetPackets(uint group, PacketDirection direction)
         {
             lock (typeof(InMemoryBuffer))
             {
-                return packets.Where(x => x.Group == messageId).ToList();
+                return packets.Where(x => x.Group == group && x.Direction == direction).ToList();
             }
         }
 
-        public uint GetPacketCount(uint messageId)
+        public uint GetPacketCount(uint group, PacketDirection direction)
         {
             lock (typeof(InMemoryBuffer))
             {
-                return (uint)packets.Where(x => x.Group == messageId).Count();
+                return (uint)packets.Where(x => x.Group == group && x.Direction == direction).Count();
             }
         }
 
@@ -34,11 +34,11 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
-        public void DeletePackets(uint messageId)
+        public void DeletePackets(uint group, PacketDirection direction)
         {
             lock (typeof(InMemoryBuffer))
             {
-                packets.RemoveAll(x => x.Group == messageId);
+                packets.RemoveAll(x => x.Group == group && x.Direction == direction);
             }
         }
 
@@ -60,7 +60,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
-        public Message GetMessageByGroup(uint group)
+        public Message GetMessageByGroup(uint group, PacketDirection direction)
         {
             throw new NotImplementedException();
         }

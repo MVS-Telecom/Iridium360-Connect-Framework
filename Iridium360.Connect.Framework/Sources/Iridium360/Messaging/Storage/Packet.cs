@@ -31,6 +31,15 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum PacketDirection : int
+    {
+        Outbound = 0,
+        Inbound = 1
+    }
+
 
     /// <summary>
     /// 
@@ -46,6 +55,11 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// Id сообщения к которому принадлежит этот пакет
         /// </summary>
         public uint Group { get; set; }
+
+        /// <summary>
+        /// Вх/исх
+        /// </summary>
+        public PacketDirection Direction { get; set; }
 
         /// <summary>
         /// Индекс пакета

@@ -172,7 +172,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                     var partIndex = reader.ReadUInt(8);
                     var payload = reader.ReadAllBytes();
 
-                    var part = new Legacy_MessageMT()
+                    var message = new Legacy_MessageMT()
                     {
                         Group = group,
                         Payload = payload,
@@ -187,41 +187,41 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
 
                     partsBuffer.SavePacket(new Packet()
                     {
-                        Id = $"{part.Group}:{part.Index}",
-                        Index = part.Index,
-                        Group = part.Group,
-                        TotalParts = part.TotalParts,
-                        Payload = part.Payload,
+                        Id = $"{message.Group}:{message.Index}",
+                        Index = message.Index,
+                        Group = message.Group,
+                        TotalParts = message.TotalParts,
+                        Payload = message.Payload,
                     });
 
-                    part.ReadyParts = partsBuffer.GetPacketCount(part.Group);
+                    message.ReadyParts = partsBuffer.GetPacketCount(message.Group, PacketDirection.Inbound);
 
-                    if (part.Complete)
+                    if (message.Complete)
                     {
                         var ordered = partsBuffer
-                            .GetPackets(part.Group)
+                            .GetPackets(message.Group, PacketDirection.Inbound)
                             .OrderBy(x => x.Index)
                             .Select(x => x.Payload)
                             .ToList();
 
-                        part.Payload = Merge(ordered);
+                        message.Payload = Merge(ordered);
 
-                        partsBuffer.DeletePackets(part.Group);
+                        partsBuffer.DeletePackets(message.Group, PacketDirection.Inbound);
                     }
 
 
-                    if (part.Complete)
+                    if (message.Complete)
                     {
                         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                        string text = Encoding.GetEncoding(1251).GetString(part.Payload).Trim();
+                        string text = Encoding.GetEncoding(1251).GetString(message.Payload).Trim();
                         var parts = text.Split(new string[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                        part.Address = parts[0];
-                        part.RawText = parts[1];
+                        message.Address = parts[0];
+                        message.RawText = parts[1];
                     }
 
-                    return part;
+                    return message;
 
                 }
             }
