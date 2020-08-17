@@ -284,6 +284,7 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
+        private DateTime time = DateTime.MinValue;
 
         public Task<ushort> SendData(byte[] data)
         {
@@ -296,7 +297,16 @@ namespace Iridium360.Connect.Framework.Fakes
 
                 _ = Task.Run(async () =>
                 {
-                    await Task.Delay(6000);
+                    var delay = DateTime.Now - time;
+
+                    if (delay < TimeSpan.FromSeconds(6))
+                        delay = TimeSpan.FromSeconds(6) + delay;
+                    else
+                        delay = TimeSpan.FromSeconds(6);
+
+                    time = DateTime.Now;
+
+                    await Task.Delay(delay);
 
 
                     PacketStatusUpdated(this, new PacketStatusUpdatedEventArgs()

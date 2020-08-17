@@ -197,7 +197,10 @@ namespace Iridium360.Connect.Framework.Messaging
 
             if (packet == null)
             {
-                Debugger.Break();
+#if DEBUG
+                if (e.Status != MessageStatus.ReceivedByDevice)
+                    Debugger.Break();
+#endif
                 return;
             }
 
@@ -209,9 +212,11 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 case MessageStatus.Transmitted:
                     buffer.SetPacketTransmitted($"{e.MessageId}");
+                    logger.Log($"[PACKET] `{e.MessageId}` -> Transmitted");
                     break;
 
                 default:
+                    logger.Log($"[PACKET] `{e.MessageId}` -> {e.Status}");
                     ///Что-то нехорошее
                     Debugger.Break();
                     break;
@@ -228,6 +233,8 @@ namespace Iridium360.Connect.Framework.Messaging
                     .Count();
 
 
+                logger.Log($"[MESSAGE] Progress {transmittedCount}/{packet.TotalParts}");
+
 
                 ///Все части отправлены == сообщение передано
                 if (transmittedCount == packet.TotalParts)
@@ -236,6 +243,8 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     if (message == null)
                         throw new NullReferenceException($"Message with group `{packet.Group}` not found");
+
+                    logger.Log($"[MESSAGE] `{message.Id}` -> Transmitted");
 
 
                     MessageTransmitted(this, new MessageTransmittedEventArgs()
