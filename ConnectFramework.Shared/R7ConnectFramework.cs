@@ -649,13 +649,13 @@ namespace ConnectFramework.Shared
                     }
 
                     if (args == null)
-                        throw new MessageSendingException($"Message Id={messageId} transfer to device timeout");
+                        throw new MessageSendingException($"Packet Id={messageId} transfer to device timeout");
 
                     if (args.Status == MessageStatus.ErrorToolong)
-                        throw new MessageSendingException($"Message Id={messageId} is too long");
+                        throw new MessageSendingException($"Packet Id={messageId} is too long");
 
                     if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
-                        throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
+                        throw new MessageSendingException($"Packet Id={messageId} transfer error `{args.Status}`");
 
 
                     if (args.Status == MessageStatus.ErrorCapability)
@@ -668,7 +668,7 @@ namespace ConnectFramework.Shared
                     await Task.Delay(1000);
                 }
 
-                throw new MessageSendingException($"Message Id={messageId} transfer to error");
+                throw new MessageSendingException($"Packet Id={messageId} transfer to error");
 
             }
             finally
@@ -1261,7 +1261,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Message check finished");
+                logger.Log($"[R7] Packet check finished");
             });
         }
 #endif
@@ -1276,7 +1276,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Message progress completed {messageId}");
+                logger.Log($"[R7] Packet progress completed {messageId}");
             });
         }
 
@@ -1290,7 +1290,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Message progress {p0} -> {p1}/{p2}");
+                logger.Log($"[R7] Packet progress {p0} -> {p1}/{p2}");
             });
         }
 
@@ -1312,7 +1312,7 @@ namespace ConnectFramework.Shared
 #elif IOS
                 data = _data.ToArray();
 #endif
-                logger.Log($"[R7] Message received {messageId} -> {data.ToHexString()}");
+                logger.Log($"[R7] Packet received {messageId} -> {data.ToHexString()}");
 
                 Debugger.Break();
 
@@ -1343,7 +1343,7 @@ namespace ConnectFramework.Shared
         {
             return Safety(() =>
             {
-                logger.Log($"[R7] Message status updated {messageId} -> {status}");
+                logger.Log($"[R7] Packet status updated {messageId} -> {status}");
 
                 MessageStatus _status = MessageStatus.Error;
 
