@@ -257,7 +257,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 double progress = transmittedCount / (double)packet.TotalParts;
 
-                logger.Log($"[MESSAGE] Message progress changed -> {Math.Round(progress, 1)}% ({transmittedCount}/{packet.TotalParts})");
+                logger.Log($"[MESSAGE] Message progress changed -> {Math.Round(100 * progress, 1)}% ({transmittedCount}/{packet.TotalParts})");
 
 
                 MessageProgressChanged(this, new MessageProgressChangedEventArgs()
