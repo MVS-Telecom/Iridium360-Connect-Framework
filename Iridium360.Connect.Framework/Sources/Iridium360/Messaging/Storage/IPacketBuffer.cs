@@ -99,7 +99,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         {
             return new RealmConfiguration(BUFFER_DATABASE_NAME)
             {
-                SchemaVersion = 6,
+                SchemaVersion = 7,
                 ObjectClasses = new Type[] { typeof(MessageRealm), typeof(Part) },
                 MigrationCallback = (migration, oldSchemaVersion) =>
                 {

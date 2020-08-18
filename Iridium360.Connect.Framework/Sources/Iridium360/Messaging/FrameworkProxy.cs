@@ -25,6 +25,18 @@ namespace Iridium360.Connect.Framework.Messaging
     /// <summary>
     /// 
     /// </summary>
+    public class MessageProgressChangedEventArgs : EventArgs
+    {
+        public string MessageId { get; set; }
+        public uint ReadyParts { get; set; }
+        public uint TotalParts { get; set; }
+        public double Progress => 100d * (ReadyParts / (double)TotalParts);
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {
         public Message Message { get; set; }
@@ -39,8 +51,9 @@ namespace Iridium360.Connect.Framework.Messaging
     {
         event EventHandler<MessageTransmittedEventArgs> MessageTransmitted;
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged;
 
-        Task<string> SendMessage(Message message);
+        Task<(string messageId, int totalParts)> SendMessage(Message message);
     }
 
 
@@ -77,6 +90,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
         public event EventHandler<MessageTransmittedEventArgs> MessageTransmitted = delegate { };
+        public event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged = delegate { };
         public event EventHandler<MessageReceivedEventArgs> MessageReceived = delegate { };
 
 
@@ -203,6 +217,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 if (e.Status != MessageStatus.ReceivedByDevice)
                     Debugger.Break();
 #endif
+                e.Handled = true;
                 return;
             }
 
@@ -228,26 +243,35 @@ namespace Iridium360.Connect.Framework.Messaging
 
             if (e.Status == MessageStatus.Transmitted)
             {
+                var message = buffer.GetMessageByGroup(packet.Group, packet.Direction);
+
+                if (message == null)
+                    throw new NullReferenceException($"Message with group `{packet.Group}` not found");
+
+
                 ///Кол-во отправленных чатей сообщения
                 var transmittedCount = buffer
                     .GetPackets(packet.Group, packet.Direction)
                     .Where(x => x.Status >= PacketStatus.Transmitted)
                     .Count();
 
+                double progress = transmittedCount / (double)packet.TotalParts;
 
-                logger.Log($"[MESSAGE] Progress {transmittedCount}/{packet.TotalParts}");
+                logger.Log($"[MESSAGE] Message progress changed -> {Math.Round(progress, 1)}% ({transmittedCount}/{packet.TotalParts})");
+
+
+                MessageProgressChanged(this, new MessageProgressChangedEventArgs()
+                {
+                    MessageId = message.Id,
+                    ReadyParts = (uint)transmittedCount,
+                    TotalParts = packet.TotalParts
+                });
 
 
                 ///Все части отправлены == сообщение передано
                 if (transmittedCount == packet.TotalParts)
                 {
-                    var message = buffer.GetMessageByGroup(packet.Group, packet.Direction);
-
-                    if (message == null)
-                        throw new NullReferenceException($"Message with group `{packet.Group}` not found");
-
                     logger.Log($"[MESSAGE] `{message.Id}` -> Transmitted");
-
 
                     MessageTransmitted(this, new MessageTransmittedEventArgs()
                     {
@@ -256,6 +280,9 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     ///Удаляем пакеты -> они отправлены и больше не нужны
                     buffer.DeletePackets(packet.Group, packet.Direction);
+
+                    ///TODO:
+                    //buffer.DeleteMessage
                 }
                 else
                 {
@@ -267,7 +294,6 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
-
         private static SemaphoreSlim sendLock = new SemaphoreSlim(1, 1);
 
         /// <summary>
@@ -275,7 +301,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<string> SendMessage(Message message)
+        public async Task<(string messageId, int totalParts)> SendMessage(Message message)
         {
             await sendLock.WaitAsync();
 
@@ -326,7 +352,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 storage.PutShort("r7-group-id", group);
 
 
-                return messageId;
+                return (messageId, packets.Count);
             }
             finally
             {

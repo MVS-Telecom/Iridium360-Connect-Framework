@@ -29,9 +29,15 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// 
         /// </summary>
+        public byte TotalParts { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [Indexed]
         public bool Transmitted { get; set; }
     }
+
 
 
 
@@ -118,6 +124,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                     {
                         Id = source.Id,
                         Group = source.Group,
+                        TotalParts = source.TotalParts
                     };
                 }
             }
@@ -140,6 +147,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                         {
                             Id = message.Id,
                             Group = message.Group,
+                            TotalParts = message.TotalParts
                         });
                     });
                 }
