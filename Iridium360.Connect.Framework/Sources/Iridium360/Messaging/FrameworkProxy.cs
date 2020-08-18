@@ -53,7 +53,7 @@ namespace Iridium360.Connect.Framework.Messaging
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
         event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged;
 
-        Task<(string messageId, int totalParts)> SendMessage(Message message);
+        Task<(string messageId, int totalParts)> SendMessage(Message message, Action<double> progress = null);
     }
 
 
@@ -207,8 +207,6 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="e"></param>
         private void Framework__PacketStatusUpdated(object sender, PacketStatusUpdatedEventArgs e)
         {
-            Debugger.Break();
-
             var packet = buffer.GetPacket($"{e.MessageId}");
 
             if (packet == null)
@@ -228,11 +226,15 @@ namespace Iridium360.Connect.Framework.Messaging
                     break;
 
                 case MessageStatus.Transmitted:
+                    Debugger.Break();
+
                     buffer.SetPacketTransmitted($"{e.MessageId}");
                     logger.Log($"[PACKET] `{e.MessageId}` -> Transmitted");
                     break;
 
                 default:
+                    Debugger.Break();
+
                     logger.Log($"[PACKET] `{e.MessageId}` -> {e.Status}");
                     ///Что-то нехорошее
                     Debugger.Break();
@@ -301,7 +303,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<(string messageId, int totalParts)> SendMessage(Message message)
+        public async Task<(string messageId, int totalParts)> SendMessage(Message message, Action<double> progress = null)
         {
             await sendLock.WaitAsync();
 
@@ -310,14 +312,22 @@ namespace Iridium360.Connect.Framework.Messaging
                 var messageId = ShortGuid.NewGuid().ToString();
                 var group = (byte)storage.GetShort("r7-group-id", 1);
 
+
                 var packets = message.Pack(group);
                 logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
+
 
                 foreach (var packet in packets)
                     logger.Log($"   => 0x{packet.Payload.ToHexString()}");
 
 
+                if (packets.Count > 1)
+                    progress?.Invoke(0);
+
+
                 ///TODO: что будет если часть пакетов не будет передана на устройство??
+
+                int count = 0;
 
                 ///Передаем пакеты на устройство
                 foreach (var packet in packets)
@@ -334,6 +344,14 @@ namespace Iridium360.Connect.Framework.Messaging
 
                         logger.Log($"[PACKET] Sent to device with Id={packetId}");
                     }
+
+                    count++;
+
+                    double __progress = 100d * (count / (double)packets.Count);
+
+
+                    if (packets.Count > 1)
+                        progress?.Invoke(__progress);
                 }
 
 
