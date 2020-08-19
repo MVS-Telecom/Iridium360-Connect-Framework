@@ -192,6 +192,7 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                         Group = message.Group,
                         TotalParts = message.TotalParts,
                         Payload = message.Payload,
+                        Direction = PacketDirection.Inbound
                     });
 
                     message.ReadyParts = partsBuffer.GetPacketCount(message.Group, PacketDirection.Inbound);
