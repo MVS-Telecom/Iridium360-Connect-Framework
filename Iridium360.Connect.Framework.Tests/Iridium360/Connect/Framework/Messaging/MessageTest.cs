@@ -23,6 +23,40 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
     [TestClass]
     public class MessageTest
     {
+        [TestMethod]
+        public void FileTest()
+        {
+            try
+            {
+                File.Delete(PacketBufferHelper.GetBufferDbPath());
+            }
+            catch { }
+
+            try
+            {
+                var file = File.OpenRead(@"C:\Users\Banana\Desktop\rockstar-media-test.jpg");
+                var m = ChatMessageMO.Create(new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null, "hello image", lat: 12, lon: -56, alt: 561);
+                var packets = m.Pack();
+
+                var buffer = new RealmPacketBuffer();
+                ChatMessageMO message = null;
+
+                foreach (var p in packets)
+                    message = MessageMO.Unpack(p.Payload, buffer) as ChatMessageMO;
+
+                if (m.File.Length != message.File.Length)
+                    Assert.Fail();
+
+                var bytes = (message.File as MemoryStream).GetBuffer();
+                File.WriteAllBytes(@"C:\Users\Banana\Desktop\rockstar-media-test.jpg", bytes);
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
 
         [TestMethod]
         public void Test222()
