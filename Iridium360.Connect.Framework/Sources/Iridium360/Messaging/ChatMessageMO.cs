@@ -19,7 +19,8 @@ namespace Iridium360.Connect.Framework.Messaging
             ushort? id,
             ushort? conversation,
             string text,
-            string subject = null)
+            string subject = null,
+            byte[] image = null)
         {
             if (from == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
@@ -30,6 +31,7 @@ namespace Iridium360.Connect.Framework.Messaging
             m.Conversation = conversation;
             m.Text = text;
             m.Subject = subject;
+            m.Media = image;
             return m;
         }
 

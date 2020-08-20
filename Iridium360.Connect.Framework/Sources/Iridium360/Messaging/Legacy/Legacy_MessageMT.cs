@@ -1,4 +1,5 @@
 ﻿using Iridium360.Connect.Framework.Helpers;
+using Iridium360.Connect.Framework.Messaging.Storage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,39 +10,23 @@ using System.Text.RegularExpressions;
 
 namespace Iridium360.Connect.Framework.Messaging.Legacy
 {
-    public interface IPartsBuffer
-    {
-        uint GetPartsCount(uint id);
-        List<IPart> GetParts(uint id);
-        void SavePart(IPart part);
-        void Clear(uint id);
-    }
-
-
-    public interface IPart
-    {
-        uint Id { get; }
-        uint Index { get; }
-        uint TotalParts { get; }
-        byte[] Content { get; }
-    }
-
-
-
-    public class Legacy_MessageMT : IPart
+    public class Legacy_MessageMT
     {
         private const byte SIGNATURE = 0x11;
 
-
-        public byte[] Content { get; private set; }
-        public uint Id { get; private set; }
+        public uint Group { get; private set; }
         public uint Index { get; private set; }
         public uint TotalParts { get; private set; }
         public uint ReadyParts { get; private set; }
-        public bool Complete { get; private set; }
+        public byte[] Payload { get; private set; }
+        public bool Complete => ReadyParts == TotalParts;
+
+
 
         public string Address { get; private set; }
         public string RawText { get; private set; }
+
+
 
 
 
@@ -169,11 +154,11 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
 
         public byte[] Pack()
         {
-            throw new InvalidOperationException();
+            throw new NotSupportedException();
         }
 
 
-        public static Legacy_MessageMT Unpack(byte[] buffer, IPartsBuffer partsBuffer = null)
+        public static Legacy_MessageMT Unpack(byte[] buffer, IPacketBuffer partsBuffer = null)
         {
             using (MemoryStream stream = new MemoryStream(buffer))
             {
@@ -182,68 +167,62 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                     if (!CheckSignature(reader.ReadByte()))
                         throw new FormatException("Invalid signature!");
 
-                    var id = reader.ReadUInt(16);
+                    var group = reader.ReadUInt(16);
                     var totalParts = reader.ReadUInt(8);
                     var partIndex = reader.ReadUInt(8);
-                    var content = reader.ReadAllBytes();
+                    var payload = reader.ReadAllBytes();
 
-                    var part = new Legacy_MessageMT()
+                    var message = new Legacy_MessageMT()
                     {
-                        Id = id,
-                        Content = content,
+                        Group = group,
+                        Payload = payload,
                         Index = partIndex,
                         TotalParts = totalParts,
-                        Complete = false
                     };
 
 
-                    if (part.TotalParts > 1)
+                    if (partsBuffer == null)
+                        partsBuffer = new RealmPacketBuffer();
+
+
+                    partsBuffer.SavePacket(new Packet()
                     {
-                        if (partsBuffer == null)
-                            partsBuffer = new RealmPartsBuffer();
+                        Id = $"{message.Group}@{message.Index}@{(int)PacketDirection.Inbound}",
+                        Index = message.Index,
+                        Group = message.Group,
+                        TotalParts = message.TotalParts,
+                        Payload = message.Payload,
+                        Direction = PacketDirection.Inbound
+                    });
 
-                        var count = partsBuffer.GetPartsCount(part.Id);
+                    message.ReadyParts = partsBuffer.GetPacketCount(message.Group, PacketDirection.Inbound);
 
-                        part.ReadyParts = count + 1;
-
-                        if (count + 1 == part.TotalParts)
-                        {
-                            var parts = partsBuffer.GetParts(part.Id);
-                            parts.Add(part);
-
-                            var ordered = parts.OrderBy(x => x.Index).Select(x => x.Content).ToList();
-                            var merged = Merge(ordered);
-
-                            part.Content = merged;
-                            part.Complete = true;
-
-                            partsBuffer.Clear(part.Id);
-                        }
-                        else
-                        {
-                            partsBuffer.SavePart(part);
-                        }
-
-                    }
-                    else
+                    if (message.Complete)
                     {
-                        part.ReadyParts = 1;
-                        part.Complete = true;
+                        var ordered = partsBuffer
+                            .GetPackets(message.Group, PacketDirection.Inbound)
+                            .OrderBy(x => x.Index)
+                            .Select(x => x.Payload)
+                            .ToList();
+
+                        message.Payload = Merge(ordered);
+
+                        partsBuffer.DeletePackets(message.Group, PacketDirection.Inbound);
                     }
 
 
-                    if (part.Complete)
+                    if (message.Complete)
                     {
                         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                        string text = Encoding.GetEncoding(1251).GetString(part.Content).Trim();
+                        string text = Encoding.GetEncoding(1251).GetString(message.Payload).Trim();
                         var parts = text.Split(new string[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                        part.Address = parts[0];
-                        part.RawText = parts[1];
+                        message.Address = parts[0];
+                        message.RawText = parts[1];
                     }
 
-                    return part;
+                    return message;
 
                 }
             }
@@ -263,48 +242,4 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         }
 
     }
-
-
-
-    public class InMemoryBuffer : IPartsBuffer
-    {
-        private List<IPart> parts = new List<IPart>();
-
-        public List<IPart> GetParts(uint id)
-        {
-            lock (typeof(InMemoryBuffer))
-            {
-                return parts.Where(x => x.Id == id).ToList();
-            }
-        }
-
-        public uint GetPartsCount(uint id)
-        {
-            lock (typeof(InMemoryBuffer))
-            {
-                return (uint)parts.Where(x => x.Id == id).Count();
-            }
-        }
-
-        public void SavePart(IPart part)
-        {
-            lock (typeof(InMemoryBuffer))
-            {
-                if (!parts.Exists(x => x.Id == part.Id && x.Index == part.Index))
-                    parts.Add(part);
-            }
-        }
-
-        public void Clear(uint id)
-        {
-            lock (typeof(InMemoryBuffer))
-            {
-                parts.RemoveAll(x => x.Id == id);
-            }
-        }
-    }
-
-
-
-
 }

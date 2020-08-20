@@ -42,8 +42,8 @@ namespace ConnectFramework.Shared
 
         public event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults = delegate { };
         public event EventHandler<EventArgs> SearchTimeout = delegate { };
-        public event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated = delegate { };
-        public event EventHandler<MessageReceivedEventArgs> _MessageReceived = delegate { };
+        public event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated = delegate { };
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived = delegate { };
 
         public ConnectComms comms { internal get; set; }
         private R7Device device;
@@ -598,7 +598,7 @@ namespace ConnectFramework.Shared
 
                 ushort messageId = (ushort)storage.GetShort("message-id", 1);
 
-                MessageStatusUpdatedEventArgs args = null;
+                PacketStatusUpdatedEventArgs args = null;
 
                 const int attempts = 2;
 
@@ -608,7 +608,7 @@ namespace ConnectFramework.Shared
 
                     await Task.Run(() =>
                     {
-                        var handler = new EventHandler<MessageStatusUpdatedEventArgs>((s, e) =>
+                        var handler = new EventHandler<PacketStatusUpdatedEventArgs>((s, e) =>
                         {
                             if (e.MessageId == messageId)
                             {
@@ -619,7 +619,7 @@ namespace ConnectFramework.Shared
 
                         try
                         {
-                            _MessageStatusUpdated += handler;
+                            PacketStatusUpdated += handler;
 
 #if ANDROID
                             comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
@@ -636,7 +636,7 @@ namespace ConnectFramework.Shared
                         }
                         finally
                         {
-                            _MessageStatusUpdated -= handler;
+                            PacketStatusUpdated -= handler;
                         }
                     });
 
@@ -649,13 +649,13 @@ namespace ConnectFramework.Shared
                     }
 
                     if (args == null)
-                        throw new MessageSendingException($"Message Id={messageId} transfer to device timeout");
+                        throw new MessageSendingException($"Packet Id={messageId} transfer to device timeout");
 
                     if (args.Status == MessageStatus.ErrorToolong)
-                        throw new MessageSendingException($"Message Id={messageId} is too long");
+                        throw new MessageSendingException($"Packet Id={messageId} is too long");
 
                     if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
-                        throw new MessageSendingException($"Message Id={messageId} transfer error `{args.Status}`");
+                        throw new MessageSendingException($"Packet Id={messageId} transfer error `{args.Status}`");
 
 
                     if (args.Status == MessageStatus.ErrorCapability)
@@ -668,7 +668,7 @@ namespace ConnectFramework.Shared
                     await Task.Delay(1000);
                 }
 
-                throw new MessageSendingException($"Message Id={messageId} transfer to error");
+                throw new MessageSendingException($"Packet Id={messageId} transfer to error");
 
             }
             finally
@@ -1287,7 +1287,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Message check finished");
+                logger.Log($"[R7] Packet check finished");
             });
         }
 #endif
@@ -1302,7 +1302,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Message progress completed {messageId}");
+                logger.Log($"[R7] Packet progress completed {messageId}");
             });
         }
 
@@ -1316,7 +1316,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Message progress {p0} -> {p1}/{p2}");
+                logger.Log($"[R7] Packet progress {p0} -> {p1}/{p2}");
             });
         }
 
@@ -1338,18 +1338,18 @@ namespace ConnectFramework.Shared
 #elif IOS
                 data = _data.ToArray();
 #endif
-                logger.Log($"[R7] Message received {messageId} -> {data.ToHexString()}");
+                logger.Log($"[R7] Packet received {messageId} -> {data.ToHexString()}");
 
                 Debugger.Break();
 
-                var args = new MessageReceivedEventArgs()
+                var args = new PacketReceivedEventArgs()
                 {
                     Handled = false,
                     MessageId = (short)(messageId + 10000),
                     Payload = data
                 };
 
-                _MessageReceived(this, args);
+                PacketReceived(this, args);
 
                 if (args.Handled)
                     return true;
@@ -1369,7 +1369,7 @@ namespace ConnectFramework.Shared
         {
             return Safety(() =>
             {
-                logger.Log($"[R7] Message status updated {messageId} -> {status}");
+                logger.Log($"[R7] Packet status updated {messageId} -> {status}");
 
                 MessageStatus _status = MessageStatus.Error;
 
@@ -1387,7 +1387,7 @@ namespace ConnectFramework.Shared
                     Debugger.Break();
                 }
 
-                var args = new MessageStatusUpdatedEventArgs()
+                var args = new PacketStatusUpdatedEventArgs()
                 {
                     Handled = false,
                     MessageId = (short)messageId,
@@ -1395,7 +1395,7 @@ namespace ConnectFramework.Shared
                     Message = status.ToString(),
                 };
 
-                _MessageStatusUpdated(this, args);
+                PacketStatusUpdated(this, args);
 
                 if (args.Handled)
                     return true;

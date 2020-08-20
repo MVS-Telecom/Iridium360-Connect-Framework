@@ -27,14 +27,14 @@ namespace Iridium360.Connect.Framework
     }
 
 
-    public class MessageReceivedEventArgs : EventArgs
+    public class PacketReceivedEventArgs : EventArgs
     {
         public short MessageId { get; set; }
         public byte[] Payload { get; set; }
         public bool Handled { get; set; } = false;
     }
 
-    public class MessageStatusUpdatedEventArgs : EventArgs
+    public class PacketStatusUpdatedEventArgs : EventArgs
     {
         public short MessageId { get; set; }
         public MessageStatus Status { get; set; }
@@ -80,8 +80,8 @@ namespace Iridium360.Connect.Framework
     {
         event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults;
         event EventHandler<EventArgs> SearchTimeout;
-        event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated;
-        event EventHandler<MessageReceivedEventArgs> _MessageReceived;
+        event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated;
+        event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         /// <summary>
         /// 

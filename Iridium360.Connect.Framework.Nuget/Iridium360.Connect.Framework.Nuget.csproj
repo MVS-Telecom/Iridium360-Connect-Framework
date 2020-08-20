@@ -50,7 +50,7 @@
     <DisableExtraReferences>true</DisableExtraReferences>
     <Company>MVS Telecom</Company>
     <PackageIcon>nuget-logo.png</PackageIcon>
-    <Version>0.0.3.7</Version>
+    <Version>0.0.5.1-alpha</Version>
     
   </PropertyGroup>
   

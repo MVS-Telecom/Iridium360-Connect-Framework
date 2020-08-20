@@ -1,3 +1,5 @@
+using Iridium360.Connect.Framework.Messaging.Storage;
+
 namespace Iridium360.Connect.Framework.Messaging
 {
     /// <summary>
@@ -33,9 +35,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public static IMessageMO Unpack(byte[] buffer)
+        public static IMessageMO Unpack(byte[] buffer, IPacketBuffer partsBuffer = null)
         {
-            return Unpack(KnownMOTypes, buffer) as IMessageMO;
+            return Unpack(KnownMOTypes, buffer, partsBuffer) as IMessageMO;
         }
     }
 

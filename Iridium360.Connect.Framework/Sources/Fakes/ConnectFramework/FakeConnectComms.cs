@@ -200,8 +200,8 @@ namespace Iridium360.Connect.Framework.Fakes
     {
         public event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults = delegate { };
         public event EventHandler<EventArgs> SearchTimeout = delegate { };
-        public event EventHandler<MessageStatusUpdatedEventArgs> _MessageStatusUpdated = delegate { };
-        public event EventHandler<MessageReceivedEventArgs> _MessageReceived = delegate { };
+        public event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated = delegate { };
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived = delegate { };
 
         internal Guid deviceId;
         public IDevice ConnectedDevice => device;
@@ -284,42 +284,58 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
+        private DateTime time = DateTime.MinValue;
 
-        public Task<ushort> SendData(byte[] data)
+        public async Task<ushort> SendData(byte[] data)
         {
             ushort _messageId = (ushort)storage.GetShort("message-id", 0);
+            var ___messageId = _messageId + 1;
 
-            return Task.Run(async () =>
+            return await Task.Run(async () =>
             {
                 await Task.Delay(1000);
 
+                storage.PutShort("message-id", (short)___messageId);
+
+
                 _ = Task.Run(async () =>
-                  {
-                      await Task.Delay(6000);
+                {
+                    var delay = DateTime.Now - time;
+
+                    if (delay < TimeSpan.FromSeconds(6))
+                        delay = TimeSpan.FromSeconds(6) + delay;
+                    else
+                        delay = TimeSpan.FromSeconds(6);
+
+                    time = DateTime.Now;
+
+                    await Task.Delay(delay);
 
 
-                      _MessageStatusUpdated(this, new MessageStatusUpdatedEventArgs()
-                      {
-                          MessageId = (short)_messageId,
-                          Status = MessageStatus.Transmitted,
-                          Handled = false
-                      });
+                    PacketStatusUpdated(this, new PacketStatusUpdatedEventArgs()
+                    {
+                        MessageId = (short)_messageId,
+                        Status = MessageStatus.Transmitted,
+                        Handled = false
+                    });
 
 
-                      await Task.Delay(5000);
+                    await Task.Delay(delay.Add(TimeSpan.FromSeconds(6)));
 
-                      var m = MessageMO.Unpack(data) as ChatMessageMO;
-                      var b = ChatMessageMT.Create(m.Subscriber, 0, 0, $"[response] {m.Text}").Pack();
 
-                      _MessageReceived(this, new MessageReceivedEventArgs()
-                      {
-                          Payload = b,
-                          MessageId = (short)(10000 + _messageId),
-                          Handled = false
-                      });
-                  });
+                    //var m = MessageMO.Unpack(data) as ChatMessageMO;
 
-                storage.PutShort("message-id", (short)(_messageId + 1));
+
+                    PacketReceived(this, new PacketReceivedEventArgs()
+                    {
+                        Payload = data,
+                        MessageId = (short)(10000 + ___messageId),
+                        Handled = false
+                    });
+
+
+                });
+
                 return _messageId;
             });
         }

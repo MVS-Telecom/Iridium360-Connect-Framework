@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Iridium360.Connect.Framework.Messaging;
+using Iridium360.Connect.Framework.Messaging.Storage;
+using System;
 
 namespace Iridium360.Connect.Framework
 {
@@ -11,10 +13,14 @@ namespace Iridium360.Connect.Framework
         /// <param name="logger"></param>
         /// <param name="bluetoothHelper"></param>
         /// <returns></returns>
-        public static IFramework GetInstance(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper)
+        public static IFrameworkProxy GetInstance(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper)
         {
 #if ANDROID || IPHONE
-            return global::ConnectFramework.Shared.R7ConnectFramework.GetInstance(storage, logger, bluetoothHelper);
+            return new FrameworkProxy(
+                global::ConnectFramework.Shared.R7ConnectFramework.GetInstance(storage, logger, bluetoothHelper),
+                logger,
+                new RealmPacketBuffer(),
+                storage);
 #else
             throw new NotSupportedException();
 #endif
@@ -28,9 +34,13 @@ namespace Iridium360.Connect.Framework
         /// <param name="bluetooth"></param>
         /// <returns></returns>
         [Obsolete("Use this framework implementaion only for experimental purposes! NOT FOR PRODUCTION")]
-        public static IFramework GetInstance_EXPERIMENTAL(IStorage storage, ILogger logger, IBluetooth bluetooth)
+        public static IFrameworkProxy GetInstance_EXPERIMENTAL(IStorage storage, ILogger logger, IBluetooth bluetooth)
         {
-            return new global::Iridium360.Connect.Framework.Implementations.FrameworkInstance__EXPERIMENTAL(bluetooth, storage, logger: logger);
+            return new FrameworkProxy(
+                new global::Iridium360.Connect.Framework.Implementations.FrameworkInstance__EXPERIMENTAL(bluetooth, storage, logger: logger),
+                logger,
+                new RealmPacketBuffer(),
+                storage);
         }
 
 
@@ -38,9 +48,13 @@ namespace Iridium360.Connect.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public static IFramework GetInstance_FAKE(IStorage storage)
+        public static IFrameworkProxy GetInstance_FAKE(IStorage storage, ILogger logger)
         {
-            return new global::Iridium360.Connect.Framework.Fakes.FrameworkInstance_FAKE(storage);
+            return new FrameworkProxy(
+                new global::Iridium360.Connect.Framework.Fakes.FrameworkInstance_FAKE(storage),
+                logger,
+                new RealmPacketBuffer(),
+                storage);
         }
     }
 }
