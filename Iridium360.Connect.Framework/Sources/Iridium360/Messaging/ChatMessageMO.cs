@@ -19,8 +19,7 @@ namespace Iridium360.Connect.Framework.Messaging
             ushort? id,
             ushort? conversation,
             string text,
-            string subject = null,
-            byte[] image = null)
+            string subject = null)
         {
             if (from == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
@@ -31,7 +30,6 @@ namespace Iridium360.Connect.Framework.Messaging
             m.Conversation = conversation;
             m.Text = text;
             m.Subject = subject;
-            m.Media = image;
             return m;
         }
 
@@ -191,10 +189,19 @@ namespace Iridium360.Connect.Framework.Messaging
             double? lat = null,
             double? lon = null,
             int? alt = null,
-            ShortGuid? byskyToken = null)
+            ShortGuid? byskyToken = null,
+            Stream file = null,
+            FileExtension? fileExtension = null,
+            ImageQuality? imageQuality = null)
         {
             if (to == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
+
+            if (file != null && fileExtension == null)
+                throw new ArgumentException("File extension must be specified");
+
+            if (fileExtension?.IsImage() == true && imageQuality == null)
+                throw new ArgumentException("Image quality must be specified");
 
             ChatMessageMO emo1 = new ChatMessageMO();
             emo1.Id = id;
@@ -206,6 +213,9 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Lon = lon;
             emo1.Alt = alt;
             emo1.ByskyToken = byskyToken;
+            emo1.File = file;
+            emo1.FileExtension = fileExtension;
+            emo1.ImageQuality = imageQuality;
             return emo1;
         }
 
@@ -247,6 +257,10 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 flags |= Flags.HasByskyToken;
             }
+            if (File != null)
+            {
+                flags |= Flags.HasFile;
+            }
             //
             // --->
             //
@@ -283,6 +297,15 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 writer.Write(base.ByskyToken.Value.Guid.ToByteArray());
             }
+            if (flags.HasFlag(Flags.HasFile))
+            {
+                writer.Write((uint)base.FileExtension, 4);
+
+                if (base.FileExtension.Value.IsImage())
+                    writer.Write((uint)base.ImageQuality, 2);
+
+                WriteBytes(writer, base.File);
+            }
         }
 
         protected override void unpack(BinaryBitReader reader)
@@ -318,6 +341,15 @@ namespace Iridium360.Connect.Framework.Messaging
             if (flags.HasFlag(Flags.HasByskyToken))
             {
                 base.ByskyToken = new ShortGuid(reader.ReadBytes(16));
+            }
+            if (flags.HasFlag(Flags.HasFile))
+            {
+                base.FileExtension = (FileExtension)reader.ReadUInt(4);
+
+                if (base.FileExtension.Value.IsImage())
+                    base.ImageQuality = (ImageQuality)reader.ReadUInt(2);
+
+                base.File = ReadBytes(reader);
             }
         }
 

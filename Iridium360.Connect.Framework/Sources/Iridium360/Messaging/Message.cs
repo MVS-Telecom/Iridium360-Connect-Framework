@@ -67,8 +67,12 @@ namespace Iridium360.Connect.Framework.Messaging
             ///8 - длина заголовков
             int length = MAX_PACKAGE_LENGTH - 8;
 
+            int parts = (int)Math.Ceiling(content.Length / (double)length);
 
-            this.TotalParts = (byte)Math.Ceiling(content.Length / (double)length);
+            if (parts > byte.MaxValue)
+                throw new ArgumentException("Message too long!");
+
+            this.TotalParts = (byte)parts;
             this.Index = 0;
             this.Group = group;
 

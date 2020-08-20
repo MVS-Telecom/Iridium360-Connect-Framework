@@ -1,5 +1,6 @@
 using Iridium360.Connect.Framework.Util;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -66,7 +67,6 @@ namespace Iridium360.Connect.Framework.Messaging
     /// </summary>
     public abstract class FreeText : MessageWithLocation
     {
-
         [Flags]
         public enum Flags
         {
@@ -78,6 +78,7 @@ namespace Iridium360.Connect.Framework.Messaging
             HasLocation = 16,
             HasId = 32,
             HasByskyToken = 64,
+            HasFile = 128,
             Reserver_3 = 0x80
         }
 
@@ -155,6 +156,103 @@ namespace Iridium360.Connect.Framework.Messaging
             return 0xff;
         }
 
+
+        public static byte[] ReadFully(Stream input)
+        {
+            input.Position = 0;
+
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
+
+
+        protected static void WriteBytes(BinaryBitWriter writer, Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var bytes = ReadFully(stream);
+            var hash = Md5.Get(bytes.Skip(bytes.Length - 5).ToArray()).Take(5).ToArray();
+
+            writer.Write(bytes);
+
+            //HASH
+            writer.Write(hash);
+
+            ///END
+            writer.Write((byte)0);
+            writer.Write((byte)0);
+            writer.Write((byte)0);
+        }
+
+
+        protected static Stream ReadBytes(BinaryBitReader reader)
+        {
+            var stream = new MemoryStream();
+
+            byte? h1 = null;
+            byte? h2 = null;
+            byte? h3 = null;
+            byte? h4 = null;
+            byte? h5 = null;
+
+            byte? b1 = null;
+            byte? b2 = null;
+            byte? b3 = null;
+            byte? b4 = null;
+            byte? b5 = null;
+
+            byte? e1 = null;
+            byte? e2 = null;
+            byte? e3 = null;
+
+            while (true)
+            {
+                h1 = h2;
+                h2 = h3;
+                h3 = h4;
+                h4 = h5;
+                h5 = b1;
+
+                b1 = b2;
+                b2 = b3;
+                b3 = b4;
+                b4 = b5;
+                b5 = e1;
+
+                e1 = e2;
+                e2 = e3;
+                e3 = reader.ReadByte();
+
+                stream.WriteByte(e3.Value);
+
+
+                if (e1 == 0 && e2 == 0 && e3 == 0)
+                {
+                    if (h1 != null && h2 != null && h3 != null && h4 != null && h5 != null)
+                    {
+                        var hash = Md5.Get(new byte[] { h1.Value, h2.Value, h3.Value, h4.Value, h5.Value }).Take(5).ToArray();
+
+                        if (hash.SequenceEqual(new byte[] { b1.Value, b2.Value, b3.Value, b4.Value, b5.Value }))
+                            break;
+                    }
+                }
+            }
+
+            ///HASH + END
+            stream.SetLength(stream.Length - (5 + 3));
+            stream.Capacity = (int)stream.Length;
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
 
 
         protected static string Read(BinaryBitReader reader)
@@ -281,7 +379,17 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public byte[] Media { get; protected set; }
+        public Stream File { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public FileExtension? FileExtension { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ImageQuality? ImageQuality { get; protected set; }
 
         /// <summary>
         /// 

@@ -307,75 +307,78 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             await sendLock.WaitAsync();
 
-            try
+            return await Task.Run(async () =>
             {
-                var messageId = ShortGuid.NewGuid().ToString();
-                var group = (byte)storage.GetShort("r7-group-id", 1);
-
-
-                var packets = message.Pack(group);
-                logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
-
-
-                foreach (var packet in packets)
-                    logger.Log($"   => 0x{packet.Payload.ToHexString()}");
-
-
-                if (packets.Count > 1)
-                    progress?.Invoke(0);
-
-
-                ///TODO: что будет если часть пакетов не будет передана на устройство??
-
-                int count = 0;
-
-                ///Передаем пакеты на устройство
-                foreach (var packet in packets)
+                try
                 {
-                    bool exist = buffer.GetPackets((uint)message.Group, PacketDirection.Outbound).Any(x => x.Index == message.Index);
+                    var messageId = ShortGuid.NewGuid().ToString();
+                    var group = (byte)storage.GetShort("r7-group-id", 1);
 
 
-                    if (!exist)
-                    {
-                        ushort packetId = await SendData(packet.Payload);
-                        packet.Id = $"{packetId}";
+                    var packets = message.Pack(group);
+                    logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
 
-                        buffer.SavePacket(packet);
 
-                        logger.Log($"[PACKET] Sent to device with Id={packetId}");
-                    }
-
-                    count++;
-
-                    double __progress = 100d * (count / (double)packets.Count);
+                    foreach (var packet in packets)
+                        logger.Log($"   => 0x{packet.Payload.ToHexString()}");
 
 
                     if (packets.Count > 1)
-                        progress?.Invoke(__progress);
+                        progress?.Invoke(0);
+
+
+                    ///TODO: что будет если часть пакетов не будет передана на устройство??
+
+                    int count = 0;
+
+                    ///Передаем пакеты на устройство
+                    foreach (var packet in packets)
+                    {
+                        bool exist = buffer.GetPackets((uint)message.Group, PacketDirection.Outbound).Any(x => x.Index == message.Index);
+
+
+                        if (!exist)
+                        {
+                            ushort packetId = await SendData(packet.Payload);
+                            packet.Id = $"{packetId}";
+
+                            buffer.SavePacket(packet);
+
+                            logger.Log($"[PACKET] Sent to device with Id={packetId}");
+                        }
+
+                        count++;
+
+                        double __progress = 100d * (count / (double)packets.Count);
+
+
+                        if (packets.Count > 1)
+                            progress?.Invoke(__progress);
+                    }
+
+
+                    buffer.SaveMessage(new Storage.Message()
+                    {
+                        Id = messageId,
+                        Group = group,
+                    });
+
+
+                    group++;
+
+                    if (group > byte.MaxValue)
+                        group = 0;
+
+                    storage.PutShort("r7-group-id", group);
+
+
+                    return (messageId, packets.Count);
                 }
-
-
-                buffer.SaveMessage(new Storage.Message()
+                finally
                 {
-                    Id = messageId,
-                    Group = group,
-                });
-
-
-                group++;
-
-                if (group > byte.MaxValue)
-                    group = 0;
-
-                storage.PutShort("r7-group-id", group);
-
-
-                return (messageId, packets.Count);
-            }
-            finally
-            {
-                sendLock.Release();
-            }
+                    sendLock.Release();
+                }
+            });
         }
 
 
