@@ -742,7 +742,7 @@ namespace ConnectFramework.Shared
         /// <param name="e"></param>
         private void BluetoothHelper_ScanResults(object sender, ScanResultsEventArgs e)
         {
-            var fix = e.FoundDevices.Where(x => x.Mac.ToUpper().StartsWith("68:0A:E2")).ToList();
+            var fix = e.FoundDevices.Where(x => x.Mac.ToUpper().StartsWith("68:0A:E2") || x.Mac.ToUpper().StartsWith("CC:CC:CC")).ToList();
 
             foreach (var d in fix)
                 __DiscoveryFoundDevice(d.Mac, d.Name);
