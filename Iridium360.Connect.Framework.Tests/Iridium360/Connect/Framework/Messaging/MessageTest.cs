@@ -34,8 +34,16 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
 
             try
             {
-                var file = File.OpenRead(@"C:\Users\Banana\Desktop\rockstar-media-test.jpg");
-                var m = ChatMessageMO.Create(new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null, "hello image", lat: 12, lon: -56, alt: 561);
+                var file = File.OpenRead(@"/Users/banana/Downloads/rockstar-media-test.jpg");
+                var m = ChatMessageMO.Create(new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null,
+                    "hello image",
+                    lat: 12,
+                    lon: -56,
+                    alt: 561,
+                    file: file,
+                    fileExtension: FileExtension.Jpg,
+                    imageQuality: ImageQuality.Low);
+
                 var packets = m.Pack();
 
                 var buffer = new RealmPacketBuffer();
@@ -48,7 +56,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                     Assert.Fail();
 
                 var bytes = (message.File as MemoryStream).GetBuffer();
-                File.WriteAllBytes(@"C:\Users\Banana\Desktop\rockstar-media-test.jpg", bytes);
+                File.WriteAllBytes(@"/Users/banana/Downloads/rockstar-media-test[unpacked].jpg", bytes);
 
             }
             catch (Exception e)

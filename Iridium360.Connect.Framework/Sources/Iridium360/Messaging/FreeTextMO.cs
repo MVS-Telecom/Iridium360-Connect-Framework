@@ -67,14 +67,6 @@ namespace Iridium360.Connect.Framework.Messaging
     /// </summary>
     public abstract class FreeText : MessageWithLocation
     {
-        public enum FileType : int
-        {
-            Image = 0,
-            Audio = 1,
-            File = 2
-        }
-
-
         [Flags]
         public enum Flags
         {
@@ -257,9 +249,8 @@ namespace Iridium360.Connect.Framework.Messaging
 
             ///HASH + END
             stream.SetLength(stream.Length - (5 + 3));
-
+            stream.Capacity = (int)stream.Length;
             stream.Seek(0, SeekOrigin.Begin);
-
             return stream;
         }
 
@@ -393,7 +384,12 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public FileType? _FileType { get; protected set; }
+        public FileExtension? FileExtension { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ImageQuality? ImageQuality { get; protected set; }
 
         /// <summary>
         /// 

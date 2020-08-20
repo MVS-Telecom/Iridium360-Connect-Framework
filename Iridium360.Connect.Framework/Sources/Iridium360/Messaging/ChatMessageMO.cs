@@ -191,13 +191,17 @@ namespace Iridium360.Connect.Framework.Messaging
             int? alt = null,
             ShortGuid? byskyToken = null,
             Stream file = null,
-            FileType? fileType = null)
+            FileExtension? fileExtension = null,
+            ImageQuality? imageQuality = null)
         {
             if (to == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
 
-            if (file != null && fileType == null)
-                throw new ArgumentException("File type must be specified");
+            if (file != null && fileExtension == null)
+                throw new ArgumentException("File extension must be specified");
+
+            if (fileExtension?.IsImage() == true && imageQuality == null)
+                throw new ArgumentException("Image quality must be specified");
 
             ChatMessageMO emo1 = new ChatMessageMO();
             emo1.Id = id;
@@ -210,7 +214,8 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Alt = alt;
             emo1.ByskyToken = byskyToken;
             emo1.File = file;
-            emo1._FileType = fileType;
+            emo1.FileExtension = fileExtension;
+            emo1.ImageQuality = imageQuality;
             return emo1;
         }
 
@@ -294,7 +299,11 @@ namespace Iridium360.Connect.Framework.Messaging
             }
             if (flags.HasFlag(Flags.HasFile))
             {
-                writer.Write((uint)base._FileType, 3);
+                writer.Write((uint)base.FileExtension, 4);
+
+                if (base.FileExtension.Value.IsImage())
+                    writer.Write((uint)base.ImageQuality, 2);
+
                 WriteBytes(writer, base.File);
             }
         }
@@ -335,7 +344,11 @@ namespace Iridium360.Connect.Framework.Messaging
             }
             if (flags.HasFlag(Flags.HasFile))
             {
-                base._FileType = (FileType)reader.ReadUInt(3);
+                base.FileExtension = (FileExtension)reader.ReadUInt(4);
+
+                if (base.FileExtension.Value.IsImage())
+                    base.ImageQuality = (ImageQuality)reader.ReadUInt(2);
+
                 base.File = ReadBytes(reader);
             }
         }
