@@ -154,12 +154,14 @@ namespace ConnectFramework.Shared
 
         private DeviceState state;
         private R7ConnectFramework framework;
+        private ILogger logger;
         private ConnectDevice source => framework.comms.CurrentDevice;
 
 
-        public R7Device(R7ConnectFramework framework)
+        public R7Device(R7ConnectFramework framework, ILogger logger)
         {
             this.framework = framework;
+            this.logger = logger;
         }
 
 
@@ -221,7 +223,20 @@ namespace ConnectFramework.Shared
                 {
                     Parameters = source
                         .Parameters()
-                        .Select(x => (Iridium360.Connect.Framework.IDeviceParameter)new R7DeviceParameter(framework, this, x))
+                        .Select(x =>
+                        {
+                            try
+                            {
+                                return (Iridium360.Connect.Framework.IDeviceParameter)new R7DeviceParameter(framework, this, x);
+                            }
+                            catch (Exception e)
+                            {
+                                logger.Log(e.ToString());
+                                Debugger.Break();
+                                return null;
+                            }
+                        })
+                        .Where(x => x != null)
                         .ToList();
 
                     DeviceInfoUpdated(this, new EventArgs());

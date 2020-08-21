@@ -95,7 +95,7 @@ namespace ConnectFramework.Shared
 
             Enable();
 
-            device = new R7Device(this);
+            device = new R7Device(this, logger);
         }
 
 
