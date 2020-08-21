@@ -627,7 +627,7 @@ namespace ConnectFramework.Shared
                             comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
 #endif
 
-                            r.WaitOne(TimeSpan.FromSeconds(10));
+                            r.WaitOne(TimeSpan.FromMinutes(1));
 
                         }
                         catch (Exception e)
