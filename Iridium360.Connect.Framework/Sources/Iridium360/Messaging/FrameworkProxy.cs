@@ -331,6 +331,11 @@ namespace Iridium360.Connect.Framework.Messaging
                         progress?.Invoke(0);
 
 
+                    ///Сразу увеличиваем - если будет ошибка, то для следующей отправки Group уже будет новый
+                    storage.PutShort("r7-group-id", (byte)(group + 1));
+
+
+
                     ///TODO: что будет если часть пакетов не будет передана на устройство??
 
                     int count = 0;
@@ -372,14 +377,6 @@ namespace Iridium360.Connect.Framework.Messaging
                 }
                 finally
                 {
-                    group++;
-
-                    if (group > byte.MaxValue)
-                        group = 0;
-
-                    storage.PutShort("r7-group-id", group);
-
-
                     sendLock.Release();
                 }
             });
