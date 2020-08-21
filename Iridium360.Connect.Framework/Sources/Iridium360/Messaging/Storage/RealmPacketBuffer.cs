@@ -118,7 +118,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                     var source = realm.All<MessageRealm>().SingleOrDefault(x => x.Group == group /*&& x.Direction == direction*/);
 
                     if (source == null)
-                        throw new NullReferenceException($"Message with group `{group}` not found");
+                        return null;
 
                     return new Message()
                     {
