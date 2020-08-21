@@ -309,12 +309,11 @@ namespace Iridium360.Connect.Framework.Messaging
 
             return await Task.Run(async () =>
             {
+                var messageId = ShortGuid.NewGuid().ToString();
+                var group = (byte)storage.GetShort("r7-group-id", 1);
+
                 try
                 {
-                    var messageId = ShortGuid.NewGuid().ToString();
-                    var group = (byte)storage.GetShort("r7-group-id", 1);
-
-
                     var packets = message.Pack(group);
                     logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
 
@@ -364,6 +363,10 @@ namespace Iridium360.Connect.Framework.Messaging
                     });
 
 
+                    return (messageId, packets.Count);
+                }
+                finally
+                {
                     group++;
 
                     if (group > byte.MaxValue)
@@ -372,10 +375,6 @@ namespace Iridium360.Connect.Framework.Messaging
                     storage.PutShort("r7-group-id", group);
 
 
-                    return (messageId, packets.Count);
-                }
-                finally
-                {
                     sendLock.Release();
                 }
             });
