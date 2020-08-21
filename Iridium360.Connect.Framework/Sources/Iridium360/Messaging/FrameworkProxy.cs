@@ -248,7 +248,12 @@ namespace Iridium360.Connect.Framework.Messaging
                 var message = buffer.GetMessageByGroup(packet.Group, packet.Direction);
 
                 if (message == null)
-                    throw new NullReferenceException($"Message with group `{packet.Group}` not found");
+                {
+                    logger.Log($"Message with group `{packet.Group}` not found");
+                    Debugger.Break();
+                    e.Handled = true;
+                    return;
+                }
 
 
                 ///Кол-во отправленных чатей сообщения
