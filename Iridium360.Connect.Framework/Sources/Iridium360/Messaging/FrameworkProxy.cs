@@ -170,10 +170,17 @@ namespace Iridium360.Connect.Framework.Messaging
 
                         logger.Log($"[MESSAGE] Message received Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> COMPLETED");
 
-                        MessageReceived(this, new MessageReceivedEventArgs()
+                        if (message is ResendMessagePartsMT resendMessage)
                         {
-                            Message = message
-                        });
+                            ResendParts(resendMessage.ResendGroup, resendMessage.ResendIndexes);
+                        }
+                        else
+                        {
+                            MessageReceived(this, new MessageReceivedEventArgs()
+                            {
+                                Message = message
+                            });
+                        }
                     }
                     else
                     {
@@ -196,6 +203,21 @@ namespace Iridium360.Connect.Framework.Messaging
 
             Debugger.Break();
             e.Handled = true;
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private async void ResendParts(byte group, byte[] indexes)
+        {
+            var __message = buffer.GetMessageByGroup((uint)group, PacketDirection.Outbound);
+            var message = MessageMO.Unpack(__message.Bytes) as Message;
+            var packets = message.Pack(message.Group);
+            var targets = packets.Where(x => indexes.Contains((byte)x.Index)).ToList();
+
+            await SendPackets(targets);
         }
 
 
@@ -290,6 +312,26 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     ///TODO:
                     //buffer.DeleteMessage
+
+
+
+                    ///TODO: А если сообщение состояло из одной части о она потерялась?
+                    if (packet.TotalParts > 1)
+                    {
+                        Debugger.Break();
+
+                        ///Отправляем подтверждение того что все сообщение ушло
+                        Task.Run(async () =>
+                        {
+                            logger.Log("[MESSAGE SENT] ~~~~~~~~~~~~~~~~~~~~~~");
+
+                            var sent = MessageSentMO.Create((byte)packet.Group);
+                            var result2 = await SendMessage(sent);
+
+                            logger.Log("[MESSAGE SENT] ~~~~~~~~~~~~~~~~~~~~~~");
+                            Debugger.Break();
+                        });
+                    }
                 }
                 else
                 {
@@ -302,6 +344,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
         private static SemaphoreSlim sendLock = new SemaphoreSlim(1, 1);
+
 
         /// <summary>
         /// 
@@ -320,6 +363,8 @@ namespace Iridium360.Connect.Framework.Messaging
                 try
                 {
                     var packets = message.Pack(group);
+                    var bytes = ByteArrayHelper.Merge(packets.Select(x => x.Payload).ToList());
+
                     logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
 
 
@@ -335,41 +380,15 @@ namespace Iridium360.Connect.Framework.Messaging
                     storage.PutShort("r7-group-id", (byte)(group + 1));
 
 
-
                     ///TODO: что будет если часть пакетов не будет передана на устройство??
-
-                    int count = 0;
-
-                    ///Передаем пакеты на устройство
-                    foreach (var packet in packets)
-                    {
-                        bool exist = buffer.GetPackets((uint)message.Group, PacketDirection.Outbound).Any(x => x.Index == message.Index);
-
-
-                        if (!exist)
-                        {
-                            ushort packetId = await SendData(packet.Payload);
-                            packet.Id = $"{packetId}";
-
-                            buffer.SavePacket(packet);
-
-                            logger.Log($"[PACKET] Sent to device with Id={packetId}");
-                        }
-
-                        count++;
-
-                        double __progress = 100d * (count / (double)packets.Count);
-
-
-                        if (packets.Count > 1)
-                            progress?.Invoke(__progress);
-                    }
+                    await SendPackets(packets, progress);
 
 
                     buffer.SaveMessage(new Storage.Message()
                     {
                         Id = messageId,
                         Group = group,
+                        Bytes = bytes
                     });
 
 
@@ -381,6 +400,39 @@ namespace Iridium360.Connect.Framework.Messaging
                 }
             });
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private async Task SendPackets(List<Packet> packets, Action<double> progress = null)
+        {
+            ///Передаем пакеты на устройство
+            for (int i = 0; i < packets.Count; i++)
+            {
+                var packet = packets[i];
+                var __packet = buffer.GetPackets(packet.Group, PacketDirection.Outbound).FirstOrDefault(x => x.Index == packet.Index);
+
+                if (__packet == null)
+                {
+                    ushort packetId = await SendData(packet.Payload);
+                    packet.Id = $"{packetId}";
+
+                    buffer.SavePacket(packet);
+
+                    logger.Log($"[PACKET] Sent to device with Id={packetId}");
+                }
+
+
+                double __progress = 100d * ((i + 1) / (double)packets.Count);
+
+
+                if (packets.Count > 1)
+                    progress?.Invoke(__progress);
+            }
+        }
+
 
 
         public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1) => framework.Connect(id, force, throwOnError, attempts);

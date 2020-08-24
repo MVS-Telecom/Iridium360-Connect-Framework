@@ -1,5 +1,6 @@
 ﻿using Iridium360.Connect.Framework.Messaging.Legacy;
 using Iridium360.Connect.Framework.Messaging.Storage;
+using Iridium360.Connect.Framework.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -235,7 +236,7 @@ namespace Iridium360.Connect.Framework.Messaging
                                     .Select(x => x.Payload)
                                     .ToList();
 
-                                message.Payload = Merge(__parts);
+                                message.Payload = ByteArrayHelper.Merge(__parts);
 
                                 using (MemoryStream stream2 = new MemoryStream(message.Payload))
                                 {
@@ -258,17 +259,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
-        private static byte[] Merge(List<byte[]> arrays)
-        {
-            byte[] rv = new byte[arrays.Sum(a => a.Length)];
-            int offset = 0;
-            foreach (byte[] array in arrays)
-            {
-                Buffer.BlockCopy(array, 0, rv, offset, array.Length);
-                offset += array.Length;
-            }
-            return rv;
-        }
+
 
 
         public abstract Iridium360.Connect.Framework.Messaging.Direction Direction { get; }

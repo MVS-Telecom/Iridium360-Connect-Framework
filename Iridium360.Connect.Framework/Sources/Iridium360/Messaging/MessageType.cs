@@ -35,8 +35,17 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// Проверка новых сообщений
         /// </summary>
-        CheckMessages = 6
+        CheckMessages = 6,
 
+        /// <summary>
+        /// Сообщение отправлено
+        /// </summary>
+        Sent = 7,
+
+        /// <summary>
+        /// Повторно отправить части сообщения
+        /// </summary>
+        Resend = 8
     }
 }
 

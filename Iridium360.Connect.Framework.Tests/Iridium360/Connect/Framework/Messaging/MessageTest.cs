@@ -24,6 +24,50 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
     public class MessageTest
     {
         [TestMethod]
+        public void ResendMessagePartsTest()
+        {
+            try
+            {
+                byte[] indexes = new byte[] { 8, 9, 19, 20, 21, 78 };
+                byte group = 159;
+
+                var bytes = ResendMessagePartsMT.Create(group, indexes).Pack()[0].Payload;
+                var message = ResendMessagePartsMT.Unpack(bytes) as ResendMessagePartsMT;
+
+                if (message.ResendGroup != group || !message.ResendIndexes.SequenceEqual(indexes))
+                    Assert.Fail();
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+
+
+        [TestMethod]
+        public void MessageSentTest()
+        {
+            try
+            {
+                byte group = 35;
+
+                var bytes = MessageSentMO.Create(group).Pack()[0].Payload;
+                var message = MessageSentMO.Unpack(bytes) as MessageSentMO;
+
+                if (message.SentGroup != group)
+                    Assert.Fail();
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+
+
+
+        [TestMethod]
         public void FileTest()
         {
             try

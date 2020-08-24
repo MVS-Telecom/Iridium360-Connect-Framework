@@ -22,9 +22,13 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// 
         /// </summary>
+        public DateTimeOffset Date { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [Indexed]
         public byte Group { get; set; }
-
 
         /// <summary>
         /// 
@@ -34,8 +38,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// 
         /// </summary>
-        [Indexed]
-        public bool Transmitted { get; set; }
+        public byte[] Bytes { get; set; }
     }
 
 
@@ -123,8 +126,10 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                     return new Message()
                     {
                         Id = source.Id,
+                        Date = source.Date == DateTimeOffset.MinValue ? (DateTime?)null : source.Date.UtcDateTime,
                         Group = source.Group,
-                        TotalParts = source.TotalParts
+                        TotalParts = source.TotalParts,
+                        Bytes = source.Bytes
                     };
                 }
             }
@@ -141,13 +146,27 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             {
                 using (var realm = PacketBufferHelper.GetBufferInstance())
                 {
+                    ///Делаем ротэйт сообщений - старые с таким же Group удаляем
+                    var toDelete = realm.All<MessageRealm>().Where(x => x.Group == message.Group);
+
+                    if (toDelete.Any())
+                    {
+                        realm.Write(() =>
+                        {
+                            realm.RemoveRange(toDelete);
+                        });
+                    }
+
+
                     realm.Write(() =>
                     {
                         realm.Add(new MessageRealm()
                         {
                             Id = message.Id,
+                            Date = DateTime.UtcNow,
                             Group = message.Group,
-                            TotalParts = message.TotalParts
+                            TotalParts = message.TotalParts,
+                            Bytes = message.Bytes,
                         });
                     });
                 }
