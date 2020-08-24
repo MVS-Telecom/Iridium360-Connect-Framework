@@ -21,10 +21,16 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         Message GetMessageByGroup(uint group, PacketDirection direction);
 
         /// <summary>
-        /// 
+        /// Сохраняем сообщение
         /// </summary>
         /// <param name="message"></param>
         void SaveMessage(Message message);
+
+        /// <summary>
+        /// Удаляем сообщение
+        /// </summary>
+        /// <param name="groupId"></param>
+        void DeleteMessage(uint groupId);
 
         /// <summary>
         /// Получить кол-во сохраненных пакетов сообщения
@@ -39,6 +45,14 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <param name="groupId"></param>
         /// <returns></returns>
         List<Packet> GetPackets(uint groupId, PacketDirection direction);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Packet GetPacket(int frameworkId);
 
         /// <summary>
         /// Сохранить пакет
@@ -56,7 +70,13 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// Отметить, что пакет отправлен
         /// </summary>
         /// <param name="packetId"></param>
-        void SetPacketTransmitted(string packetId);
+        void SetPacketTransmitted(int frameworkId);
+
+        /// <summary>
+        /// Отметить, что пакет не отправлен
+        /// </summary>
+        /// <param name="frameworkId"></param>
+        void SetPacketNotTransmitted(int frameworkId);
 
         /// <summary>
         /// Получить пакет
@@ -99,7 +119,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         {
             return new RealmConfiguration(BUFFER_DATABASE_NAME)
             {
-                SchemaVersion = 7,
+                SchemaVersion = 10,
                 ObjectClasses = new Type[] { typeof(MessageRealm), typeof(Part) },
                 MigrationCallback = (migration, oldSchemaVersion) =>
                 {

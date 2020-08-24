@@ -49,7 +49,12 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// Id пакета
         /// </summary>
-        public string Id { get; set; }
+        public string Id => $"{Group}@{Index}@{(int)Direction}";
+
+        /// <summary>
+        /// Сквозной id пакета (от фреймворка)
+        /// </summary>
+        public int FrameworkId { get; set; }
 
         /// <summary>
         /// Id сообщения к которому принадлежит этот пакет
@@ -80,6 +85,11 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// Дата отправки пакета устройством
         /// </summary>
         public DateTime? TransmittedDate { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Transmitted => Status >= PacketStatus.Transmitted;
 
         /// <summary>
         /// Статус пакета

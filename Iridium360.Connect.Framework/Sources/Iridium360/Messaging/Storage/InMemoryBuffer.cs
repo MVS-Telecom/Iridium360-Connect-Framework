@@ -18,6 +18,14 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
+        public Packet GetPacket(int id)
+        {
+            lock (typeof(InMemoryBuffer))
+            {
+                return packets.LastOrDefault(x => x.FrameworkId == id);
+            }
+        }
+
         public uint GetPacketCount(uint group, PacketDirection direction)
         {
             lock (typeof(InMemoryBuffer))
@@ -35,6 +43,15 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
+
+        public void DeleteMessage(uint groupId)
+        {
+            lock (typeof(InMemoryBuffer))
+            {
+                messages.RemoveAll(x => x.Group == groupId);
+            }
+        }
+
         public void DeletePackets(uint group, PacketDirection direction)
         {
             lock (typeof(InMemoryBuffer))
@@ -43,11 +60,21 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
-        public void SetPacketTransmitted(string packetId)
+        public void SetPacketTransmitted(int frameworkId)
         {
             lock (typeof(InMemoryBuffer))
             {
-                var packet = packets.SingleOrDefault(x => x.Id == packetId);
+                var packet = packets.SingleOrDefault(x => x.FrameworkId == frameworkId);
+
+                throw new NotImplementedException();
+            }
+        }
+
+        public void SetPacketNotTransmitted(int frameworkId)
+        {
+            lock (typeof(InMemoryBuffer))
+            {
+                var packet = packets.SingleOrDefault(x => x.FrameworkId == frameworkId);
 
                 throw new NotImplementedException();
             }
@@ -76,5 +103,6 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                 messages.Add(message);
             }
         }
+
     }
 }

@@ -132,8 +132,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 payloads.Add(new Packet()
                 {
-                    ///Заполнится дальше
-                    Id = null,
                     Direction = this.Direction == Direction.MO ? PacketDirection.Outbound : PacketDirection.Inbound,
                     Index = this.Index,
                     Group = this.Group,
@@ -217,7 +215,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
                             var packet = new Packet()
                             {
-                                Id = $"{message.Group}@{message.Index}@{(int)message.Direction}",
                                 Direction = direction == Direction.MO ? PacketDirection.Outbound : PacketDirection.Inbound,
                                 Index = message.Index,
                                 Group = message.Group,
