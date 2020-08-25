@@ -232,7 +232,6 @@ namespace ConnectFramework.Shared
                             catch (Exception e)
                             {
                                 logger.Log(e.ToString());
-                                Debugger.Break();
                                 return null;
                             }
                         })

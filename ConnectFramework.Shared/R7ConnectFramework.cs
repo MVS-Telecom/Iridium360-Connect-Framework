@@ -534,7 +534,7 @@ namespace ConnectFramework.Shared
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                logger.Log(e);
             }
         }
 
