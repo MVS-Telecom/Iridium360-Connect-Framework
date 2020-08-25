@@ -57,6 +57,9 @@ namespace ConnectFramework.Shared
             try
             {
 #if ANDROID
+                if (!Enum.IsDefined(typeof(Parameter), (int)parameter.Ordinal()))
+                    throw new Exception($"Specified value {parameter.Ordinal()} not defined in enum `{nameof(Parameter)}`");
+
                 return (Parameter)(int)parameter.Ordinal();
 #elif IOS
                 return (Parameter)Enum.Parse(typeof(Parameter), parameter.ToString(), ignoreCase: true);
@@ -64,7 +67,6 @@ namespace ConnectFramework.Shared
             }
             catch (Exception e)
             {
-                Debugger.Break();
                 ///Не нашелся параметр в "нашем" энаме
                 throw;
             }
