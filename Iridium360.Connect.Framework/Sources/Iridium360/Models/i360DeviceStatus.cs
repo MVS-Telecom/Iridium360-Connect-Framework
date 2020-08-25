@@ -31,19 +31,21 @@ namespace Iridium360.Connect.Framework.Models
         public string Package { get; set; }
     }
 
+
     /// <summary>
-    /// From Iridium360.Web.Controllers.Redesign.Common.cs
+    /// 
     /// </summary>
     [Flags]
-    public enum ApiAppFeatures
+    public enum AppFeatures
     {
         None = 0,
         Developer = 1
     }
 
+
     public class i360DeviceStatus
     {
-        public ApiAppFeatures AppFeatures { get; set; }
+        public AppFeatures? AppFeatures { get; set; }
         public DateTime? Time { get; set; }
         public Hardware Hardware { get; set; }
         public DeviceInfo Device { get; set; }
