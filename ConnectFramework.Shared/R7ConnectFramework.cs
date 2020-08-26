@@ -117,7 +117,7 @@ namespace ConnectFramework.Shared
         /// <returns></returns>
         private Task Enable()
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 AutoResetEvent r = new AutoResetEvent(false);
 
@@ -133,6 +133,8 @@ namespace ConnectFramework.Shared
 
                 r.WaitOne(TimeSpan.FromSeconds(10));
                 OnDeviceReady -= handler;
+
+                await Task.Delay(1000);
             });
         }
 
