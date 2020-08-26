@@ -380,8 +380,11 @@ namespace ConnectFramework.Shared
         /// </summary>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        internal Task<bool> Reconnect(bool throwOnError = true)
+        public Task<bool> Reconnect(bool throwOnError = true)
         {
+            if (deviceId == Guid.Empty)
+                throw new InvalidOperationException("Device was not connected previosly");
+
             return Connect(deviceId, throwOnError: throwOnError);
         }
 

@@ -399,7 +399,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 try
                 {
-                    ///Т.к мы ограничены макисмальным кол-вом частей == byte.max - делаем ротэйт
+                    ///Т.к мы ограничены максимальным кол-вом частей == byte.max - делаем ротэйт
                     buffer.DeleteMessage(group);
                     buffer.DeletePackets(group, PacketDirection.Outbound);
 
@@ -509,5 +509,7 @@ namespace Iridium360.Connect.Framework.Messaging
         public Task<ushort> SendData(byte[] data) => framework.SendData(data);
 
         public void Dispose() => framework.Dispose();
+
+        public Task<bool> Reconnect(bool throwOnError = true) => framework.Reconnect(throwOnError: throwOnError);
     }
 }

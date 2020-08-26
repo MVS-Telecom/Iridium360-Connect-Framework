@@ -263,6 +263,14 @@ namespace Iridium360.Connect.Framework.Fakes
             return Connect(device.Id);
         }
 
+
+        public async Task<bool> Reconnect(bool throwOnError = false)
+        {
+            await Task.Delay(2000);
+            return true;
+        }
+
+
         public void Dispose()
         {
 

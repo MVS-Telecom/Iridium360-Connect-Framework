@@ -117,6 +117,13 @@ namespace Iridium360.Connect.Framework
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="throwOnError"></param>
+        /// <returns></returns>
+        Task<bool> Reconnect(bool throwOnError = true);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         Task Disconnect();
 
