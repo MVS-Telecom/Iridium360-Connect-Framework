@@ -393,6 +393,9 @@ namespace Iridium360.Connect.Framework.Messaging
 
             return await Task.Run(async () =>
             {
+                await Reconnect();
+
+
                 var messageId = ShortGuid.NewGuid().ToString();
                 var group = (byte)storage.GetShort("r7-group-id", 1);
 
