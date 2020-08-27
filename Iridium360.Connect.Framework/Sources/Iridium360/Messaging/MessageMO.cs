@@ -14,30 +14,16 @@ namespace Iridium360.Connect.Framework.Messaging
     /// </summary>
     public abstract class MessageMO : MessageWithLocation, IMessageMO
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public sealed override Direction Direction => Direction.MO;
 
         /// <summary>
         /// 
         /// </summary>
         protected MessageMO()
         {
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public sealed override Iridium360.Connect.Framework.Messaging.Direction Direction =>
-            Iridium360.Connect.Framework.Messaging.Direction.MO;
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <returns></returns>
-        public static IMessageMO Unpack(byte[] buffer, IPacketBuffer partsBuffer = null)
-        {
-            return Unpack(KnownMOTypes, buffer, partsBuffer) as IMessageMO;
         }
     }
 

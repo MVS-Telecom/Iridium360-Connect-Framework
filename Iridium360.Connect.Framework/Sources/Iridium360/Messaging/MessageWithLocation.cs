@@ -13,9 +13,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected void WriteLocation(BinaryBitWriter writer)
         {
-            if (Direction != Direction.MO)
-                throw new InvalidOperationException();
-
             if (Version >= ProtocolVersion.LocationFix)
             {
                 writer.Write((float)Lat, true, 7, 13);

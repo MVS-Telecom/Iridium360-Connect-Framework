@@ -16,6 +16,7 @@ using Iridium360.Connect.Framework.Helpers;
 using Iridium360.Connect.Framework.Util;
 using ByskySubscriber = Bysky.Subscriber;
 using Bysky.SDK;
+using Message = Iridium360.Connect.Framework.Messaging.Message;
 using Iridium360.Connect.Framework.Messaging.Storage;
 
 namespace Iridium360.Connect.Framework.Tests.Messaging
@@ -32,7 +33,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                 byte group = 159;
 
                 var bytes = ResendMessagePartsMT.Create(group, indexes).Pack()[0].Payload;
-                var message = ResendMessagePartsMT.Unpack(bytes) as ResendMessagePartsMT;
+                var message = Message.Unpack(bytes) as ResendMessagePartsMT;
 
                 if (message.ResendGroup != group || !message.ResendIndexes.SequenceEqual(indexes))
                     Assert.Fail();
@@ -53,7 +54,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                 byte group = 35;
 
                 var bytes = MessageSentMO.Create(group).Pack()[0].Payload;
-                var message = MessageSentMO.Unpack(bytes) as MessageSentMO;
+                var message = Message.Unpack(bytes) as MessageSentMO;
 
                 if (message.SentGroup != group)
                     Assert.Fail();
@@ -78,8 +79,8 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
 
             try
             {
-                var file = File.OpenRead(@"/Users/banana/Downloads/rockstar-media-test.jpg");
-                var m = ChatMessageMO.Create(new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null,
+                var file = File.OpenRead(@"C:\Users\Banana\Desktop\file.txt");
+                var m = ChatMessageMT.Create(new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null,
                     "hello image",
                     lat: 12,
                     lon: -56,
@@ -90,11 +91,13 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
 
                 var packets = m.Pack();
 
+                string s = packets[0].Payload.ToHexString();
+
                 var buffer = new RealmPacketBuffer();
-                ChatMessageMO message = null;
+                ChatMessageMT message = null;
 
                 foreach (var p in packets)
-                    message = MessageMO.Unpack(p.Payload, buffer) as ChatMessageMO;
+                    message = Message.Unpack(p.Payload, buffer) as ChatMessageMT;
 
                 if (m.File.Length != message.File.Length)
                     Assert.Fail();
@@ -466,13 +469,13 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
 
 
 
-        IMessageMT __Unpack(List<Packet> packets)
+        Message __Unpack(List<Packet> packets)
         {
             var buffer = new InMemoryBuffer();
-            IMessageMT message = null;
+            Message message = null;
 
             foreach (var p in packets)
-                message = MessageMT.Unpack(p.Payload, buffer);
+                message = Message.Unpack(p.Payload, buffer);
 
             return message;
         }

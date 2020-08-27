@@ -1,27 +1,27 @@
-using Iridium360.Connect.Framework.Util;
+﻿using Iridium360.Connect.Framework.Util;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
+
     /// <summary>
     /// 
     /// </summary>
-    public class ChatMessageMO : ChatMessage, IMessageMO
+    public class ChatMessageMT : ChatMessage, IMessageMO
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public override Direction Direction => Direction.MT;
+
 
         /// <summary>
         /// 
         /// </summary>
-        public override Direction Direction => Direction.MO;
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private ChatMessageMO()
+        private ChatMessageMT()
         {
         }
 
@@ -35,7 +35,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="text">тест</param>
         /// <param name="subject">заголовок</param>
         /// <returns></returns>
-        public static ChatMessageMO Create(
+        public static ChatMessageMT Create(
             Subscriber? to,
             ushort? id,
             ushort? conversation,
@@ -48,7 +48,7 @@ namespace Iridium360.Connect.Framework.Messaging
             FileExtension? fileExtension = null,
             ImageQuality? imageQuality = null)
         {
-            return ChatMessage.Create<ChatMessageMO>(
+            return ChatMessage.Create<ChatMessageMT>(
                 to,
                 id,
                 conversation,
@@ -62,5 +62,5 @@ namespace Iridium360.Connect.Framework.Messaging
                 imageQuality);
         }
     }
-}
 
+}

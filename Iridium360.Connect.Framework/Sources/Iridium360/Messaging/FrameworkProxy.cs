@@ -164,7 +164,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 {
                     Debugger.Break();
 
-                    var message = (Message)MessageMT.Unpack(e.Payload);
+                    var message = Message.Unpack(e.Payload);
 
                     if (message.Complete)
                     {

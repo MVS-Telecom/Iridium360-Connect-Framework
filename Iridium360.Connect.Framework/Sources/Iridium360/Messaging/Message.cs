@@ -155,7 +155,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="direction"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        protected static Message Unpack(Dictionary<MessageType, Type> knownTypes, byte[] buffer, IPacketBuffer packetBuffer = null)
+        public static Message Unpack(byte[] buffer, IPacketBuffer packetBuffer = null)
         {
             if (packetBuffer == null)
                 packetBuffer = new RealmPacketBuffer();
@@ -203,7 +203,8 @@ namespace Iridium360.Connect.Framework.Messaging
                                 throw new FormatException("Invalid checksum!");
                             }
 
-                            var type = knownTypes.Where(t => t.Key == messageType).FirstOrDefault();
+                            var types = direction == Direction.MT ? KnownMTTypes : KnownMOTypes;
+                            var type = types.Where(t => t.Key == messageType).FirstOrDefault();
                             Message message = (Message)Activator.CreateInstance(type.Value, true);
 
                             message.Version = (ProtocolVersion)version;
