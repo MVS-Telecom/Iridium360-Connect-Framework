@@ -116,8 +116,9 @@ namespace Iridium360.Connect.Framework
 
                 using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
                 {
-                    content.Add(new StreamContent(zip), "feedback", "feedback.zip");
+                    content.Add(new StringContent(auth), "auth");
                     content.Add(new StringContent(json), "json");
+                    content.Add(new StreamContent(zip), "feedback", "feedback.zip");
 
                     response = await client.PostAsync(url, content);
                 }
