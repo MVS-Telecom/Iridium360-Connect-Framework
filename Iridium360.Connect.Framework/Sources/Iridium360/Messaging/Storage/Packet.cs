@@ -22,7 +22,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// Пакет передан на устройство. Идет отправка
         /// </summary>
-        Transmitting = 20,
+        TransferredToDevice = 20,
 
         /// <summary>
         /// Пакет отправлен устройством

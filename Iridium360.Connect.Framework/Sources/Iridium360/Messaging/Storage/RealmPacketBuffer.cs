@@ -129,17 +129,33 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                     if (source == null)
                         return null;
 
-                    return new Message()
-                    {
-                        Id = source.Id,
-                        Date = source.Date == DateTimeOffset.MinValue ? (DateTime?)null : source.Date.UtcDateTime,
-                        Group = source.Group,
-                        TotalParts = source.TotalParts,
-                        Type = (MessageType?)source.Type
-                    };
+                    return BuildMessage(source);
                 }
             }
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="frameworkId"></param>
+        /// <returns></returns>
+        public Message GetMessageById(string messageId)
+        {
+            lock (locker)
+            {
+                using (var realm = PacketBufferHelper.GetBufferInstance())
+                {
+                    var source = realm.Find<MessageRealm>(messageId);
+
+                    if (source == null)
+                        return null;
+
+                    return BuildMessage(source);
+                }
+            }
+        }
+
 
 
         /// <summary>
@@ -352,25 +368,34 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         }
 
 
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="packetId"></param>
-        public void SetPacketTransmitted(int frameworkId)
+        /// <param name="frameworkId"></param>
+        public void SetPacketStatus(string packetId, PacketStatus status, int? frameworkId = null)
         {
             lock (locker)
             {
                 using (var realm = PacketBufferHelper.GetBufferInstance())
                 {
-                    var source = realm.All<Part>().LastOrDefault(x => x.FrameworkId == frameworkId);
+                    var source = realm.Find<Part>(packetId);
 
                     if (source == null)
                         throw new NullReferenceException();
 
+                    if (status == PacketStatus.TransferredToDevice && frameworkId == null)
+                        throw new ArgumentException("Framework id must be specified");
+
                     realm.Write(() =>
                     {
-                        source.Status = (int)PacketStatus.Transmitted;
-                        source.TransmittedDate = DateTime.UtcNow;
+                        source.Status = (int)status;
+                        source.FrameworkId = frameworkId ?? source.FrameworkId;
+
+                        if (status == PacketStatus.Transmitted)
+                            source.TransmittedDate = DateTimeOffset.UtcNow;
+                        else
+                            source.TransmittedDate = DateTimeOffset.MinValue;
                     });
                 }
             }
@@ -381,22 +406,28 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="packetId"></param>
+        /// <param name="status"></param>
         /// <param name="frameworkId"></param>
-        public void SetPacketNotTransmitted(int frameworkId)
+        public void SetPacketStatus(int frameworkId, PacketStatus status)
         {
             lock (locker)
             {
                 using (var realm = PacketBufferHelper.GetBufferInstance())
                 {
-                    var source = realm.All<Part>().LastOrDefault(x => x.FrameworkId == frameworkId);
+                    var source = realm.All<Part>().SingleOrDefault(x => x.FrameworkId == frameworkId);
 
                     if (source == null)
                         throw new NullReferenceException();
 
                     realm.Write(() =>
                     {
-                        source.Status = (int)PacketStatus.None;
-                        source.TransmittedDate = DateTimeOffset.MinValue;
+                        source.Status = (int)status;
+
+                        if (status == PacketStatus.Transmitted)
+                            source.TransmittedDate = DateTimeOffset.UtcNow;
+                        else
+                            source.TransmittedDate = DateTimeOffset.MinValue;
                     });
                 }
             }
@@ -423,6 +454,24 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                 Payload = source.Payload,
                 Status = (PacketStatus)source.Status,
                 TransmittedDate = source.TransmittedDate == DateTimeOffset.MinValue ? (DateTime?)null : source.TransmittedDate.UtcDateTime
+            };
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private static Message BuildMessage(MessageRealm source)
+        {
+            return new Message()
+            {
+                Id = source.Id,
+                Date = source.Date == DateTimeOffset.MinValue ? (DateTime?)null : source.Date.UtcDateTime,
+                Group = source.Group,
+                TotalParts = source.TotalParts,
+                Type = (MessageType?)source.Type
             };
         }
 

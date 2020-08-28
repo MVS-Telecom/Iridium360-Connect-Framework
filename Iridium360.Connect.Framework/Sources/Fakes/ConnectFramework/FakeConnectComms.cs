@@ -293,11 +293,20 @@ namespace Iridium360.Connect.Framework.Fakes
         }
 
         private DateTime time = DateTime.MinValue;
+        private int i = 0;
 
         public async Task<ushort> SendData(byte[] data)
         {
             ushort _messageId = (ushort)storage.GetShort("message-id", 0);
             var ___messageId = _messageId + 1;
+            i++;
+
+            if (i % 3 == 0)
+            {
+                await Task.Delay(2000);
+                throw new Exception("Dummy send errior");
+            }
+
 
             return await Task.Run(async () =>
             {
@@ -327,6 +336,7 @@ namespace Iridium360.Connect.Framework.Fakes
                         Handled = false
                     });
 
+                    return;
 
                     await Task.Delay(delay.Add(TimeSpan.FromSeconds(6)));
 

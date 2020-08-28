@@ -104,5 +104,19 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
+        public Message GetMessageById(string frameworkId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetPacketStatus(string packetId, PacketStatus status, int? frameworkId = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetPacketStatus(int frameworkId, PacketStatus status)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

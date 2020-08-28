@@ -21,6 +21,13 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         Message GetMessageByGroup(uint group, PacketDirection direction);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="frameworkId"></param>
+        /// <returns></returns>
+        Message GetMessageById(string frameworkId);
+
+        /// <summary>
         /// Сохраняем сообщение
         /// </summary>
         /// <param name="message"></param>
@@ -67,16 +74,20 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         void DeletePackets(uint groupId, PacketDirection direction);
 
         /// <summary>
-        /// Отметить, что пакет отправлен
+        /// 
         /// </summary>
-        /// <param name="packetId"></param>
-        void SetPacketTransmitted(int frameworkId);
+        /// <param name=""></param>
+        /// <param name=""></param>
+        /// <param name=""></param>
+        void SetPacketStatus(string packetId, PacketStatus status, int? frameworkId = null);
 
         /// <summary>
-        /// Отметить, что пакет не отправлен
+        /// 
         /// </summary>
+        /// <param name="packetId"></param>
+        /// <param name="status"></param>
         /// <param name="frameworkId"></param>
-        void SetPacketNotTransmitted(int frameworkId);
+        void SetPacketStatus(int frameworkId, PacketStatus status);
 
         /// <summary>
         /// Получить пакет
