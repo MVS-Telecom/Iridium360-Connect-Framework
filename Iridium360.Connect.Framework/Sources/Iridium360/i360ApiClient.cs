@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -72,7 +73,7 @@ namespace Iridium360.Connect.Framework
 
 
                 var response = await client.GetAsync(url);
-
+                
                 try
                 {
                     response.EnsureSuccessStatusCode();
@@ -101,6 +102,43 @@ namespace Iridium360.Connect.Framework
                 {
                     Exception = ex
                 };
+            }
+        }
+
+        public async Task<bool> SendFeedback(string json, Stream zip)
+        {
+            try
+            {
+                string url = $"https://demo.iridium360.ru/connect/feedback";
+                //string url = $"http://192.168.88.36:45455/connect/feedback"; 
+
+                HttpResponseMessage response = null;
+
+                using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+                {
+                    content.Add(new StreamContent(zip), "feedback", "feedback.zip");
+                    content.Add(new StringContent(json), "json");
+
+                    response = await client.PostAsync(url, content);
+                }
+
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+
+                string jsonResult = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<bool>(jsonResult);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
 
