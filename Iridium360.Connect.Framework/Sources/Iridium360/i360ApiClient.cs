@@ -25,7 +25,6 @@ namespace Iridium360.Connect.Framework
         }
     }
 
-
     /// <summary>
     /// HTTP REST клиент для iridium360.ru
     /// </summary>
@@ -105,20 +104,23 @@ namespace Iridium360.Connect.Framework
             }
         }
 
-        public async Task<bool> SendFeedback(string json, Stream zip)
+        private async Task<Result<T>> MakePostApiRequest<T>(string actionName, Dictionary<string, HttpContent> @params = null)
         {
             try
             {
-                string url = $"https://demo.iridium360.ru/connect/feedback";
-                //string url = $"http://192.168.88.36:45455/connect/feedback"; 
+                if (@params == null)
+                    @params = new Dictionary<string, HttpContent>();
+
+                string url = $"https://demo.iridium360.ru/connect/{actionName}";
 
                 HttpResponseMessage response = null;
 
                 using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
                 {
                     content.Add(new StringContent(auth), "auth");
-                    content.Add(new StringContent(json), "json");
-                    content.Add(new StreamContent(zip), "feedback", "feedback.zip");
+
+                    foreach (var param in @params)
+                        content.Add(param.Value, param.Key);
 
                     response = await client.PostAsync(url, content);
                 }
@@ -127,20 +129,40 @@ namespace Iridium360.Connect.Framework
                 {
                     response.EnsureSuccessStatusCode();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    return false;
+                    return new Result<T>()
+                    {
+                        Exception = ex
+                    };
                 }
 
                 string jsonResult = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<bool>(jsonResult);
+                var result = JsonConvert.DeserializeObject<T>(jsonResult);
 
-                return result;
+                return new Result<T>()
+                {
+                    ApiResult = result,
+                };
             }
             catch (Exception ex)
             {
-                return false;
+                return new Result<T>()
+                {
+                    Exception = ex
+                };
             }
+        }
+
+        public async Task<bool> SendFeedback(string json, Stream zip)
+        {
+            var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
+            {
+                { "json", new StringContent(json) },
+                { "feedback", new StreamContent(zip) },
+            });
+
+            return result.ApiResult;
         }
 
 
