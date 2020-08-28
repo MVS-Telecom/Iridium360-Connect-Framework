@@ -64,6 +64,7 @@ namespace Iridium360.Connect.Framework.Messaging
         event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged;
 
         Task<(string messageId, int totalParts)> SendMessage(Message message, Action<double> progress = null);
+        Task RetrySendMessage(string messageId, Action<double> progress = null);
     }
 
 
@@ -405,7 +406,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="messageId"></param>
         /// <returns></returns>
-        public async Task ResendMessage(string messageId, Action<double> progress = null)
+        public async Task RetrySendMessage(string messageId, Action<double> progress = null)
         {
             try
             {
@@ -428,9 +429,12 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 if (!success)
                 {
-                    MessageError(this, new MessageErrorEventArgs()
+                    Task.Run(() =>
                     {
-                        MessageId = messageId
+                        MessageError(this, new MessageErrorEventArgs()
+                        {
+                            MessageId = messageId
+                        });
                     });
                 }
             }
@@ -505,9 +509,12 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     if (!success)
                     {
-                        MessageError(this, new MessageErrorEventArgs()
+                        Task.Run(() =>
                         {
-                            MessageId = messageId
+                            MessageError(this, new MessageErrorEventArgs()
+                            {
+                                MessageId = messageId
+                            });
                         });
                     }
 
