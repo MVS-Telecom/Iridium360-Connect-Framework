@@ -167,7 +167,8 @@ namespace Iridium360.Connect.Framework
                 if (@params == null)
                     @params = new Dictionary<string, HttpContent>();
 
-                string url = $"https://demo.iridium360.ru/connect/{actionName}";
+                string url = $"http://192.168.88.36:45455/connect/{actionName}";
+                //string url = $"https://demo.iridium360.ru/connect/{actionName}";
 
                 HttpResponseMessage response = null;
 
@@ -217,14 +218,14 @@ namespace Iridium360.Connect.Framework
         /// <param name="json"></param>
         /// <param name="zip"></param>
         /// <returns></returns>
-        public async Task<bool> SendFeedback(Feedback feedback, Stream zip)
+        public async Task<bool> SendFeedback(Feedback feedback, MemoryStream zip)
         {
             var json = JsonConvert.SerializeObject(feedback, Formatting.Indented);
 
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
             {
                 { "json", new StringContent(json, Encoding.UTF8,  "application/json") },
-                { "feedback", new StreamContent(zip) },
+                { "feedback.zip", new ByteArrayContent(zip.ToArray(), 0, (int)zip.Length) },
             });
 
             result.ThrowIfError();
