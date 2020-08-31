@@ -216,7 +216,7 @@ namespace Iridium360.Connect.Framework
         /// <returns></returns>
         public async Task<bool> SendFeedback(Feedback feedback, Stream zip)
         {
-            var json = JsonConvert.SerializeObject(feedback);
+            var json = JsonConvert.SerializeObject(feedback, Formatting.Indented);
 
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
             {
