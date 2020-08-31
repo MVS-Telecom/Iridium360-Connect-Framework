@@ -12,6 +12,63 @@ using System.Threading.Tasks;
 
 namespace Iridium360.Connect.Framework
 {
+    public class Snapshot
+    {
+        [JsonProperty("z")]
+        public string Zip { get; set; }
+        [JsonProperty("t")]
+        public string Text { get; set; }
+    }
+
+    public class SavedDeviceInfo
+    {
+        [JsonProperty("m")]
+        public string MacAddress { get; set; }
+        [JsonProperty("n")]
+
+        public string Name { get; set; }
+        [JsonProperty("s")]
+
+        public string Serial { get; set; }
+        [JsonProperty("h")]
+
+        public string Hardware { get; set; }
+        [JsonProperty("f")]
+
+        public string Firmware { get; set; }
+    }
+
+    public class Feedback
+    {
+        [JsonProperty("a")]
+        public string AppVersion { get; set; }
+        [JsonProperty("o")]
+        public string Os { get; set; }
+        [JsonProperty("d")]
+        public string Device { get; set; }
+        [JsonProperty("c")]
+        public SavedDeviceInfo ConnectedDevice { get; set; }
+        [JsonProperty("v")]
+        public List<string> VersionHistory { get; set; }
+
+        [JsonProperty("e")]
+        public string Email { get; set; }
+
+        [JsonProperty("s")]
+        public List<Snapshot> Snapshots { get; set; }
+    }
+
+    public enum FeedbackResult
+    {
+        Send = 0,
+        WaitNetwork = 1,
+    }
+
+    public class SendFeedbackResult
+    {
+        public FeedbackResult Result { get; set; }
+    }
+
     internal class Result<T>
     {
         internal T ApiResult { get; set; }
@@ -111,7 +168,7 @@ namespace Iridium360.Connect.Framework
                 if (@params == null)
                     @params = new Dictionary<string, HttpContent>();
 
-                string url = $"https://demo.iridium360.ru/connect/{actionName}";
+                string url = $"https://demo.iridium360.ru1/connect/{actionName}";
 
                 HttpResponseMessage response = null;
 
@@ -154,7 +211,7 @@ namespace Iridium360.Connect.Framework
             }
         }
 
-        public async Task<bool> SendFeedback(string json, Stream zip)
+        public async Task<SendFeedbackResult> SendFeedback(string json, Stream zip)
         {
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
             {
@@ -162,7 +219,10 @@ namespace Iridium360.Connect.Framework
                 { "feedback", new StreamContent(zip) },
             });
 
-            return result.ApiResult;
+            return new SendFeedbackResult()
+            {
+                Result = result.ApiResult ? FeedbackResult.Send : FeedbackResult.WaitNetwork
+            };
         }
 
 
