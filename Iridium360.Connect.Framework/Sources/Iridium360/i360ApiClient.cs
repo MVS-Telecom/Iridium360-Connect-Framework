@@ -8,66 +8,62 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Iridium360.Connect.Framework
 {
     public class Snapshot
     {
-        [JsonProperty("z")]
+        [JsonProperty("Zip")]
         public string Zip { get; set; }
-        [JsonProperty("t")]
+
+        [JsonProperty("Text")]
         public string Text { get; set; }
     }
 
     public class SavedDeviceInfo
     {
-        [JsonProperty("m")]
+        [JsonProperty("MacAddress")]
         public string MacAddress { get; set; }
-        [JsonProperty("n")]
 
+        [JsonProperty("Name")]
         public string Name { get; set; }
-        [JsonProperty("s")]
 
+        [JsonProperty("Serial")]
         public string Serial { get; set; }
-        [JsonProperty("h")]
 
+        [JsonProperty("Hardware")]
         public string Hardware { get; set; }
-        [JsonProperty("f")]
 
+        [JsonProperty("Firmware")]
         public string Firmware { get; set; }
     }
 
     public class Feedback
     {
-        [JsonProperty("a")]
+        [JsonProperty("AppVersion")]
         public string AppVersion { get; set; }
-        [JsonProperty("o")]
+
+        [JsonProperty("Os")]
         public string Os { get; set; }
-        [JsonProperty("d")]
+
+        [JsonProperty("Device")]
         public string Device { get; set; }
-        [JsonProperty("c")]
+
+        [JsonProperty("ConnectedDevice")]
         public SavedDeviceInfo ConnectedDevice { get; set; }
-        [JsonProperty("v")]
+
+        [JsonProperty("VersionHistory")]
         public List<string> VersionHistory { get; set; }
 
-        [JsonProperty("e")]
+        [JsonProperty("Email")]
         public string Email { get; set; }
 
-        [JsonProperty("s")]
+        [JsonProperty("Snapshots")]
         public List<Snapshot> Snapshots { get; set; }
     }
 
-    public enum FeedbackResult
-    {
-        Send = 0,
-        WaitNetwork = 1,
-    }
-
-    public class SendFeedbackResult
-    {
-        public FeedbackResult Result { get; set; }
-    }
 
     internal class Result<T>
     {
@@ -129,7 +125,7 @@ namespace Iridium360.Connect.Framework
 
 
                 var response = await client.GetAsync(url);
-                
+
                 try
                 {
                     response.EnsureSuccessStatusCode();
@@ -211,18 +207,26 @@ namespace Iridium360.Connect.Framework
             }
         }
 
-        public async Task<SendFeedbackResult> SendFeedback(string json, Stream zip)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="zip"></param>
+        /// <returns></returns>
+        public async Task<bool> SendFeedback(Feedback feedback, Stream zip)
         {
+            var json = JsonConvert.SerializeObject(feedback);
+
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
             {
-                { "json", new StringContent(json) },
+                { "json", new StringContent(json, Encoding.UTF8,  "application/json") },
                 { "feedback", new StreamContent(zip) },
             });
 
-            return new SendFeedbackResult()
-            {
-                Result = result.ApiResult ? FeedbackResult.Send : FeedbackResult.WaitNetwork
-            };
+            result.ThrowIfError();
+
+            return result.ApiResult;
         }
 
 
