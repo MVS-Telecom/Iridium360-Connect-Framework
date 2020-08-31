@@ -218,14 +218,14 @@ namespace Iridium360.Connect.Framework
         /// <param name="json"></param>
         /// <param name="zip"></param>
         /// <returns></returns>
-        public async Task<bool> SendFeedback(Feedback feedback, MemoryStream zip)
+        public async Task<bool> SendFeedback(Feedback feedback, byte[] bytes)
         {
             var json = JsonConvert.SerializeObject(feedback, Formatting.Indented);
 
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
             {
                 { "json", new StringContent(json, Encoding.UTF8,  "application/json") },
-                { "feedback.zip", new ByteArrayContent(zip.ToArray(), 0, (int)zip.Length) },
+                { "feedback.zip", new ByteArrayContent(bytes) },
             });
 
             result.ThrowIfError();
