@@ -25,7 +25,7 @@ namespace Iridium360.Connect.Framework
         public DateTime? Date { get; set; }
     }
 
-    public class SavedDeviceInfo
+    public class DeviceInfo
     {
         [JsonProperty("MacAddress")]
         public string MacAddress { get; set; }
@@ -55,7 +55,7 @@ namespace Iridium360.Connect.Framework
         public string Device { get; set; }
 
         [JsonProperty("ConnectedDevice")]
-        public SavedDeviceInfo ConnectedDevice { get; set; }
+        public DeviceInfo ConnectedDevice { get; set; }
 
         [JsonProperty("VersionHistory")]
         public List<string> VersionHistory { get; set; }
