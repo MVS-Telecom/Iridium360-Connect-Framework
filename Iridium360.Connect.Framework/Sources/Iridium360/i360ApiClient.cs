@@ -167,8 +167,8 @@ namespace Iridium360.Connect.Framework
                 if (@params == null)
                     @params = new Dictionary<string, HttpContent>();
 
-                string url = $"http://192.168.88.36:45455/connect/{actionName}";
-                //string url = $"https://demo.iridium360.ru/connect/{actionName}";
+                //string url = $"http://192.168.88.36:45455/connect/{actionName}";
+                string url = $"https://demo.iridium360.ru/connect/{actionName}";
 
                 HttpResponseMessage response = null;
 
