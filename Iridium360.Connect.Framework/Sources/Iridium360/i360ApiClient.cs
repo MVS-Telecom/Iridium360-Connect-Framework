@@ -20,6 +20,9 @@ namespace Iridium360.Connect.Framework
 
         [JsonProperty("Text")]
         public string Text { get; set; }
+
+        [JsonProperty("Date")]
+        public DateTime? Date { get; set; }
     }
 
     public class SavedDeviceInfo
