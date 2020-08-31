@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -177,7 +178,12 @@ namespace Iridium360.Connect.Framework
                     content.Add(new StringContent(auth), "auth");
 
                     foreach (var param in @params)
-                        content.Add(param.Value, param.Key);
+                    {
+                        if (param.Value is ByteArrayContent)
+                            content.Add(param.Value, param.Key, param.Key);
+                        else
+                            content.Add(param.Value, param.Key);
+                    }
 
                     response = await client.PostAsync(url, content);
                 }
@@ -220,6 +226,9 @@ namespace Iridium360.Connect.Framework
         /// <returns></returns>
         public async Task<bool> SendFeedback(Feedback feedback, byte[] bytes)
         {
+            var byteContent = new ByteArrayContent(bytes);
+            byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+
             var json = JsonConvert.SerializeObject(feedback, Formatting.Indented);
 
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
