@@ -67,6 +67,12 @@ namespace Iridium360.Connect.Framework.Models
         public double? WindSpeed { get; set; }
 
         /// <summary>
+        /// Порывы ветра м/с
+        /// </summary>
+        [JsonProperty("wg")]
+        public double? WindGust { get; set; }
+
+        /// <summary>
         /// Вероятность снега
         /// </summary>
         [JsonProperty("s")]
@@ -258,12 +264,6 @@ namespace Iridium360.Connect.Framework.Models
         /// </summary>
         [JsonProperty("moon")]
         public MoonPhase? MoonPhase { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [JsonProperty("gust")]
-        public double? WindGust { get; set; }
     }
 
 
