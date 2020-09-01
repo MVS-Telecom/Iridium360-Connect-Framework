@@ -43,6 +43,12 @@ namespace Iridium360.Connect.Framework.Models
         public int? Cloud { get; set; }
 
         /// <summary>
+        /// Высота облаков в метрах
+        /// </summary>
+        [JsonProperty("ch")]
+        public int? CloudHeight { get; set; }
+
+        /// <summary>
         /// Осадки в мм
         /// </summary>
         [JsonProperty("pr")]
@@ -65,6 +71,12 @@ namespace Iridium360.Connect.Framework.Models
         /// </summary>
         [JsonProperty("s")]
         public bool SnowRisk { get; set; }
+
+        /// <summary>
+        /// Видимость в метрах
+        /// </summary>
+        [JsonProperty("v")]
+        public int? Visibility { get; set; }
     }
 
 
@@ -246,6 +258,12 @@ namespace Iridium360.Connect.Framework.Models
         /// </summary>
         [JsonProperty("moon")]
         public MoonPhase? MoonPhase { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonProperty("gust")]
+        public double? WindGust { get; set; }
     }
 
 
