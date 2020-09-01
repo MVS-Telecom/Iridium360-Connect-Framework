@@ -234,7 +234,7 @@ namespace Iridium360.Connect.Framework
             var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
             {
                 { "json", new StringContent(json, Encoding.UTF8,  "application/json") },
-                { "feedback.zip", new ByteArrayContent(bytes) },
+                { "feedback.zip", byteContent },
             });
 
             result.ThrowIfError();
