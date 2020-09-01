@@ -303,101 +303,67 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
         //        }
 
 
-        //        /// <summary>
-        //        /// 
-        //        /// </summary>
-        //        [TestMethod]
-        //        public async Task Pack__WeatherMTTest()
-        //        {
-        //            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.255859375&interval=6");
-        //            var s = await r.Content.ReadAsStringAsync();
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public async Task Pack__WeatherMTTest()
+        {
+            //var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.255859375&interval=6");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=-37.731255&lon=176.283231&interval=6");
+            var s = await r.Content.ReadAsStringAsync();
 
 
+            try
+            {
+                var ffff = JsonConvert.DeserializeObject<i360WeatherForecast>(s);
 
-        //            try
-        //            {
-        //                var ffff = JsonConvert.DeserializeObject<i360WeatherForecast>(s);
+                var fs = ffff.Forecasts.Select(x => new i360PointForecast()
+                {
+                    Lat = x.Lat,
+                    Lon = x.Lon,
+                    DayInfos = x.DayInfos,
+                    Forecasts = x.Forecasts.Select(z => new i360Forecast()
+                    {
+                        CloudHeight = z.CloudHeight,
+                        Visibility = z.Visibility,
+                        Cloud = z.Cloud,
+                        Date = z.Date,
+                        Precipitation = z.Precipitation,
+                        WindSpeed = z.WindSpeed,
+                        WindDirection = z.WindDirection,
+                        Temperature = z.Temperature,
+                        SnowRisk = z.SnowRisk,
+                        Pressure = z.Pressure
 
-        //                var fs = ffff.Forecasts.Select(x => new i360PointForecast()
-        //                {
-        //                    Lat = x.Lat,
-        //                    Lon = x.Lon,
-        //                    DayInfos = x.DayInfos,
-        //                    Forecasts = x.Forecasts.Select(z => new i360Forecast()
-        //                    {
-        //                        Cloud = z.Cloud,
-        //                        Date = z.Date,
-        //                        Precipitation = z.Precipitation,
-        //                        WindSpeed = z.WindSpeed,
-        //                        WindDirection = z.WindDirection,
-        //                        Temperature = z.Temperature,
-        //                        SnowRisk = z.SnowRisk,
-        //                        Pressure = z.Pressure
+                    }).Take(16).ToList()
 
-        //                    }).Take(16).ToList()
+                }).FirstOrDefault();
 
-        //                }).FirstOrDefault();
+                var message = WeatherMT.Create(fs);
 
-        //                var message = WeatherMT.Create(fs);
-
-        //                //var message = WeatherMT.Create(new i360PointForecast()
-        //                //{
-        //                //    Lat = 55.12345678,
-        //                //    Lon = 37.12345678,
-        //                //    TimeOffset = 3,
-        //                //    DayInfos = new List<i360DayInfo>()
-        //                //          {
-        //                //              new i360DayInfo()
-        //                //              {
-        //                //                   DateDay = DateTime.Now,
-        //                //                   Forecasts = new List<i360Forecast>()
-        //                //                   {
-        //                //                        new i360Forecast()
-        //                //                        {
-        //                //                             Cloud = 80,
-        //                //                              HourOffset = 0,
-        //                //                               Precipitation = 12,
-        //                //                                Pressure = 740,
-        //                //                                  SnowRisk = false,
-        //                //                                   Temperature = 13,
-        //                //                                    WindDirection = 124,
-        //                //                                     WindSpeed = 5.2
-        //                //                        },
-        //                //                        new i360Forecast()
-        //                //                        {
-        //                //                             Cloud = 60,
-        //                //                              HourOffset = 6,
-        //                //                               Precipitation = 50,
-        //                //                                Pressure = 741,
-        //                //                                  SnowRisk = true,
-        //                //                                   Temperature = 15,
-        //                //                                    WindDirection = 189,
-        //                //                                     WindSpeed = 2.9
-        //                //                        }
-        //                //                   }
-        //                //              },
-        //                //          }
-        //                //});
-        //                var buffer = message.Pack();
-        //                string hex = buffer.ToHexString();
+                var buffer = message.Pack();
+                string hex = buffer.ToHexString();
 
 
-        //                string b = string.Join("", buffer.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
+                string b = string.Join("", buffer.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
 
-        //                //if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
-        //                //Assert.Fail();
+                //if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
+                //Assert.Fail();
 
-        //                var _message = MessageMT.Unpack(buffer) as WeatherMT;
+                var _message = MessageMT.Unpack(buffer) as WeatherMT;
 
-        //                if (_message == null)
-        //                    Assert.Fail();
+                if (_message == null)
+                    Assert.Fail();
 
-        //            }
-        //            catch (Exception e)
-        //            {
+            }
+            catch (Exception e)
+            {
 
-        //            }
-        //        }
+            }
+        }
+
+
 
 
         //        /// <summary>
