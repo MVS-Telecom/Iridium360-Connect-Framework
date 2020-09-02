@@ -250,14 +250,14 @@ namespace Iridium360.Connect.Framework.Messaging
                     {
                         ///->
 
-                        uint? _cloudHeight = reader.ReadUInt(8);
+                        uint? _cloudHeight = reader.ReadUIntNullable(8);
 
                         if (_cloudHeight != null)
-                            forecast.CloudHeight = (int)(_windDirection.Value * 70d);
+                            forecast.CloudHeight = (int)(_cloudHeight.Value * 70d);
 
                         ///->
 
-                        uint? _visibility = reader.ReadUInt(10);
+                        uint? _visibility = reader.ReadUIntNullable(10);
 
                         if (_visibility != null)
                             forecast.Visibility = (int)(_visibility.Value * 10d);

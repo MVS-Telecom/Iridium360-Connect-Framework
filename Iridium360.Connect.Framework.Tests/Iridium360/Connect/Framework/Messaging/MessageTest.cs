@@ -293,7 +293,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
         {
             try
             {
-                var buffer = "1204055C8F78D75F00904279FD0500291860FA1B004268A8BF0420854CDB6B006228ADBC0730050450790D40084D55F700A4906D730F600AE515D70086A080EAED01CCA0B1E21AC00C322EAE010CA1B4E206C0101830C50D801934555C0318028B".ToByteArray();
+                var buffer = "1208058C19F1C2B10060817FF4FF321C0B0016F847FF37C017160002F08FFEDF9463016004FFE8FF193A160088F08FFE5F8A6301E002FFE8FF0810C3020005FED1FF1B342C008CE01FFD3F5BC3020011FED1FF4BF22B0098E01FFD5F01E3560080C03FFA7F9376050009FCA3FF67EC5600A8C33FFA7F496E050023FCA3FF3320DC0A0036F847FF6FCAAD0020827FF47F12".ToByteArray();
                 var weather = MessageMT.Unpack(buffer);
             }
             catch (Exception e)
@@ -345,7 +345,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
                 var packets = message.Pack(33);
 
                 var hex = packets[0].Payload.ToHexString();
-
+                var m = Message.Unpack(packets[0].Payload) as WeatherMT;
 
             }
             catch (Exception e)

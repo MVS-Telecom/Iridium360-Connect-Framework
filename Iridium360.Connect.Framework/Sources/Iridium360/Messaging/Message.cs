@@ -80,7 +80,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
 
 
-            var compressed = Compress(content);
+            //var compressed = Compress(content);
 
             //if (this.Length > 0x4b0)
             //{
