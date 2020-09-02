@@ -4,13 +4,71 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Iridium360.Connect.Framework
 {
+    public class Snapshot
+    {
+        [JsonProperty("Zip")]
+        public string Zip { get; set; }
+
+        [JsonProperty("Text")]
+        public string Text { get; set; }
+
+        [JsonProperty("Date")]
+        public DateTime? Date { get; set; }
+    }
+
+    public class DeviceInfo
+    {
+        [JsonProperty("MacAddress")]
+        public string MacAddress { get; set; }
+
+        [JsonProperty("Name")]
+        public string Name { get; set; }
+
+        [JsonProperty("Serial")]
+        public string Serial { get; set; }
+
+        [JsonProperty("Hardware")]
+        public string Hardware { get; set; }
+
+        [JsonProperty("Firmware")]
+        public string Firmware { get; set; }
+    }
+
+    public class Feedback
+    {
+        [JsonProperty("AppVersion")]
+        public string AppVersion { get; set; }
+
+        [JsonProperty("Os")]
+        public string Os { get; set; }
+
+        [JsonProperty("Device")]
+        public string Device { get; set; }
+
+        [JsonProperty("ConnectedDevice")]
+        public DeviceInfo ConnectedDevice { get; set; }
+
+        [JsonProperty("VersionHistory")]
+        public List<string> VersionHistory { get; set; }
+
+        [JsonProperty("Email")]
+        public string Email { get; set; }
+
+        [JsonProperty("Snapshots")]
+        public List<Snapshot> Snapshots { get; set; }
+    }
+
+
     internal class Result<T>
     {
         internal T ApiResult { get; set; }
@@ -23,7 +81,6 @@ namespace Iridium360.Connect.Framework
                 throw Exception;
         }
     }
-
 
     /// <summary>
     /// HTTP REST клиент для iridium360.ru
@@ -102,6 +159,87 @@ namespace Iridium360.Connect.Framework
                     Exception = ex
                 };
             }
+        }
+
+        private async Task<Result<T>> MakePostApiRequest<T>(string actionName, Dictionary<string, HttpContent> @params = null)
+        {
+            try
+            {
+                if (@params == null)
+                    @params = new Dictionary<string, HttpContent>();
+
+                //string url = $"http://192.168.88.36:45455/connect/{actionName}";
+                string url = $"https://demo.iridium360.ru/connect/{actionName}";
+
+                HttpResponseMessage response = null;
+
+                using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+                {
+                    content.Add(new StringContent(auth), "auth");
+
+                    foreach (var param in @params)
+                    {
+                        if (param.Value is ByteArrayContent)
+                            content.Add(param.Value, param.Key, param.Key);
+                        else
+                            content.Add(param.Value, param.Key);
+                    }
+
+                    response = await client.PostAsync(url, content);
+                }
+
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+                    return new Result<T>()
+                    {
+                        Exception = ex
+                    };
+                }
+
+                string jsonResult = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<T>(jsonResult);
+
+                return new Result<T>()
+                {
+                    ApiResult = result,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Result<T>()
+                {
+                    Exception = ex
+                };
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="zip"></param>
+        /// <returns></returns>
+        public async Task<bool> SendFeedback(Feedback feedback, byte[] bytes)
+        {
+            var byteContent = new ByteArrayContent(bytes);
+            byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+
+            var json = JsonConvert.SerializeObject(feedback, Formatting.Indented);
+
+            var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
+            {
+                { "json", new StringContent(json, Encoding.UTF8,  "application/json") },
+                { "feedback.zip", new ByteArrayContent(bytes) },
+            });
+
+            result.ThrowIfError();
+
+            return result.ApiResult;
         }
 
 
