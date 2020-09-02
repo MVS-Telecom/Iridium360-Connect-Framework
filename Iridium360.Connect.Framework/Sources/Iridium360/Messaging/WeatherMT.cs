@@ -14,7 +14,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        public i360PointForecast Forecast { get; set; }
+        public i360PointForecast Forecast { get; private set; }
 
         /// <summary>
         /// 
@@ -29,12 +29,22 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="writer"></param>
         protected override void pack(BinaryBitWriter writer)
         {
+            bool extended = false;
+
+            if (this.Version >= ProtocolVersion.WeatherExtension)
+            {
+                extended = Forecast.Forecasts.Any(x => x.WindGust != null || x.CloudHeight != null || x.Visibility != null);
+                writer.Write(extended);
+            }
+
+
             writer.Write((uint)Forecast.TimeOffset + 12, 5); //[-12...14]h часовой пояс
 
             if (Forecast.Forecasts.Count != 16)
                 throw new ArgumentOutOfRangeException("Forecasts != 16");
 
             i360Forecast prev = null;
+
 
             foreach (var ff in Forecast.Forecasts)
             {
@@ -99,8 +109,44 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 writer.Write((uint?)_windSpeed, 6); //[0...60]м/с скорость ветра
 
+
                 ///->
+
                 writer.Write(ff.SnowRisk);  //[0...1] вероятность снега
+
+
+
+                if (this.Version >= ProtocolVersion.WeatherExtension && extended)
+                {
+                    ///->
+
+                    int? cloudHeight = ff.CloudHeight;
+
+                    if (cloudHeight != null)
+                        cloudHeight = (int)(cloudHeight.Value / 70d);
+
+                    writer.Write((uint?)cloudHeight, 8);  //[0..256] == [0..18000] м высота облаков
+
+                    ///->
+
+                    int? visibility = ff.Visibility;
+
+                    if (visibility != null)
+                        visibility = (int)(visibility.Value / 10d);
+
+                    writer.Write((uint?)visibility, 10);
+
+                    ///->                       
+
+                    double? _gust = ff.WindGust;
+
+                    if (_gust != null)
+                        _gust = (int)Math.Round(_gust.Value);
+
+                    writer.Write((uint?)_gust, 6); //[0...60]м/с порывы ветра
+
+                    ///->
+                }
             }
 
 
@@ -114,6 +160,14 @@ namespace Iridium360.Connect.Framework.Messaging
         protected override void unpack(BinaryBitReader reader)
         {
             Forecast = new i360PointForecast();
+
+            bool extended = false;
+
+            if (this.Version >= ProtocolVersion.WeatherExtension)
+            {
+                extended = reader.ReadBoolean();
+            }
+
 
             Forecast.TimeOffset = (int)reader.ReadUInt(5) - 12;
 
@@ -191,6 +245,32 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     ///->
 
+
+                    if (this.Version >= ProtocolVersion.WeatherExtension && extended)
+                    {
+                        ///->
+
+                        uint? _cloudHeight = reader.ReadUInt(8);
+
+                        if (_cloudHeight != null)
+                            forecast.CloudHeight = (int)(_windDirection.Value * 70d);
+
+                        ///->
+
+                        uint? _visibility = reader.ReadUInt(10);
+
+                        if (_visibility != null)
+                            forecast.Visibility = (int)(_visibility.Value * 10d);
+
+                        ///->         
+
+                        forecast.WindGust = reader.ReadUIntNullable(6);
+
+                        ///->        
+                    }
+
+
+
                     forecasts.Add(forecast);
                 }
                 catch (Exception e)
@@ -211,19 +291,18 @@ namespace Iridium360.Connect.Framework.Messaging
         private WeatherMT() { }
 
 
-        /// <summary>
+        /// 
         /// 
         /// </summary>
-        /// <param name="chatId"></param>
-        /// <param name="conversation"></param>
-        /// <param name="text"></param>
-        /// <param name="subject"></param>
-        public static WeatherMT Create(i360PointForecast forecast)
+        /// <param name="forecast"></param>
+        /// <param name="extendedForecast"><see cref="ExtendedForecast"/></param>
+        /// <returns></returns>
+        public static WeatherMT Create(i360PointForecast forecast, bool extendedForecast = false)
         {
             WeatherMT weather = new WeatherMT();
 
             weather.Forecast = forecast;
-            // --->
+
             return weather;
         }
     }

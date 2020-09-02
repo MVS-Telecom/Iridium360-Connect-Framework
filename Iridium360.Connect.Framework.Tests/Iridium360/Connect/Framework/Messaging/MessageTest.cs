@@ -288,19 +288,19 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
         //        }
 
 
-        //        [TestMethod]
-        //        public void ParseWeather()
-        //        {
-        //            try
-        //            {
-        //                var buffer = "1200055c8c4fddda039841d6ad3d801994dd5902a08100bab4044084a64b6b0034c8bab4044084b23b5b0044204097d60088d074690f80085997f600685076670f800606e8ce1e00159aeeac015021ebd21e0015caeeac019001015d5a03200379".ToByteArray();
-        //                var weather = MessageMT.Unpack(buffer);
-        //            }
-        //            catch (Exception e)
-        //            {
+        [TestMethod]
+        public void ParseWeather()
+        {
+            try
+            {
+                var buffer = "1204055C8F78D75F00904279FD0500291860FA1B004268A8BF0420854CDB6B006228ADBC0730050450790D40084D55F700A4906D730F600AE515D70086A080EAED01CCA0B1E21AC00C322EAE010CA1B4E206C0101830C50D801934555C0318028B".ToByteArray();
+                var weather = MessageMT.Unpack(buffer);
+            }
+            catch (Exception e)
+            {
 
-        //            }
-        //        }
+            }
+        }
 
 
         /// <summary>
@@ -310,7 +310,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
         public async Task Pack__WeatherMTTest()
         {
             //var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.255859375&interval=6");
-            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=-37.731255&lon=176.283231&interval=6");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=34.671347&lon=33.043014&interval=6");
             var s = await r.Content.ReadAsStringAsync();
 
 
@@ -325,6 +325,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
                     DayInfos = x.DayInfos,
                     Forecasts = x.Forecasts.Select(z => new i360Forecast()
                     {
+                        WindGust = z.WindGust,
                         CloudHeight = z.CloudHeight,
                         Visibility = z.Visibility,
                         Cloud = z.Cloud,
@@ -341,20 +342,10 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
                 }).FirstOrDefault();
 
                 var message = WeatherMT.Create(fs);
+                var packets = message.Pack(33);
 
-                var buffer = message.Pack();
-                string hex = buffer.ToHexString();
+                var hex = packets[0].Payload.ToHexString();
 
-
-                string b = string.Join("", buffer.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
-
-                //if (hex != "0005141D97D051088DB00D020D02230AA8E63190C90805A3")
-                //Assert.Fail();
-
-                var _message = MessageMT.Unpack(buffer) as WeatherMT;
-
-                if (_message == null)
-                    Assert.Fail();
 
             }
             catch (Exception e)

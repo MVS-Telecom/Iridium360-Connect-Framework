@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -42,6 +43,26 @@ namespace Iridium360.Connect.Framework.Messaging
         protected abstract void pack(BinaryBitWriter writer);
 
 
+        public static byte[] Compress(byte[] sourceFile)
+        {
+            // поток для чтения исходного файла
+            using (Stream sourceStream = new MemoryStream(sourceFile))
+            {
+                // поток для записи сжатого файла
+                using (MemoryStream targetStream = new MemoryStream())
+                {
+                    // поток архивации
+                    using (GZipStream compressionStream = new GZipStream(targetStream, CompressionMode.Compress))
+                    {
+                        sourceStream.CopyTo(compressionStream); // копируем байты из одного потока в другой
+                    }
+
+                    return targetStream.GetBuffer();
+                }
+            }
+        }
+
+
         public List<Packet> Pack(byte group = 0)
         {
             List<Packet> payloads = new List<Packet>();
@@ -59,6 +80,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
 
 
+            var compressed = Compress(content);
 
             //if (this.Length > 0x4b0)
             //{
@@ -268,9 +290,10 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             First = 0,
             LocationFix = 1,
+            WeatherExtension = 2,
         }
 
-        public ProtocolVersion Version { get; private set; } = ProtocolVersion.LocationFix;
+        public ProtocolVersion Version { get; private set; } = ProtocolVersion.WeatherExtension;
 
         public byte Group { get; private set; }
 
