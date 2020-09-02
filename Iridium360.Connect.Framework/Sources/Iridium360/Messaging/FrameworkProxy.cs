@@ -522,9 +522,6 @@ namespace Iridium360.Connect.Framework.Messaging
                 return true;
 
 
-            Dictionary<string, Exception> errors = new Dictionary<string, Exception>();
-
-
             ///Передаем пакеты на устройство
             for (int i = 0; i < packets.Count; i++)
             {
@@ -542,12 +539,15 @@ namespace Iridium360.Connect.Framework.Messaging
                 }
                 catch (Exception e)
                 {
-                    errors.Add(packet.Id, e);
-
                     logger.Log($"[PACKET] Transfer to device error {e}");
                     Debugger.Break();
 
                     buffer.SetPacketStatus(packet.Id, PacketStatus.None);
+
+                    if (throwOnError)
+                        throw e;
+
+                    return false;
                 }
 
 
@@ -557,12 +557,8 @@ namespace Iridium360.Connect.Framework.Messaging
                     progress?.Invoke(__progress);
             }
 
-            if (throwOnError)
-                if (errors.Any())
-                    throw new AggregateException("Packets transfer error", errors.Select(x => x.Value));
 
-
-            return errors.Any() == false;
+            return true;
         }
 
 
