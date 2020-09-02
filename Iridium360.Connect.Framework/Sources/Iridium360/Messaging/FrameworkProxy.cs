@@ -57,14 +57,13 @@ namespace Iridium360.Connect.Framework.Messaging
     /// </summary>
     public interface IFrameworkProxy : IFramework
     {
-        event EventHandler<MessageErrorEventArgs> MessageError;
         event EventHandler<MessageTransmittedEventArgs> MessageTransmitted;
         event EventHandler<MessageTransmittedEventArgs> MessagePartsResending;
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
         event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged;
 
-        Task<(string messageId, int totalParts)> SendMessage(Message message, Action<double> progress = null);
-        Task RetrySendMessage(string messageId, Action<double> progress = null);
+        Task<(string messageId, int totalParts, bool transferSuccess)> SendMessage(Message message, Action<double> progress = null);
+        Task<bool> RetrySendMessage(string messageId, Action<double> progress = null);
     }
 
 
@@ -100,7 +99,6 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
-        public event EventHandler<MessageErrorEventArgs> MessageError = delegate { };
         public event EventHandler<MessageTransmittedEventArgs> MessageTransmitted = delegate { };
         public event EventHandler<MessageTransmittedEventArgs> MessagePartsResending = delegate { };
         public event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged = delegate { };
@@ -224,7 +222,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
-        private async void ResendParts(byte group, byte[] indexes)
+        private async Task<bool> ResendParts(byte group, byte[] indexes)
         {
             var message = buffer.GetMessageByGroup(group, PacketDirection.Outbound);
             var packets = buffer.GetPackets((uint)group, PacketDirection.Outbound);
@@ -250,15 +248,8 @@ namespace Iridium360.Connect.Framework.Messaging
             });
 
 
-            bool success = await SendPackets(targets);
-
-            if (!success)
-            {
-                MessageError(this, new MessageErrorEventArgs()
-                {
-                    MessageId = message.Id
-                });
-            }
+            bool transferSuccess = await SendPackets(targets);
+            return transferSuccess;
         }
 
 
@@ -406,7 +397,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="messageId"></param>
         /// <returns></returns>
-        public async Task RetrySendMessage(string messageId, Action<double> progress = null)
+        public async Task<bool> RetrySendMessage(string messageId, Action<double> progress = null)
         {
             try
             {
@@ -424,19 +415,8 @@ namespace Iridium360.Connect.Framework.Messaging
                     .ToList();
 
 
-                bool success = await SendPackets(packets, progress: progress);
-
-
-                if (!success)
-                {
-                    Task.Run(() =>
-                    {
-                        MessageError(this, new MessageErrorEventArgs()
-                        {
-                            MessageId = messageId
-                        });
-                    });
-                }
+                bool transferSuccess = await SendPackets(packets, progress: progress);
+                return transferSuccess;
             }
             catch (Exception e)
             {
@@ -457,7 +437,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<(string messageId, int totalParts)> SendMessage(Message message, Action<double> progress = null)
+        public async Task<(string messageId, int totalParts, bool transferSuccess)> SendMessage(Message message, Action<double> progress = null)
         {
             await sendLock.WaitAsync();
 
@@ -505,20 +485,8 @@ namespace Iridium360.Connect.Framework.Messaging
                     });
 
 
-                    bool success = await SendPackets(packets, progress: progress);
-
-                    if (!success)
-                    {
-                        Task.Run(() =>
-                        {
-                            MessageError(this, new MessageErrorEventArgs()
-                            {
-                                MessageId = messageId
-                            });
-                        });
-                    }
-
-                    return (messageId, packets.Count);
+                    bool transferSuccess = await SendPackets(packets, progress: progress);
+                    return (messageId, packets.Count, transferSuccess);
                 }
                 finally
                 {
