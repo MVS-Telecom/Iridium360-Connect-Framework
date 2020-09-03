@@ -323,6 +323,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
                     Lat = x.Lat,
                     Lon = x.Lon,
                     DayInfos = x.DayInfos,
+                    TimeOffset = x.TimeOffset,
                     Forecasts = x.Forecasts.Select(z => new i360Forecast()
                     {
                         WindGust = z.WindGust,
