@@ -310,7 +310,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
         public async Task Pack__WeatherMTTest()
         {
             //var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=55.67578125&lon=37.255859375&interval=6");
-            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=34.671347&lon=33.043014&interval=6");
+            var r = await new HttpClient().GetAsync("http://demo.iridium360.ru/connect/weather?auth=d9fc554e3ad74919bf274e11bdfe07c3&lat=56.821339&lon=60.574787&interval=6");
             var s = await r.Content.ReadAsStringAsync();
 
 
