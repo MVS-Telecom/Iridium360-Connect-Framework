@@ -5,27 +5,27 @@ namespace Iridium360.Connect.Framework.Messaging
 {
     public class PayloadMO : MessageMO
     {
-        public static PayloadMO Create(byte[] payload)
+        public static PayloadMO Create(ProtocolVersion version, byte[] content)
         {
-            PayloadMO dmo1 = new PayloadMO();
-            dmo1.Payload = payload;
+            PayloadMO dmo1 = Create<PayloadMO>(version);
+            dmo1.Content = content;
             return dmo1;
         }
 
         protected override void pack(BinaryBitWriter writer)
         {
-            writer.Write(this.Payload);
+            writer.Write(this.Content);
         }
 
         protected override void unpack(BinaryBitReader reader)
         {
-            this.Payload = reader.ReadAllBytes();
+            this.Content = reader.ReadAllBytes();
         }
 
         public override MessageType Type =>
             MessageType.Payload;
 
-        public byte[] Payload { get; protected set; }
+        public byte[] Content { get; protected set; }
     }
 }
 

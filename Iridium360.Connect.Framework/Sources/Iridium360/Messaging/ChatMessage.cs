@@ -25,6 +25,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="subject">заголовок</param>
         /// <returns></returns>
         protected static T Create<T>(
+            ProtocolVersion version,
             Subscriber? to,
             ushort? id,
             ushort? conversation,
@@ -47,7 +48,7 @@ namespace Iridium360.Connect.Framework.Messaging
             if (fileExtension?.IsImage() == true && imageQuality == null)
                 throw new ArgumentException("Image quality must be specified");
 
-            T emo1 = (T)Activator.CreateInstance(typeof(T), true);
+            T emo1 = Message.Create<T>(version);
             emo1.Id = id;
             emo1.Subscriber = to;
             emo1.Conversation = conversation;

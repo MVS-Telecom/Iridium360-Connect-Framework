@@ -22,9 +22,9 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
-        public static MessageSentMO Create(byte sentGroup)
+        public static MessageSentMO Create(ProtocolVersion version, byte sentGroup)
         {
-            var mo = new MessageSentMO();
+            var mo = Create<MessageSentMO>(version);
             mo.SentGroup = sentGroup;
             return mo;
         }

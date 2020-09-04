@@ -32,9 +32,9 @@ namespace Iridium360.Connect.Framework.Messaging
                 ResendIndexes[i] = reader.ReadByte();
         }
 
-        public static ResendMessagePartsMT Create(byte resendGroup, byte[] resendIndexes)
+        public static ResendMessagePartsMT Create(ProtocolVersion version, byte resendGroup, byte[] resendIndexes)
         {
-            var mt = new ResendMessagePartsMT();
+            var mt = Create<ResendMessagePartsMT>(version);
             mt.ResendGroup = resendGroup;
             mt.ResendIndexes = resendIndexes;
             return mt;

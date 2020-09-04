@@ -156,7 +156,7 @@ namespace Iridium360.Connect.Framework.Messaging
                         var subscriber = legacy.GetSubscriber();
                         var text = legacy.GetText();
 
-                        var message = ChatMessageMT.Create(subscriber, null, null, text);
+                        var message = ChatMessageMT.Create(ProtocolVersion.v1, subscriber, null, null, text);
 
                         MessageReceived(this, new MessageReceivedEventArgs()
                         {
@@ -358,7 +358,7 @@ namespace Iridium360.Connect.Framework.Messaging
                             {
                                 logger.Log("[MESSAGE SENT] ~~~~~~~~~~~~~~~~~~~~~~");
 
-                                var sent = MessageSentMO.Create((byte)packet.Group);
+                                var sent = MessageSentMO.Create(ProtocolVersion.v3__WeatherExtension, (byte)packet.Group);
                                 var result2 = await SendMessage(sent);
 
                                 logger.Log("[MESSAGE SENT] ~~~~~~~~~~~~~~~~~~~~~~");

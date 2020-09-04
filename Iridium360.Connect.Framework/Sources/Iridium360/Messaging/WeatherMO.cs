@@ -48,9 +48,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="conversation"></param>
         /// <param name="text"></param>
         /// <param name="subject"></param>
-        public static WeatherMO Create(double lat, double lon)
+        public static WeatherMO Create(ProtocolVersion version, double lat, double lon)
         {
-            WeatherMO weather = new WeatherMO();
+            WeatherMO weather = Create<WeatherMO>(version);
 
             weather.Lat = lat;
             weather.Lon = lon;

@@ -8,8 +8,8 @@ namespace Iridium360.Connect.Framework.Messaging
         {
         }
 
-        public static PingMO Create() =>
-            new PingMO();
+        public static PingMO Create(ProtocolVersion version) =>
+            Create<PingMO>(version);
 
         protected override void pack(BinaryBitWriter writer)
         {

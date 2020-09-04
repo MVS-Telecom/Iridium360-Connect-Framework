@@ -36,6 +36,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="subject">заголовок</param>
         /// <returns></returns>
         public static ChatMessageMT Create(
+            ProtocolVersion version,
             Subscriber? to,
             ushort? id,
             ushort? conversation,
@@ -50,6 +51,7 @@ namespace Iridium360.Connect.Framework.Messaging
             string subject = null)
         {
             return ChatMessage.Create<ChatMessageMT>(
+                version,
                 to,
                 id,
                 conversation,

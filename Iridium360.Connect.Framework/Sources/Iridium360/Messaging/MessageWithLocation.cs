@@ -13,7 +13,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected void WriteLocation(BinaryBitWriter writer)
         {
-            if (Version >= ProtocolVersion.LocationFix)
+            if (Version >= ProtocolVersion.v2__LocationFix)
             {
                 writer.Write((float)Lat, true, 7, 13);
                 writer.Write((float)Lon, true, 8, 13);
@@ -38,7 +38,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected void ReadLocation(BinaryBitReader reader)
         {
-            if (Version >= ProtocolVersion.LocationFix)
+            if (Version >= ProtocolVersion.v2__LocationFix)
             {
                 Lat = reader.ReadFloat(true, 7, 13);
                 Lon = reader.ReadFloat(true, 8, 13);

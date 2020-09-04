@@ -32,7 +32,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                 byte[] indexes = new byte[] { 8, 9, 19, 20, 21, 78 };
                 byte group = 159;
 
-                var bytes = ResendMessagePartsMT.Create(group, indexes).Pack()[0].Payload;
+                var bytes = ResendMessagePartsMT.Create(ProtocolVersion.v3__WeatherExtension, group, indexes).Pack()[0].Payload;
                 var message = Message.Unpack(bytes) as ResendMessagePartsMT;
 
                 if (message.ResendGroup != group || !message.ResendIndexes.SequenceEqual(indexes))
@@ -53,7 +53,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
             {
                 byte group = 35;
 
-                var bytes = MessageSentMO.Create(group).Pack()[0].Payload;
+                var bytes = MessageSentMO.Create(ProtocolVersion.v3__WeatherExtension, group).Pack()[0].Payload;
                 var message = Message.Unpack(bytes) as MessageSentMO;
 
                 if (message.SentGroup != group)
@@ -80,7 +80,9 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
             try
             {
                 var file = File.OpenRead(@"C:\Users\Banana\Desktop\file.txt");
-                var m = ChatMessageMT.Create(new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null,
+                var m = ChatMessageMT.Create(
+                    ProtocolVersion.v3__WeatherExtension,
+                    new Subscriber("79999740562", SubscriberNetwork.Mobile), null, null,
                     "hello image",
                     lat: 12,
                     lon: -56,
@@ -163,8 +165,8 @@ This shovel connects to our Compose for RabbitMQ exchange compose-exchange with 
 Ive also created two queues to send messages to: compose - queue in the Compose instance and messages - queue in the Messages for RabbitMQ instance. 
 Since the shovel is sending messages to the two exchanges, the queues have been bound to the exchanges so that the messages are received and queued up.";
 
-                var __a = ChatMessageMT.Create(Subscriber.Create("hello@world.com", SubscriberNetwork.Email), null, null, text);
-                var __b = ChatMessageMO.Create(Subscriber.Create("79153925491", SubscriberNetwork.Mobile), null, null, text);
+                var __a = ChatMessageMT.Create(ProtocolVersion.v3__WeatherExtension, Subscriber.Create("hello@world.com", SubscriberNetwork.Email), null, null, text);
+                var __b = ChatMessageMO.Create(ProtocolVersion.v3__WeatherExtension, Subscriber.Create("79153925491", SubscriberNetwork.Mobile), null, null, text);
 
                 var a = __a.Pack(56);
                 var b = __b.Pack(56);
@@ -342,7 +344,7 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
 
                 }).FirstOrDefault();
 
-                var message = WeatherMT.Create(fs);
+                var message = WeatherMT.Create(ProtocolVersion.v3__WeatherExtension, fs);
                 var packets = message.Pack(33);
 
                 var hex = packets[0].Payload.ToHexString();
@@ -413,7 +415,9 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
         [TestMethod]
         public void Pack__ChatMessageMTTest2()
         {
-            ChatMessageMT emt = ChatMessageMT.Create(new Subscriber("hello@world", SubscriberNetwork.Email)
+            ChatMessageMT emt = ChatMessageMT.Create(
+                ProtocolVersion.v3__WeatherExtension,
+                new Subscriber("hello@world", SubscriberNetwork.Email)
                     , 123
                     , null
                     , "The markdown document and any attachments, such as images, will then be sent to your email address"

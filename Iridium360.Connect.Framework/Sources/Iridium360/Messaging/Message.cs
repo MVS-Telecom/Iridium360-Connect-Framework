@@ -11,12 +11,20 @@ using System.Runtime.CompilerServices;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
+
+    public enum ProtocolVersion : byte
+    {
+        v1 = 0,
+        v2__LocationFix = 1,
+        v3__WeatherExtension = 2,
+    }
+
     public abstract class Message
     {
         private static Dictionary<MessageType, System.Type> knownMOTypes = new Dictionary<MessageType, System.Type>();
         private static Dictionary<MessageType, System.Type> knownMTTypes = new Dictionary<MessageType, System.Type>();
 
-        private const byte SIGNATURE = 0x12;
+        public const byte SIGNATURE = 0x12;
 
 
         public static bool CheckSignature(byte[] bytes)
@@ -27,11 +35,6 @@ namespace Iridium360.Connect.Framework.Messaging
         public static bool CheckSignature(byte _byte)
         {
             return _byte == SIGNATURE;
-        }
-
-
-        protected Message()
-        {
         }
 
 
@@ -174,6 +177,28 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public static ProtocolVersion GetProtocolVersion(byte[] buffer)
+        {
+            using (MemoryStream stream = new MemoryStream(buffer))
+            {
+                using (BinaryBitReader reader = new BinaryBitReader((Stream)stream))
+                {
+                    if (!CheckSignature(reader.ReadByte()))
+                        throw new FormatException("Invalid signature!");
+
+                    reader.ReadBoolean();
+                    reader.ReadBoolean();
+                    return (ProtocolVersion)reader.ReadUInt(3);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="direction"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
@@ -286,14 +311,8 @@ namespace Iridium360.Connect.Framework.Messaging
 
         public virtual Iridium360.Connect.Framework.Messaging.Composite Composite { get; private set; }
 
-        public enum ProtocolVersion : byte
-        {
-            First = 0,
-            LocationFix = 1,
-            WeatherExtension = 2,
-        }
 
-        public ProtocolVersion Version { get; private set; } = ProtocolVersion.WeatherExtension;
+        public ProtocolVersion Version { get; private set; } = ProtocolVersion.v3__WeatherExtension;
 
         public byte Group { get; private set; }
 
@@ -305,7 +324,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         public ushort Length => (ushort)Payload.Length;
 
-        public byte[] Payload { get; protected set; }
+        public byte[] Payload { get; private set; }
 
         public bool Complete => ReadyParts == TotalParts;
 
@@ -375,6 +394,13 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
+
+        static protected T Create<T>(ProtocolVersion version) where T : Message
+        {
+            var message = (T)Activator.CreateInstance(typeof(T), true);
+            message.Version = version;
+            return message;
+        }
 
     }
 }

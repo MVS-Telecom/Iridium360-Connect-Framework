@@ -33,9 +33,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="byskyToken"></param>
         /// <returns></returns>
-        public static CheckMessagesMO Create(ShortGuid? byskyToken = null)
+        public static CheckMessagesMO Create(ProtocolVersion version, ShortGuid? byskyToken = null)
         {
-            CheckMessagesMO emo1 = new CheckMessagesMO();
+            CheckMessagesMO emo1 = Create<CheckMessagesMO>(version);
             emo1.ByskyToken = byskyToken;
             return emo1;
         }

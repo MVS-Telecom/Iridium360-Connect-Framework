@@ -31,7 +31,7 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             bool extended = false;
 
-            if (this.Version >= ProtocolVersion.WeatherExtension)
+            if (this.Version >= ProtocolVersion.v3__WeatherExtension)
             {
                 extended = Forecast.Forecasts.Any(x => x.WindGust != null || x.CloudHeight != null || x.Visibility != null);
                 writer.Write(extended);
@@ -116,7 +116,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
 
-                if (this.Version >= ProtocolVersion.WeatherExtension && extended)
+                if (this.Version >= ProtocolVersion.v3__WeatherExtension && extended)
                 {
                     ///->
 
@@ -163,7 +163,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
             bool extended = false;
 
-            if (this.Version >= ProtocolVersion.WeatherExtension)
+            if (this.Version >= ProtocolVersion.v3__WeatherExtension)
             {
                 extended = reader.ReadBoolean();
             }
@@ -246,7 +246,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     ///->
 
 
-                    if (this.Version >= ProtocolVersion.WeatherExtension && extended)
+                    if (this.Version >= ProtocolVersion.v3__WeatherExtension && extended)
                     {
                         ///->
 
@@ -297,9 +297,9 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="forecast"></param>
         /// <param name="extendedForecast"><see cref="ExtendedForecast"/></param>
         /// <returns></returns>
-        public static WeatherMT Create(i360PointForecast forecast, bool extendedForecast = false)
+        public static WeatherMT Create(ProtocolVersion version, i360PointForecast forecast)
         {
-            WeatherMT weather = new WeatherMT();
+            WeatherMT weather = Create<WeatherMT>(version);
 
             weather.Forecast = forecast;
 
