@@ -46,7 +46,8 @@ namespace Iridium360.Connect.Framework.Messaging
             ShortGuid? byskyToken = null,
             Stream file = null,
             FileExtension? fileExtension = null,
-            ImageQuality? imageQuality = null)
+            ImageQuality? imageQuality = null,
+            string subject = null)
         {
             return ChatMessage.Create<ChatMessageMT>(
                 to,
@@ -59,7 +60,8 @@ namespace Iridium360.Connect.Framework.Messaging
                 byskyToken,
                 file,
                 fileExtension,
-                imageQuality);
+                imageQuality,
+                subject);
         }
     }
 

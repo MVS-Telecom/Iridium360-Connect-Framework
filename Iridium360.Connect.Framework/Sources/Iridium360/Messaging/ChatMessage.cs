@@ -35,7 +35,8 @@ namespace Iridium360.Connect.Framework.Messaging
             ShortGuid? byskyToken = null,
             Stream file = null,
             FileExtension? fileExtension = null,
-            ImageQuality? imageQuality = null) where T : ChatMessage
+            ImageQuality? imageQuality = null,
+            string subject = null) where T : ChatMessage
         {
             if (to == null && conversation == null)
                 throw new ArgumentException("Subscriber or conversation must be specified");
@@ -51,7 +52,7 @@ namespace Iridium360.Connect.Framework.Messaging
             emo1.Subscriber = to;
             emo1.Conversation = conversation;
             emo1.Text = text;
-            emo1.Subject = null;
+            emo1.Subject = subject;
             emo1.Lat = lat;
             emo1.Lon = lon;
             emo1.Alt = alt;
