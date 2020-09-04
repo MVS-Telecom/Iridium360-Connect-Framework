@@ -87,13 +87,21 @@ namespace Iridium360.Connect.Framework
     /// </summary>
     public class i360ApiClient : IDisposable
     {
+        private readonly string endpoint;
         private readonly HttpClient client;
         private readonly string token;
         private readonly string serial;
         private readonly string auth;
-        private bool shouldDisposeClient = false;
+        private readonly bool shouldDisposeClient = false;
 
-        public i360ApiClient(string token, string serial, HttpClient client = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="serial"></param>
+        /// <param name="client"></param>
+        /// <param name="endpoint"></param>
+        public i360ApiClient(string token, string serial, HttpClient client = null, string endpoint = "https://demo.iridium360.ru")
         {
             if (client == null)
             {
@@ -102,6 +110,7 @@ namespace Iridium360.Connect.Framework
             }
 
             this.client = client;
+            this.endpoint = endpoint;
             this.token = token;
             this.serial = serial;
             this.auth = Md5.Get($"{serial}#{token}");
@@ -125,7 +134,7 @@ namespace Iridium360.Connect.Framework
 
 
                 string _params = string.Join("&", @params.Select(x => $"{x.Key}={x.Value}"));
-                string url = $"https://demo.iridium360.ru/connect/{actionName}?{_params}";
+                string url = $"{endpoint}/connect/{actionName}?{_params}";
 
 
                 var response = await client.GetAsync(url);
@@ -168,8 +177,7 @@ namespace Iridium360.Connect.Framework
                 if (@params == null)
                     @params = new Dictionary<string, HttpContent>();
 
-                //string url = $"http://192.168.88.36:45455/connect/{actionName}";
-                string url = $"https://demo.iridium360.ru/connect/{actionName}";
+                string url = $"{endpoint}/connect/{actionName}";
 
                 HttpResponseMessage response = null;
 
