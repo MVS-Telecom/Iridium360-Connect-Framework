@@ -181,10 +181,10 @@ namespace Iridium360.Connect.Framework.Messaging
 
                         logger.Log($"[MESSAGE] Message received Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> COMPLETED");
 
-                        if (message is ResendMessagePartsMT resendMessage)
+                        if (message is MessageAckMT resendMessage)
                         {
                             Debugger.Break();
-                            ResendParts(resendMessage.ResendGroup, resendMessage.ResendIndexes);
+                            ResendParts(resendMessage.TargetGroup, resendMessage.ResendIndexes);
                         }
                         else
                         {

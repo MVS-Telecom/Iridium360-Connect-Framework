@@ -4,16 +4,16 @@ using System.Text;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
-    public class ResendMessagePartsMT : MessageMT
+    public class MessageAckMT : MessageMT
     {
         public override MessageType Type => MessageType.Resend;
 
         public byte[] ResendIndexes { get; private set; }
-        public byte ResendGroup { get; private set; }
+        public byte TargetGroup { get; private set; }
 
         protected override void pack(BinaryBitWriter writer)
         {
-            writer.Write(ResendGroup);
+            writer.Write(TargetGroup);
 
             writer.Write((byte)ResendIndexes.Length);
 
@@ -23,7 +23,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected override void unpack(BinaryBitReader reader)
         {
-            ResendGroup = reader.ReadByte();
+            TargetGroup = reader.ReadByte();
 
             int length = reader.ReadByte();
             ResendIndexes = new byte[length];
@@ -32,10 +32,10 @@ namespace Iridium360.Connect.Framework.Messaging
                 ResendIndexes[i] = reader.ReadByte();
         }
 
-        public static ResendMessagePartsMT Create(ProtocolVersion version, byte resendGroup, byte[] resendIndexes)
+        public static MessageAckMT Create(ProtocolVersion version, byte targetGroup, byte[] resendIndexes)
         {
-            var mt = Create<ResendMessagePartsMT>(version);
-            mt.ResendGroup = resendGroup;
+            var mt = Create<MessageAckMT>(version);
+            mt.TargetGroup = targetGroup;
             mt.ResendIndexes = resendIndexes;
             return mt;
         }
