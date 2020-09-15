@@ -6,7 +6,7 @@ namespace Iridium360.Connect.Framework.Messaging
 {
     public class MessageAckMT : MessageMT
     {
-        public override MessageType Type => MessageType.Resend;
+        public override MessageType Type => MessageType.Ack;
 
         public byte[] ResendIndexes { get; private set; }
         public byte TargetGroup { get; private set; }
