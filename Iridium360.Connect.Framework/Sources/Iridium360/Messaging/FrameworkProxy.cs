@@ -372,7 +372,7 @@ namespace Iridium360.Connect.Framework.Messaging
                         .Count();
 
 
-                    logger.Log($"[MESSAGE] Message progress changed -> {Math.Round(100 * (transmittedCount / (double)packet.TotalParts), 1)}% ({transmittedCount}/{packet.TotalParts})");
+                    logger.Log($"[MESSAGE] Message `{message.Id}` progress changed -> {Math.Round(100 * (transmittedCount / (double)packet.TotalParts), 1)}% ({transmittedCount}/{packet.TotalParts})");
 
                     MessageProgressChanged(this, new MessageProgressChangedEventArgs()
                     {
@@ -533,7 +533,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     var packets = message.Pack(group);
 
-                    logger.Log($"[MESSAGE] Sending message Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
+                    logger.Log($"[MESSAGE] Sending message Id=`{messageId}` Parts=`{packets.Count}` Type=`{message.GetType().Name}` Text=`{(message as ChatMessageMO)?.Text}` Location=`{(message as MessageWithLocation)?.Lat}, {(message as MessageWithLocation)?.Lon}`");
 
 
                     foreach (var packet in packets)
