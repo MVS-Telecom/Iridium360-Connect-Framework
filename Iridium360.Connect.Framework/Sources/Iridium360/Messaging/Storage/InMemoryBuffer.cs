@@ -118,5 +118,10 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         {
             throw new NotImplementedException();
         }
+
+        public void SetMessageSendAttempt(string id, int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -40,6 +40,12 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         void DeleteMessage(uint groupId);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        void SetMessageSendAttempt(string id, int count);
+
+        /// <summary>
         /// Получить кол-во сохраненных пакетов сообщения
         /// </summary>
         /// <param name="groupId"></param>
@@ -130,7 +136,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         {
             return new RealmConfiguration(BUFFER_DATABASE_NAME)
             {
-                SchemaVersion = 10,
+                SchemaVersion = 11,
                 ObjectClasses = new Type[] { typeof(MessageRealm), typeof(Part) },
                 MigrationCallback = (migration, oldSchemaVersion) =>
                 {

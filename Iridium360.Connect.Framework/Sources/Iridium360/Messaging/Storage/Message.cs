@@ -12,5 +12,6 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         public DateTime? Date { get; set; }
         public byte Group { get; set; }
         public byte TotalParts { get; set; }
+        public int SendAttempt { get; set; }
     }
 }
