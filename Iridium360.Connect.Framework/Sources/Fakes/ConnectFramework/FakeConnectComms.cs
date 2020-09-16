@@ -1,10 +1,12 @@
 ﻿using Iridium360.Connect.Framework.Helpers;
 using Iridium360.Connect.Framework.Implementations;
 using Iridium360.Connect.Framework.Messaging;
+using Iridium360.Connect.Framework.Messaging.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Message = Iridium360.Connect.Framework.Messaging.Message;
 
 namespace Iridium360.Connect.Framework.Fakes
 {
@@ -301,11 +303,31 @@ namespace Iridium360.Connect.Framework.Fakes
             var ___messageId = _messageId + 1;
             i++;
 
-            if (i % 3 == 0)
+            //if (i % 3 == 0)
+            //{
+            //    await Task.Delay(2000);
+            //    throw new Exception("Dummy send errior");
+            //}
+
+
+
+            Task.Run(async () =>
             {
-                await Task.Delay(2000);
-                throw new Exception("Dummy send errior");
-            }
+                var m = Message.Unpack(data, new InMemoryBuffer());
+                if (m is MessageSentMO sent)
+                {
+                    await Task.Delay(10000);
+
+                    var ack = MessageAckMT.Create(ProtocolVersion.v3__WeatherExtension, (byte)sent.SentGroup, new byte[] { 0, 2 }).Pack();
+
+                    PacketReceived(this, new PacketReceivedEventArgs()
+                    {
+                        Payload = ack[0].Payload,
+                        MessageId = (short)(10005 + ___messageId),
+                        Handled = false
+                    });
+                }
+            });
 
 
             return await Task.Run(async () =>

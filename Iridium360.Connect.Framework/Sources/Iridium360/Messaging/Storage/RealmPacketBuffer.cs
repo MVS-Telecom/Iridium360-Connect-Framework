@@ -39,6 +39,11 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// 
         /// </summary>
         public int? Type { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SendAttempt { get; set; }
     }
 
 
@@ -180,6 +185,26 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                 }
             }
 
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetMessageSendAttempt(string id, int attempt)
+        {
+            lock (locker)
+            {
+                using (var realm = PacketBufferHelper.GetBufferInstance())
+                {
+                    var message = realm.Find<MessageRealm>(id);
+
+                    realm.Write(() =>
+                    {
+                        message.SendAttempt = attempt;
+                    });
+                }
+            }
         }
 
 
@@ -471,7 +496,8 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                 Date = source.Date == DateTimeOffset.MinValue ? (DateTime?)null : source.Date.UtcDateTime,
                 Group = source.Group,
                 TotalParts = source.TotalParts,
-                Type = (MessageType?)source.Type
+                Type = (MessageType?)source.Type,
+                SendAttempt = source.SendAttempt
             };
         }
 
