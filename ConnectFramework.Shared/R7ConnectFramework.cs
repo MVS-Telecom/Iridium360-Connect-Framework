@@ -42,8 +42,8 @@ namespace ConnectFramework.Shared
 
         public event EventHandler<DeviceSearchResultsEventArgs> DeviceSearchResults = delegate { };
         public event EventHandler<EventArgs> SearchTimeout = delegate { };
-        public event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated = delegate { };
-        public event EventHandler<PacketReceivedEventArgs> PacketReceived = delegate { };
+        public event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated;
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         public ConnectComms comms { internal get; set; }
         private R7Device device;

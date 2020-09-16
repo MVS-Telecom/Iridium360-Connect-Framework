@@ -118,11 +118,11 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
-        public event EventHandler<MessageAckedEventArgs> MessageAcked = delegate { };
-        public event EventHandler<MessageTransmittedEventArgs> MessageTransmitted = delegate { };
-        public event EventHandler<MessageResendNeededEventArgs> MessageResendNeeded = delegate { };
-        public event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged = delegate { };
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived = delegate { };
+        public event EventHandler<MessageAckedEventArgs> MessageAcked;
+        public event EventHandler<MessageTransmittedEventArgs> MessageTransmitted;
+        public event EventHandler<MessageResendNeededEventArgs> MessageResendNeeded;
+        public event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged;
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
 
         private IFramework framework;
