@@ -358,20 +358,24 @@ namespace Iridium360.Connect.Framework.Fakes
                         Handled = false
                     });
 
-                    return;
+
 
                     await Task.Delay(delay.Add(TimeSpan.FromSeconds(6)));
 
 
-                    //var m = MessageMO.Unpack(data) as ChatMessageMO;
+                    var m = Message.Unpack(data) as ChatMessageMO;
 
-
-                    PacketReceived(this, new PacketReceivedEventArgs()
+                    if (m != null && m.TotalParts == 1)
                     {
-                        Payload = data,
-                        MessageId = (short)(10000 + ___messageId),
-                        Handled = false
-                    });
+                        var p = ChatMessageMT.Create(m.Version, m.Subscriber, m.Id, m.Conversation, m.Text, m.Lat, m.Lon, m.Alt, m.ByskyToken, m.File, m.FileExtension, m.ImageQuality, m.Subject).Pack();
+
+                        PacketReceived(this, new PacketReceivedEventArgs()
+                        {
+                            Payload = p[0].Payload,
+                            MessageId = (short)(10000 + ___messageId),
+                            Handled = false
+                        });
+                    }
 
 
                 });
