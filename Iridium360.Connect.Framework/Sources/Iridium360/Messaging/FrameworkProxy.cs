@@ -107,8 +107,8 @@ namespace Iridium360.Connect.Framework.Messaging
 
         event EventHandler<PacketStatusUpdatedEventArgs> IFramework.PacketStatusUpdated
         {
-            add => throw new NotSupportedException($"Use `{nameof(MessageTransmitted)}` event instead");
-            remove => throw new NotSupportedException($"Use `{nameof(MessageTransmitted)}` event instead");
+            add => framework.PacketStatusUpdated += value;
+            remove => framework.PacketStatusUpdated -= value;
         }
 
         event EventHandler<PacketReceivedEventArgs> IFramework.PacketReceived
