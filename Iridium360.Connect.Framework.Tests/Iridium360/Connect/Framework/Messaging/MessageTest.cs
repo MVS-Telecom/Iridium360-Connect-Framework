@@ -120,24 +120,30 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
         {
             try
             {
-                File.Delete(PacketBufferHelper.GetBufferDbPath());
+                try
+                {
+                    File.Delete(PacketBufferHelper.GetBufferDbPath());
+                }
+                catch { }
+
+
+                var buffer = new RealmPacketBuffer();
+
+
+                var list = new List<byte[]>()
+                {
+                    "120808020B002F".ToByteArray(),
+                };
+
+                object message = null;
+
+                foreach (var bytes in list)
+                    message = Message.Unpack(bytes, buffer);
             }
-            catch { }
-
-
-            var buffer = new RealmPacketBuffer();
-
-
-            var list = new List<byte[]>()
+            catch (Exception e)
             {
-                "1204055C0F79D8DC03184289CD3D802128C09A7B003368ACB90730844C9B7B003428ABB802300306506F0560068DF5B60068906D6D0D8006E5D5B60068E080EA6D0190A0B1E21E0009B26DEE0194A0C4E2DE80082080B53500223457DB03A0019D".ToByteArray(),
-            };
-
-            Message message = null;
-
-            foreach (var bytes in list)
-                message = Message.Unpack(bytes, buffer);
-
+                Debugger.Break();
+            }
 
         }
 
