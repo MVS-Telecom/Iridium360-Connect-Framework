@@ -1108,7 +1108,6 @@ namespace Iridium360.Connect.Framework.Implementations
                         {
                             MessageId = (short)(command.MessageId.Value + 10000),
                             Payload = command.Payload,
-                            Handled = false
                         };
 
                         PacketReceived(this, args);
@@ -1139,10 +1138,10 @@ namespace Iridium360.Connect.Framework.Implementations
 
                         PacketStatusUpdated(this, args);
 
-                        if (args.Handled)
-                        {
-                            //PostCommand(new AcknowledgeMessageStatusCommand(command.MessageId.Value, command.AppId, command.Key));
-                        }
+                        //if (args.Handled)
+                        //{
+                        //PostCommand(new AcknowledgeMessageStatusCommand(command.MessageId.Value, command.AppId, command.Key));
+                        //}
 
                         //handler.post(new MessageStatusReceivedByDeviceRunnable(this, s));
                     }
@@ -1400,14 +1399,11 @@ namespace Iridium360.Connect.Framework.Implementations
                     {
                         MessageId = status.MessageId.Value,
                         Status = MessageStatus.Transmitted,
-                        Handled = false
+                        //Handled = false
                     };
                     PacketStatusUpdated(this, args);
 
-                    if (args.Handled)
-                    {
-                        PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
-                    }
+                    PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, status.AppId, status.Key));
                 }
                 else if (status.Key == DEFAULT_KEY_INDEX)
                 {
@@ -1415,14 +1411,11 @@ namespace Iridium360.Connect.Framework.Implementations
                     {
                         MessageId = status.MessageId.Value,
                         Status = MessageStatus.Transmitted,
-                        Handled = false
+                        //Handled = false
                     };
                     PacketStatusUpdated(this, args);
 
-                    if (args.Handled)
-                    {
-                        PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, this.AppId, status.Key));
-                    }
+                    PostCommand(new AcknowledgeMessageStatusCommand(status.MessageId.Value, this.AppId, status.Key));
                 }
                 else if (status.Key == 0)
                 {

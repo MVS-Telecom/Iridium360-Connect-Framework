@@ -324,7 +324,6 @@ namespace Iridium360.Connect.Framework.Fakes
                     {
                         Payload = ack[0].Payload,
                         MessageId = (short)(10005 + ___messageId),
-                        Handled = false
                     });
                 }
             });
@@ -355,7 +354,6 @@ namespace Iridium360.Connect.Framework.Fakes
                     {
                         MessageId = (short)_messageId,
                         Status = MessageStatus.Transmitted,
-                        Handled = false
                     });
 
 
@@ -373,7 +371,6 @@ namespace Iridium360.Connect.Framework.Fakes
                         {
                             Payload = p[0].Payload,
                             MessageId = (short)(10000 + ___messageId),
-                            Handled = false
                         });
                     }
 

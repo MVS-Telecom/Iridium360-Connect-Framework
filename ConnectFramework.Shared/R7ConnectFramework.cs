@@ -556,6 +556,19 @@ namespace ConnectFramework.Shared
             }
         }
 
+        private bool Safety(Func<bool> action)
+        {
+            try
+            {
+                return action();
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// 
@@ -1360,19 +1373,13 @@ namespace ConnectFramework.Shared
 
                 Debugger.Break();
 
-                var args = new PacketReceivedEventArgs()
+                PacketReceived(this, new PacketReceivedEventArgs()
                 {
-                    Handled = false,
                     MessageId = (short)(messageId + 10000),
                     Payload = data
-                };
+                });
 
-                PacketReceived(this, args);
-
-                if (args.Handled)
-                    return true;
-                else
-                    return false;
+                return true;
             });
         }
 
@@ -1405,20 +1412,15 @@ namespace ConnectFramework.Shared
                     Debugger.Break();
                 }
 
-                var args = new PacketStatusUpdatedEventArgs()
+
+                PacketStatusUpdated(this, new PacketStatusUpdatedEventArgs()
                 {
-                    Handled = false,
                     MessageId = (short)messageId,
                     Status = _status,
                     Message = status.ToString(),
-                };
+                });
 
-                PacketStatusUpdated(this, args);
-
-                if (args.Handled)
-                    return true;
-                else
-                    return false;
+                return true;
             });
         }
 

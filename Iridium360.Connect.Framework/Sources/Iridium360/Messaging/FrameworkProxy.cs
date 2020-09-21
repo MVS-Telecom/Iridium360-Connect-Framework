@@ -7,12 +7,37 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    internal class EventNotHandledException : Exception
+    {
+        public EventNotHandledException()
+        {
+        }
+
+        public EventNotHandledException(string message) : base(message)
+        {
+        }
+
+        public EventNotHandledException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected EventNotHandledException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -157,10 +182,10 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <param name="e"></param>
         private void Framework__PacketReceived(object sender, PacketReceivedEventArgs e)
         {
-            logger.Log($"[MESSAGE] Packet received -> `0x{e.Payload.ToHexString()}`");
-
             try
             {
+                logger.Log($"[MESSAGE] Packet received -> `0x{e.Payload.ToHexString()}`");
+
                 if (Legacy_MessageMT.CheckSignature(e.Payload))
                 {
                     Debugger.Break();
@@ -178,10 +203,14 @@ namespace Iridium360.Connect.Framework.Messaging
 
                         var message = ChatMessageMT.Create(ProtocolVersion.v1, subscriber, null, null, text);
 
-                        MessageReceived(this, new MessageReceivedEventArgs()
+                        ExecuteEvent(() =>
                         {
-                            Message = message
+                            MessageReceived(this, new MessageReceivedEventArgs()
+                            {
+                                Message = message
+                            });
                         });
+
                     }
                     else
                     {
@@ -204,13 +233,20 @@ namespace Iridium360.Connect.Framework.Messaging
                         if (message is MessageAckMT resendMessage)
                         {
                             Debugger.Break();
-                            AckMessage(resendMessage.TargetGroup, resendMessage.ResendIndexes);
+
+                            ExecuteEvent(() =>
+                            {
+                                AckMessage(resendMessage.TargetGroup, resendMessage.ResendIndexes);
+                            });
                         }
                         else
                         {
-                            MessageReceived(this, new MessageReceivedEventArgs()
+                            ExecuteEvent(() =>
                             {
-                                Message = message
+                                MessageReceived(this, new MessageReceivedEventArgs()
+                                {
+                                    Message = message
+                                });
                             });
                         }
                     }
@@ -223,8 +259,14 @@ namespace Iridium360.Connect.Framework.Messaging
                 else
                 {
                     Debugger.Break();
-                    throw new NotImplementedException("Unknown bytes");
+                    logger.Log($"[MESSAGE] Unknown bytes");
                 }
+            }
+            catch (ExternalException ex1)
+            {
+                Debugger.Break();
+                logger.Log($"[MESSAGE] External exception occured while parsing `{e.Payload.ToHexString()}` {ex1}");
+                throw ex1;
             }
             catch (Exception ex)
             {
@@ -234,7 +276,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
             Debugger.Break();
-            e.Handled = true;
         }
 
 
@@ -254,6 +295,8 @@ namespace Iridium360.Connect.Framework.Messaging
                 Debugger.Break();
                 return;
             }
+
+
 
             if (indexes.Any())
             {
@@ -280,18 +323,24 @@ namespace Iridium360.Connect.Framework.Messaging
                     message.SendAttempt += 1;
                     buffer.SetMessageSendAttempt(message.Id, message.SendAttempt);
 
-                    MessageResendNeeded(this, new MessageResendNeededEventArgs()
+                    ExecuteEvent(() =>
                     {
-                        MessageId = message.Id,
-                        SendAttempt = message.SendAttempt,
-                        ResendParts = indexes.Length
+                        MessageResendNeeded(this, new MessageResendNeededEventArgs()
+                        {
+                            MessageId = message.Id,
+                            SendAttempt = message.SendAttempt,
+                            ResendParts = indexes.Length
+                        });
                     });
 
-                    MessageProgressChanged(this, new MessageProgressChangedEventArgs()
+                    ExecuteEvent(() =>
                     {
-                        MessageId = message.Id,
-                        ReadyParts = (uint)(packets.Count - resend.Count),
-                        TotalParts = message.TotalParts,
+                        MessageProgressChanged(this, new MessageProgressChangedEventArgs()
+                        {
+                            MessageId = message.Id,
+                            ReadyParts = (uint)(packets.Count - resend.Count),
+                            TotalParts = message.TotalParts,
+                        });
                     });
                 }
             }
@@ -300,9 +349,12 @@ namespace Iridium360.Connect.Framework.Messaging
                 logger.Log($"[ACK] Message acked `{message.Id}`");
                 Debugger.Break();
 
-                MessageAcked(this, new MessageAckedEventArgs()
+                ExecuteEvent(() =>
                 {
-                    MessageId = message.Id
+                    MessageAcked(this, new MessageAckedEventArgs()
+                    {
+                        MessageId = message.Id
+                    });
                 });
             }
         }
@@ -326,7 +378,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     if (e.Status != MessageStatus.ReceivedByDevice)
                         Debugger.Break();
 #endif
-                    e.Handled = true;
+                    //e.Handled = true;
                     return;
                 }
 
@@ -360,7 +412,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     {
                         logger.Log($"Message with group `{packet.Group}` not found");
                         Debugger.Break();
-                        e.Handled = true;
+                        //e.Handled = true;
                         return;
                     }
 
@@ -374,11 +426,14 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     logger.Log($"[MESSAGE] Message `{message.Id}` progress changed -> {Math.Round(100 * (transmittedCount / (double)packet.TotalParts), 1)}% ({transmittedCount}/{packet.TotalParts})");
 
-                    MessageProgressChanged(this, new MessageProgressChangedEventArgs()
+                    ExecuteEvent(() =>
                     {
-                        MessageId = message.Id,
-                        ReadyParts = (uint)transmittedCount,
-                        TotalParts = packet.TotalParts
+                        MessageProgressChanged(this, new MessageProgressChangedEventArgs()
+                        {
+                            MessageId = message.Id,
+                            ReadyParts = (uint)transmittedCount,
+                            TotalParts = packet.TotalParts
+                        });
                     });
 
 
@@ -388,20 +443,25 @@ namespace Iridium360.Connect.Framework.Messaging
                         logger.Log($"[MESSAGE] `{message.Id}` ({message.Type}) -> Transmitted");
                         Debugger.Break();
 
-                        MessageTransmitted(this, new MessageTransmittedEventArgs()
+                        ExecuteEvent(() =>
                         {
-                            MessageId = message.Id
+                            MessageTransmitted(this, new MessageTransmittedEventArgs()
+                            {
+                                MessageId = message.Id
+                            });
                         });
-
 
                         ///HACK: Если сообщение состоит из одной части - подтверждение не придет с сервера
                         ///- считаем что оно не может потеряться (на самом деле может) и не потребует переотправки (на самом деле может потребовать)
 
                         if (message.TotalParts == 1)
                         {
-                            MessageAcked(this, new MessageAckedEventArgs()
+                            ExecuteEvent(() =>
                             {
-                                MessageId = message.Id
+                                MessageAcked(this, new MessageAckedEventArgs()
+                                {
+                                    MessageId = message.Id
+                                });
                             });
                         }
 
@@ -436,20 +496,17 @@ namespace Iridium360.Connect.Framework.Messaging
                         ///Не все пакеты сообщения отправлены
                     }
                 }
-
-                e.Handled = true;
-
+            }
+            catch (EventNotHandledException ex1)
+            {
+                logger.Log(ex1);
+                Debugger.Break();
+                throw ex1;
             }
             catch (Exception ex)
             {
                 logger.Log(ex);
                 Debugger.Break();
-
-#if DEBUG
-                e.Handled = false;
-#else
-                e.Handled = false;
-#endif
             }
         }
 
@@ -637,6 +694,23 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
+        /// <summary>
+        /// Вызовы всех внешних событий должны быть обернуты этой функцией
+        /// </summary>
+        /// <param name="action"></param>
+        private void ExecuteEvent(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Debugger.Break();
+                logger.Log($"[EXCEPTION] {ex}");
+                throw new EventNotHandledException("Exception occured in event", ex);
+            }
+        }
 
 
         public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1) => framework.Connect(id, force, throwOnError, attempts);
