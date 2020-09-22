@@ -332,7 +332,7 @@ namespace ConnectFramework.Shared
 
             try
             {
-                bool changed = ((BaseDeviceParameter)parameter).UpdateCachedValue(new byte[] { (byte)p.CachedValue });
+                bool changed = ((BaseDeviceParameter)parameter).UpdateCachedValue(new int[] { p.CachedValue });
 
                 if (changed)
                 {

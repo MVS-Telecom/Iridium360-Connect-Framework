@@ -253,7 +253,7 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         /// <param name="new"></param>
         /// <returns>Изменился?</returns>
-        internal bool UpdateCachedValue(byte[] @new)
+        internal bool UpdateCachedValue(int[] @new)
         {
             if (IsEvent)
             {
@@ -263,18 +263,18 @@ namespace Iridium360.Connect.Framework
 
             if (@new != null && @new.Length != 1)
             {
+                Debugger.Break();
                 throw new Exception($"Length of value for parameter is {@new.Length}");
             }
 
-            if (@new?.FirstOrDefault() == byte.MaxValue)
-            {
+            if (@new?.FirstOrDefault() == byte.MaxValue || @new?.FirstOrDefault() == 999 || @new?.FirstOrDefault() == -1)
                 throw new DeviceIsLockedException();
-            }
+            
 
 
             bool changed = @new?.FirstOrDefault() != cachedValue;
 
-            this.bytes = @new;
+            this.bytes = new byte[1] { (byte)@new[0] };
             this.cachedTime = DateTime.Now;
 
             if (changed)

@@ -214,7 +214,7 @@ namespace ConnectFramework.Shared
 
 
         private SemaphoreSlim unlockLocker = new SemaphoreSlim(1, 1);
-
+        private Exception lastUnlockException = null;
 
         /// <summary>
         /// 
@@ -225,7 +225,26 @@ namespace ConnectFramework.Shared
         {
             return Task.Run(async () =>
             {
+                ///ЭТО ВАЖНО!
+                ///Возвращаем результат первого вызова для всех вызовов в очереди ожидающих завершения первого
+                ///В случае неуспеха первого вызова все последующие также буду неуспешны (например неверный пин) - избегаем этого
+
+                #region
+
+                bool returnLastUnlockResult = false;
+
+                if (unlockLocker.CurrentCount == 0)
+                    returnLastUnlockResult = true;
+
                 await unlockLocker.WaitAsync();
+
+                if (returnLastUnlockResult && lastUnlockException != null)
+                    throw lastUnlockException;
+
+                lastUnlockException = null;
+
+                #endregion
+
 
                 try
                 {
@@ -273,14 +292,18 @@ namespace ConnectFramework.Shared
                                 comms.Unlock((nuint)pin);
 #endif
 
-                                r.WaitOne(TimeSpan.FromSeconds(20));
+                                bool ok = r.WaitOne(TimeSpan.FromSeconds(15));
 
 
                                 if (ConnectedDevice.IncorrectPin == true)
                                     throw new IncorrectPinException();
 
+                                if (!ok)
+                                    throw new TimeoutException();
+
                                 if (ConnectedDevice.LockStatus != LockState.Unlocked)
                                     throw new DeviceIsLockedException();
+
 
                                 storage.PutShort("r7-device-pin", pin.Value);
                                 logger.Log("[R7] Unlock success");
@@ -290,27 +313,32 @@ namespace ConnectFramework.Shared
                                 ConnectedDevice.DeviceLockStatusUpdated -= handler;
                             }
                         }
-                        catch (DeviceIsLockedException lockedException)
+                        catch (Exception e)
                         {
-                            ///Делаем повторную попытку - ЭТО ВАЖНО
-                            if (i + 1 > attempts)
+                            lastUnlockException = e;
+
+                            if (e is TimeoutException)
                             {
-                                Debugger.Break();
-                                logger.Log("[R7] Unlock error");
-                                throw lockedException;
+                                logger.Log("[R7] Unlock error - timeout");
+
+                                ///Делаем повторную попытку - ЭТО ВАЖНО
+                                if (i + 1 > attempts)
+                                {
+                                    Debugger.Break();
+                                    throw e;
+                                }
+                                else
+                                {
+                                    logger.Log("[R7] Next unlock attempt...");
+                                    await Task.Delay(1000);
+                                }
                             }
                             else
                             {
-                                logger.Log("[R7] Unlock error - new attempt");
-                                await Task.Delay(1000);
+                                logger.Log($"[R7] Unlock error {e}");
+                                Debugger.Break();
+                                throw e;
                             }
-
-                        }
-                        catch (Exception e)
-                        {
-                            Debugger.Break();
-                            logger.Log("[R7] Unlock error");
-                            throw e;
                         }
                     }
                 }
@@ -955,7 +983,7 @@ namespace ConnectFramework.Shared
 #endif
                         )
                         {
-                            if (device.LockStatus != LockState.Unlocked)
+                            if (device.LockStatus == LockState.Locked)
                                 throw new DeviceIsLockedException();
 
                             throw new Exception();

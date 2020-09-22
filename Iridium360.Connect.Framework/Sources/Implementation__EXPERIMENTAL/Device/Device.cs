@@ -601,7 +601,7 @@ namespace Iridium360.Connect.Framework.Implementations
             if (!parameter.IsAvailable)
                 throw new InvalidOperationException("This parameter is not available (GATT characterictic wasn't found)");
 
-            byte[] bytes = { (byte)Convert.ToInt32(value) };
+            int[] bytes = { Convert.ToInt32(value) };
 
 
             ///Отправляем значение на устройство
@@ -656,7 +656,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// </summary>
         /// <param name="gatt"></param>
         /// <param name="data"></param>
-        internal void OnParameterUpdated(Guid gatt, byte[] data)
+        internal void OnParameterUpdated(Guid gatt, int[] data)
         {
             IDeviceParameter parameter = GetParameter(gatt);
 

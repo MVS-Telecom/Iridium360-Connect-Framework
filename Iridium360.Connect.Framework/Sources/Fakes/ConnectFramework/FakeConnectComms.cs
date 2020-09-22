@@ -14,7 +14,7 @@ namespace Iridium360.Connect.Framework.Fakes
     {
         public FakeDeviceParameter(IFramework framework, IDevice device, Parameter id, Enum value) : base(framework, device, id)
         {
-            UpdateCachedValue(new byte[] { Convert.ToByte(value) });
+            UpdateCachedValue(new int[] { Convert.ToByte(value) });
         }
     }
 
@@ -95,7 +95,7 @@ namespace Iridium360.Connect.Framework.Fakes
             return Task.Run(async () =>
             {
                 await Task.Delay(200);
-                ((BaseDeviceParameter)Parameters.SingleOrDefault(x => x.Id == parameter)).UpdateCachedValue(new byte[] { Convert.ToByte(value) });
+                ((BaseDeviceParameter)Parameters.SingleOrDefault(x => x.Id == parameter)).UpdateCachedValue(new int[] { Convert.ToByte(value) });
             });
         }
 

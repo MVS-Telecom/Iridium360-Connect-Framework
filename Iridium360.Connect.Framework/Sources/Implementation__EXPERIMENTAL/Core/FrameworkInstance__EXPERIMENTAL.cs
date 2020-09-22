@@ -714,7 +714,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <param name="data"></param>
         /// <param name="checkSuccess"></param>
         /// <returns></returns>
-        internal async Task WriteDeviceParameter(Guid id, byte[] data, bool checkSuccess = false)
+        internal async Task WriteDeviceParameter(Guid id, int[] data, bool checkSuccess = false)
         {
             await Reconnect(throwOnError: true);
             await Unlock();
@@ -724,8 +724,8 @@ namespace Iridium360.Connect.Framework.Implementations
             if (gatt == null)
                 throw new NullReferenceException($"Unknown GATT characteristic `{id}`");
 
-
-            await gatt.WriteAsync(data);
+            var __data = data.Cast<byte>().ToArray();
+            await gatt.WriteAsync(__data);
 
 
             if (checkSuccess)
@@ -733,7 +733,7 @@ namespace Iridium360.Connect.Framework.Implementations
                 ///1 - Убеждаемся, что записанное значение равно тому что после записи возвращает устройство
                 var saved = await gatt.ReadAsync();
 
-                if (!saved.SequenceEqual(data))
+                if (!saved.SequenceEqual(__data))
                     throw new Exception("GATT write error - new data not equals to written");
 
                 //bool updated = await WaitForParameter(id, data);
@@ -1016,7 +1016,7 @@ namespace Iridium360.Connect.Framework.Implementations
 
                     if (parameter != null)
                     {
-                        ConnectedDevice.OnParameterUpdated(gatt.Id, gatt.Value);
+                        ConnectedDevice.OnParameterUpdated(gatt.Id, gatt.Value.Cast<int>().ToArray());
                     }
                     else
                     {
