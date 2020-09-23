@@ -702,7 +702,7 @@ namespace ConnectFramework.Shared
                         throw new MessageSendingException($"Packet Id={messageId} is too long");
 
                     if (args?.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
-                        throw new MessageSendingException($"Packet Id={messageId} transfer error `{args.Status}`");
+                        throw new MessageSendingException($"Packet Id={messageId} transfer error `{args?.Status}`");
 
 
                     if (args?.Status == MessageStatus.ErrorCapability)
@@ -717,6 +717,11 @@ namespace ConnectFramework.Shared
 
                 throw new MessageSendingException($"Packet Id={messageId} transfer to error");
 
+            }
+            catch(Exception e)
+            {
+                Debugger.Break();
+                throw e;
             }
             finally
             {
