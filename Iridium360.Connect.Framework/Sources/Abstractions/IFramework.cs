@@ -109,7 +109,8 @@ namespace Iridium360.Connect.Framework
         Task<bool> Connect(
             IBluetoothDevice device,
             bool force = true,
-            bool throwOnError = false);
+            bool throwOnError = false,
+            int attempts = 1);
 
 
         /// <summary>
@@ -117,7 +118,9 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        Task<bool> Reconnect(bool throwOnError = true);
+        Task<bool> Reconnect(
+            bool throwOnError = true,
+            int attempts = 1);
 
         /// <summary>
         /// 
