@@ -410,12 +410,12 @@ namespace ConnectFramework.Shared
         /// </summary>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Reconnect(bool throwOnError = true)
+        public Task<bool> Reconnect(bool throwOnError = true, int attempts = 1)
         {
             if (deviceId == Guid.Empty)
                 throw new InvalidOperationException("Device was not connected previosly");
 
-            return Connect(deviceId, throwOnError: throwOnError);
+            return Connect(deviceId, throwOnError: throwOnError, attempts: attempts);
         }
 
         /// <summary>
@@ -425,9 +425,9 @@ namespace ConnectFramework.Shared
         /// <param name="flags"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false)
+        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false, int attempts = 1)
         {
-            return Connect(device.Id, force, throwOnError);
+            return Connect(device.Id, force, throwOnError, attempts);
         }
 
 
@@ -639,8 +639,7 @@ namespace ConnectFramework.Shared
 
             try
             {
-                await Reconnect(throwOnError: true);
-                //await Unlock();
+                await Reconnect(throwOnError: true, attempts: 2);
 
                 ushort messageId = (ushort)storage.GetShort("message-id", 1);
 
@@ -650,6 +649,8 @@ namespace ConnectFramework.Shared
 
                 for (int i = 1; i <= attempts; i++)
                 {
+                    await Reconnect(throwOnError: true, attempts: 1);
+
                     AutoResetEvent r = new AutoResetEvent(false);
 
                     await Task.Run(() =>
@@ -694,28 +695,33 @@ namespace ConnectFramework.Shared
                         return messageId;
                     }
 
-                    if (args == null)
+                    if (ConnectedDevice?.State == DeviceState.Connected && args == null)
                         throw new MessageSendingException($"Packet Id={messageId} transfer to device timeout");
 
-                    if (args.Status == MessageStatus.ErrorToolong)
+                    if (args?.Status == MessageStatus.ErrorToolong)
                         throw new MessageSendingException($"Packet Id={messageId} is too long");
 
-                    if (args.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
-                        throw new MessageSendingException($"Packet Id={messageId} transfer error `{args.Status}`");
+                    if (args?.Status != MessageStatus.ReceivedByDevice && i + 1 > attempts)
+                        throw new MessageSendingException($"Packet Id={messageId} transfer error `{args?.Status}`");
 
 
-                    if (args.Status == MessageStatus.ErrorCapability)
+                    if (args?.Status == MessageStatus.ErrorCapability)
                     {
                         Debugger.Break();
                         await Disconnect();
                     }
 
 
-                    await Task.Delay(1000);
+                    await Task.Delay(3000);
                 }
 
                 throw new MessageSendingException($"Packet Id={messageId} transfer to error");
 
+            }
+            catch(Exception e)
+            {
+                Debugger.Break();
+                throw e;
             }
             finally
             {

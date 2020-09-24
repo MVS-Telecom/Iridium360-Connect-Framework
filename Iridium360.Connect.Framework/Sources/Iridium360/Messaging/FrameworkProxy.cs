@@ -715,7 +715,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
         public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1) => framework.Connect(id, force, throwOnError, attempts);
 
-        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false) => framework.Connect(device, force, throwOnError);
+        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false, int attempts = 1) => framework.Connect(device, force, throwOnError, attempts);
 
         public Task Disconnect() => framework.Disconnect();
 
@@ -737,6 +737,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
         public void Dispose() => framework.Dispose();
 
-        public Task<bool> Reconnect(bool throwOnError = true) => framework.Reconnect(throwOnError: throwOnError);
+        public Task<bool> Reconnect(bool throwOnError = true, int attempts = 1) => framework.Reconnect(throwOnError: throwOnError, attempts: attempts);
     }
 }

@@ -260,7 +260,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// Повторно подключиться к устройству
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> Reconnect(bool throwOnError = false)
+        public async Task<bool> Reconnect(bool throwOnError = false, int attempts = 1)
         {
             if (deviceMac == Guid.Empty)
             {
@@ -272,7 +272,8 @@ namespace Iridium360.Connect.Framework.Implementations
 
             return await Connect(
                 deviceMac,
-                throwOnError: throwOnError);
+                throwOnError: throwOnError,
+                attempts: attempts);
         }
 
         /// <summary>
@@ -281,12 +282,13 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <param name="device"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false)
+        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false, int attempts = 1)
         {
             return Connect(
                 device.Id,
                 force: force,
-                throwOnError: throwOnError);
+                throwOnError: throwOnError,
+                attempts: attempts);
         }
 
 

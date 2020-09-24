@@ -260,13 +260,13 @@ namespace Iridium360.Connect.Framework.Fakes
             await Task.Delay(1000);
         }
 
-        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false)
+        public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false, int attempts = 1)
         {
             return Connect(device.Id);
         }
 
 
-        public async Task<bool> Reconnect(bool throwOnError = false)
+        public async Task<bool> Reconnect(bool throwOnError = false, int attempts = 1)
         {
             await Task.Delay(2000);
             return true;
