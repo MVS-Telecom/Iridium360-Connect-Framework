@@ -262,7 +262,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     logger.Log($"[MESSAGE] Unknown bytes");
                 }
             }
-            catch (ExternalException ex1)
+            catch (EventNotHandledException ex1)
             {
                 Debugger.Break();
                 logger.Log($"[MESSAGE] External exception occured while parsing `{e.Payload.ToHexString()}` {ex1}");
