@@ -483,7 +483,10 @@ namespace ConnectFramework.Shared
                         var enabled = await bluetoothHelper.TurnOn(force: force);
 
                         if (!enabled)
-                            throw new BluetoothTurnedOffException();
+                            if (throwOnError)
+                                throw new BluetoothTurnedOffException();
+                            else
+                                return false;
                     }
 
 
@@ -718,7 +721,7 @@ namespace ConnectFramework.Shared
                 throw new MessageSendingException($"Packet Id={messageId} transfer to error");
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debugger.Break();
                 throw e;
