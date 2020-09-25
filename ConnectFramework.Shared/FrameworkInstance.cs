@@ -34,10 +34,10 @@ namespace Iridium360.Connect.Framework
         /// <param name="bluetooth"></param>
         /// <returns></returns>
         [Obsolete("Use this framework implementaion only for experimental purposes! NOT FOR PRODUCTION")]
-        public static IFrameworkProxy GetInstance_EXPERIMENTAL(IStorage storage, ILogger logger, Lazy<IBluetooth> bluetooth)
+        public static IFrameworkProxy GetInstance_EXPERIMENTAL(IStorage storage, ILogger logger, IBluetooth bluetooth)
         {
             return new FrameworkProxy(
-                new global::Iridium360.Connect.Framework.Implementations.FrameworkInstance__EXPERIMENTAL(bluetooth.Value, storage, logger: logger),
+                new global::Iridium360.Connect.Framework.Implementations.FrameworkInstance__EXPERIMENTAL(bluetooth, storage, logger: logger),
                 logger,
                 new RealmPacketBuffer(),
                 storage);
