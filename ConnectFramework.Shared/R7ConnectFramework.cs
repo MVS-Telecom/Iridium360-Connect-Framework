@@ -483,7 +483,10 @@ namespace ConnectFramework.Shared
                         var enabled = await bluetoothHelper.Value.TurnOn(force: force);
 
                         if (!enabled)
-                            throw new BluetoothTurnedOffException();
+                            if (throwOnError)
+                                throw new BluetoothTurnedOffException();
+                            else
+                                return false;
                     }
 
 
