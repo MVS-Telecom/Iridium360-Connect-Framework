@@ -49,11 +49,12 @@ namespace ConnectFramework.Shared
         private R7Device device;
         private ILogger logger;
         private IStorage storage;
-        private IBluetoothHelper bluetoothHelper;
+
+        private Lazy<IBluetoothHelper> bluetoothHelper;
 
 
         private static R7ConnectFramework instance;
-        public static R7ConnectFramework GetInstance(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper)
+        public static R7ConnectFramework GetInstance(IStorage storage, ILogger logger, Lazy<IBluetoothHelper> bluetoothHelper)
         {
             lock (typeof(R7ConnectFramework))
             {
@@ -73,12 +74,11 @@ namespace ConnectFramework.Shared
         /// 
         /// </summary>
         /// <param name="logger"></param>
-        private R7ConnectFramework(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper) : base()
+        private R7ConnectFramework(IStorage storage, ILogger logger, Lazy<IBluetoothHelper> bluetoothHelper) : base()
         {
             this.logger = logger;
             this.storage = storage;
             this.bluetoothHelper = bluetoothHelper;
-
 
 #if ANDROID
             comms = ConnectComms.GetConnectComms();
@@ -93,7 +93,7 @@ namespace ConnectFramework.Shared
 #endif
 
 
-            Enable();
+            //Enable();
 
             device = new R7Device(this, logger);
         }
@@ -478,9 +478,9 @@ namespace ConnectFramework.Shared
 
                     ///Должен быть включен блютуз
                     ///Пытаемся включить его программно, если не получается - выкидываем ошибку
-                    if (!bluetoothHelper.IsOn)
+                    if (!bluetoothHelper.Value.IsOn)
                     {
-                        var enabled = await bluetoothHelper.TurnOn(force: force);
+                        var enabled = await bluetoothHelper.Value.TurnOn(force: force);
 
                         if (!enabled)
                             throw new BluetoothTurnedOffException();
@@ -718,7 +718,7 @@ namespace ConnectFramework.Shared
                 throw new MessageSendingException($"Packet Id={messageId} transfer to error");
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debugger.Break();
                 throw e;
@@ -748,21 +748,21 @@ namespace ConnectFramework.Shared
         /// </summary>
         public async Task StartDeviceSearch()
         {
-            var enabled = await bluetoothHelper.TurnOn(force: true);
+            var enabled = await bluetoothHelper.Value.TurnOn(force: true);
 
             if (!enabled)
                 throw new BluetoothTurnedOffException();
 
-#if IOS
+
             await Enable();
             await Task.Delay(500);
-#endif
+
 
             comms.StartDiscovery();
 
             //HACK
-            bluetoothHelper.StartLeScan();
-            bluetoothHelper.ScanResults += BluetoothHelper_ScanResults;
+            bluetoothHelper.Value.StartLeScan();
+            bluetoothHelper.Value.ScanResults += BluetoothHelper_ScanResults;
         }
 
 
@@ -779,8 +779,8 @@ namespace ConnectFramework.Shared
 
             Safety(() =>
             {
-                bluetoothHelper.StopLeScan();
-                bluetoothHelper.ScanResults -= BluetoothHelper_ScanResults;
+                bluetoothHelper.Value.StopLeScan();
+                bluetoothHelper.Value.ScanResults -= BluetoothHelper_ScanResults;
             });
         }
 

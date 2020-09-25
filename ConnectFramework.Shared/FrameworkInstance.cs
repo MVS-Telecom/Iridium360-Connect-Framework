@@ -13,7 +13,7 @@ namespace Iridium360.Connect.Framework
         /// <param name="logger"></param>
         /// <param name="bluetoothHelper"></param>
         /// <returns></returns>
-        public static IFrameworkProxy GetInstance(IStorage storage, ILogger logger, IBluetoothHelper bluetoothHelper)
+        public static IFrameworkProxy GetInstance(IStorage storage, ILogger logger, Lazy<IBluetoothHelper> bluetoothHelper)
         {
 #if ANDROID || IPHONE
             return new FrameworkProxy(
@@ -34,10 +34,10 @@ namespace Iridium360.Connect.Framework
         /// <param name="bluetooth"></param>
         /// <returns></returns>
         [Obsolete("Use this framework implementaion only for experimental purposes! NOT FOR PRODUCTION")]
-        public static IFrameworkProxy GetInstance_EXPERIMENTAL(IStorage storage, ILogger logger, IBluetooth bluetooth)
+        public static IFrameworkProxy GetInstance_EXPERIMENTAL(IStorage storage, ILogger logger, Lazy<IBluetooth> bluetooth)
         {
             return new FrameworkProxy(
-                new global::Iridium360.Connect.Framework.Implementations.FrameworkInstance__EXPERIMENTAL(bluetooth, storage, logger: logger),
+                new global::Iridium360.Connect.Framework.Implementations.FrameworkInstance__EXPERIMENTAL(bluetooth.Value, storage, logger: logger),
                 logger,
                 new RealmPacketBuffer(),
                 storage);
