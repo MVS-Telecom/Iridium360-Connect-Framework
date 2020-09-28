@@ -106,7 +106,7 @@ namespace Iridium360.Connect.Framework.Messaging
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
         event EventHandler<MessageProgressChangedEventArgs> MessageProgressChanged;
 
-        Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, Action<double> progress = null);
+        Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, string messageId, Action<double> progress = null);
         Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> RetrySendMessage(string messageId, Action<double> progress = null);
     }
 
@@ -533,7 +533,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 var packets = buffer
                     .GetPackets(message.Group, PacketDirection.Outbound)
-                    .Where(x => x.Status == PacketStatus.None)
+                    .Where(x => x.Status == null || x.Status < PacketStatus.SendingToDevice)
                     .ToList();
 
                 if (packets.Count == 0)
@@ -544,9 +544,9 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 buffer.SetMessageSendAttempt(message.Id, message.SendAttempt + 1);
 
-                (int readyParts, int totalParts, bool transferSuccess) = await SendPackets(packets, progress: progress);
+                var result = await SendPackets(packets, progress: progress);
 
-                return (messageId, readyParts, totalParts, transferSuccess);
+                return (messageId, result.readyParts, result.totalParts, result.transferSuccess);
             }
             catch (Exception e)
             {
@@ -567,7 +567,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, Action<double> progress = null)
+        public async Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, string messageId = null, Action<double> progress = null)
         {
             await sendLock.WaitAsync();
 
@@ -577,7 +577,9 @@ namespace Iridium360.Connect.Framework.Messaging
                 await Reconnect();
 
 
-                var messageId = ShortGuid.NewGuid().ToString();
+                if (string.IsNullOrEmpty(messageId))
+                    messageId = ShortGuid.NewGuid().ToString();
+
                 var group = (byte)storage.GetShort("r7-group-id", 1);
 
 
@@ -606,6 +608,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     storage.PutShort("r7-group-id", (byte)(group + 1));
 
 
+                    ///Сохраняем сообщение
                     buffer.SaveMessage(new Storage.Message()
                     {
                         Id = messageId,
@@ -615,10 +618,15 @@ namespace Iridium360.Connect.Framework.Messaging
                         SendAttempt = 1,
                     });
 
+                    ///Сохраняем пакеты сообщения
+                    packets.ForEach(x =>
+                    {
+                        buffer.SavePacket(x);
+                    });
 
-                    (int readyParts, int totalParts, bool transferSuccess) = await SendPackets(packets, progress: progress);
+                    var result = await SendPackets(packets, progress: progress);
 
-                    return (messageId, readyParts, totalParts, transferSuccess);
+                    return (messageId, result.readyParts, result.totalParts, result.transferSuccess);
                 }
                 finally
                 {
@@ -634,30 +642,23 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <returns></returns>
         private async Task<(int readyParts, int totalParts, bool transferSuccess)> SendPackets(List<Packet> packets, bool throwOnError = false, Action<double> progress = null)
         {
-            List<Packet> __packets = new List<Packet>();
 
-
-            ///Сохраняем пакеты в хранилище
-            foreach (var __packet in packets)
+#if DEBUG
+            foreach (var x in packets)
             {
-                var packet = buffer.GetPacket(__packet.Id);
+                var packet = buffer.GetPacket(x.Id);
 
-                if (packet == null || packet.Status < PacketStatus.SendingToDevice)
-                {
-                    buffer.SavePacket(__packet);
-                    __packets.Add(__packet);
-                }
-            }
+                if (packet != null && packet.Status != null && packet.Status >= PacketStatus.SendingToDevice)
+                    Debugger.Break();
+            };
+#endif
 
-
-            if (__packets.Count == 0)
-                return (0, 0, true);
 
 
             ///Передаем пакеты на устройство
-            for (int i = 0; i < __packets.Count; i++)
+            for (int i = 0; i < packets.Count; i++)
             {
-                var packet = __packets[i];
+                var packet = packets[i];
                 buffer.SetPacketStatus(packet.Id, PacketStatus.SendingToDevice);
 
                 try
@@ -679,7 +680,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     if (throwOnError)
                         throw e;
 
-                    return (i + 1, __packets.Count, false);
+                    return (i + 1, packets.Count, false);
                 }
 
 
@@ -690,7 +691,7 @@ namespace Iridium360.Connect.Framework.Messaging
             }
 
 
-            return (__packets.Count, __packets.Count, true);
+            return (packets.Count, packets.Count, true);
         }
 
 
