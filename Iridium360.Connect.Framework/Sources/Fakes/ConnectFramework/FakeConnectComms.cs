@@ -245,6 +245,10 @@ namespace Iridium360.Connect.Framework.Fakes
             catch (Exception e)
             {
                 device.SetState(DeviceState.Disconnected);
+
+                if (throwOnError)
+                    throw e;
+
                 return false;
             }
         }
