@@ -94,6 +94,29 @@ namespace Iridium360.Connect.Framework.Messaging
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public class MessageNotFoundException : Exception
+    {
+        public MessageNotFoundException()
+        {
+        }
+
+        public MessageNotFoundException(string message) : base(message)
+        {
+        }
+
+        public MessageNotFoundException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected MessageNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+
 
     /// <summary>
     /// 
@@ -528,7 +551,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 var message = buffer.GetMessageById(messageId);
 
                 if (message == null)
-                    throw new NullReferenceException($"Message with id `{messageId}` not found");
+                    throw new MessageNotFoundException($"Message with id `{messageId}` not found");
 
 
                 var packets = buffer
