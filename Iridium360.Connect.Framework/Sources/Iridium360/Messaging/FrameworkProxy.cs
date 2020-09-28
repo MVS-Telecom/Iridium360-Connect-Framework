@@ -390,7 +390,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     case MessageStatus.Transmitted:
                         logger.Log($"[PACKET] `{e.MessageId}` -> Transmitted");
-                        Debugger.Break();
+                        //Debugger.Break();
 
                         buffer.SetPacketStatus(e.MessageId, PacketStatus.Transmitted);
                         break;
@@ -441,7 +441,7 @@ namespace Iridium360.Connect.Framework.Messaging
                     if (transmittedCount == packet.TotalParts)
                     {
                         logger.Log($"[MESSAGE] `{message.Id}` ({message.Type}) -> Transmitted");
-                        Debugger.Break();
+                        //Debugger.Break();
 
                         ExecuteEvent(() =>
                         {

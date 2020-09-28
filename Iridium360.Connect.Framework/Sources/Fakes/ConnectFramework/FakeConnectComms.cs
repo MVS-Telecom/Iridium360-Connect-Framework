@@ -303,13 +303,11 @@ namespace Iridium360.Connect.Framework.Fakes
             var ___messageId = _messageId + 1;
             i++;
 
-            //if (i % 3 == 0)
-            //{
-            //    await Task.Delay(2000);
-            //    throw new Exception("Dummy send errior");
-            //}
-
-
+            if (i % 3 == 0)
+            {
+                await Task.Delay(2000);
+                throw new Exception("Dummy send errior");
+            }
 
             Task.Run(async () =>
             {
