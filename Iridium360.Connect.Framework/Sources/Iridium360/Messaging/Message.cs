@@ -65,8 +65,18 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
+        public int CalculatePacketsCount()
+        {
+            return __Pack(returnEmptyPackets: true).Count;
+        }
 
         public List<Packet> Pack(byte group = 0)
+        {
+            return __Pack(group);
+        }
+
+
+        private List<Packet> __Pack(byte group = 0, bool returnEmptyPackets = false)
         {
             List<Packet> payloads = new List<Packet>();
             byte[] content;
@@ -94,6 +104,14 @@ namespace Iridium360.Connect.Framework.Messaging
             int length = MAX_PACKAGE_LENGTH - 8;
 
             int parts = (int)Math.Ceiling(content.Length / (double)length);
+
+            if (returnEmptyPackets)
+            {
+                var list = new List<Packet>();
+                for (int i = 0; i < parts; i++)
+                    list.Add(null);
+                return list;
+            }
 
             if (parts > byte.MaxValue)
                 throw new ArgumentException("Message too long!");
