@@ -132,6 +132,8 @@ namespace Iridium360.Connect.Framework.Messaging
         event EventHandler<MessageProgressChangedEventArgs> MessageTransferProgressChanged;
 
         Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, string messageId);
+
+        [Obsolete("Должен быть один метод SendMessage")]
         Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> RetrySendMessage(string messageId);
     }
 
@@ -570,7 +572,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 buffer.SetMessageSendAttempt(message.Id, message.SendAttempt + 1);
 
-                var result = await SendPackets(message.Id, packets);
+                var result = await SendMessagePackets(message.Id, packets);
 
                 return (messageId, result.readyParts, result.totalParts, result.transferSuccess);
             }
@@ -645,7 +647,7 @@ namespace Iridium360.Connect.Framework.Messaging
                         buffer.SavePacket(x);
                     });
 
-                    var result = await SendPackets(messageId, packets);
+                    var result = await SendMessagePackets(messageId, packets);
 
                     return (messageId, result.readyParts, result.totalParts, result.transferSuccess);
                 }
@@ -661,7 +663,7 @@ namespace Iridium360.Connect.Framework.Messaging
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task<(int readyParts, int totalParts, bool transferSuccess)> SendPackets(string messageId, List<Packet> packets, bool throwOnError = false)
+        private async Task<(int readyParts, int totalParts, bool transferSuccess)> SendMessagePackets(string messageId, List<Packet> packets, bool throwOnError = false)
         {
 #if DEBUG
             foreach (var x in packets)
@@ -674,11 +676,14 @@ namespace Iridium360.Connect.Framework.Messaging
 #endif
 
 
+            int ready = buffer.GetMessageById(messageId).TotalParts - packets.Count;
+
+
             MessageTransferProgressChanged?.Invoke(this, new MessageProgressChangedEventArgs()
             {
                 MessageId = messageId,
-                TotalParts = (uint)packets.Count,
-                ReadyParts = 0,
+                TotalParts = (uint)(packets.Count + ready),
+                ReadyParts = (uint)ready,
             });
 
 
@@ -702,8 +707,8 @@ namespace Iridium360.Connect.Framework.Messaging
                     MessageTransferProgressChanged?.Invoke(this, new MessageProgressChangedEventArgs()
                     {
                         MessageId = messageId,
-                        TotalParts = (uint)packets.Count,
-                        ReadyParts = (uint)(i + 1),
+                        TotalParts = (uint)(packets.Count + ready),
+                        ReadyParts = (uint)(i + 1 + ready),
                     });
                 }
                 catch (Exception e)
@@ -720,18 +725,18 @@ namespace Iridium360.Connect.Framework.Messaging
                     MessageTransferProgressChanged?.Invoke(this, new MessageProgressChangedEventArgs()
                     {
                         MessageId = messageId,
-                        TotalParts = (uint)packets.Count,
-                        ReadyParts = (uint)i,
+                        TotalParts = (uint)(packets.Count + ready),
+                        ReadyParts = (uint)(i + ready),
                         Error = true,
                     });
 
 
-                    return (i, packets.Count, false);
+                    return (i + ready, packets.Count + ready, false);
                 }
             }
 
 
-            return (packets.Count, packets.Count, true);
+            return (packets.Count + ready, packets.Count + ready, true);
 
         }
 
