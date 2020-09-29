@@ -305,12 +305,14 @@ namespace Iridium360.Connect.Framework.Fakes
         private Random r = new Random();
         private SemaphoreSlim locker = new SemaphoreSlim(1, 1);
 
+        private int resendParts = 2;
+
         public async Task<ushort> SendData(byte[] data)
         {
             try
             {
                 await locker.WaitAsync();
-                await Task.Delay(2000);
+                await Task.Delay(1000);
 
 
                 ushort _messageId = (ushort)storage.GetShort("message-id", 0);
@@ -319,11 +321,10 @@ namespace Iridium360.Connect.Framework.Fakes
 
                 i++;
 
-                //if (i % 5 == 0)
-                //{
-                //    await Task.Delay(2000);
-                //    throw new Exception("Dummy send errior");
-                //}
+                if (i % 8 == 0)
+                {
+                    throw new Exception("Dummy send error");
+                }
 
 
                 var m = Message.Unpack(data, new InMemoryBuffer());
@@ -331,9 +332,16 @@ namespace Iridium360.Connect.Framework.Fakes
                 {
                     thread.PostDelayed(() =>
                     {
-                        //r.Next(0, new RealmPacketBuffer().GetMessageByGroup(sent.Group).TotalParts);
+                        var resendIndexes = new byte[resendParts];
+                        for (int k = 0; k < resendParts; k++)
+                            resendIndexes[k] = (byte)k;
 
-                        var ack = MessageAckMT.Create(ProtocolVersion.v3__WeatherExtension, (byte)sent.SentGroup, new byte[] { }).Pack();
+                        resendParts -= 2;
+
+                        if (resendParts < 0)
+                            resendParts = 2;
+
+                        var ack = MessageAckMT.Create(ProtocolVersion.v3__WeatherExtension, (byte)sent.SentGroup, resendIndexes).Pack();
 
                         PacketReceived(this, new PacketReceivedEventArgs()
                         {
@@ -347,7 +355,7 @@ namespace Iridium360.Connect.Framework.Fakes
 
                 thread.Post(async () =>
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(8));
+                    await Task.Delay(TimeSpan.FromSeconds(4));
 
 
                     PacketStatusUpdated(this, new PacketStatusUpdatedEventArgs()
