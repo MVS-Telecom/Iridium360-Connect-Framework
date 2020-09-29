@@ -179,7 +179,7 @@ namespace Iridium360.Connect.Framework
         /// Enqueues the task.
         /// </summary>
         /// <param name="task">The task.</param>
-        public virtual void PostDelayed(Action task, TimeSpan delay, string name)
+        public virtual void PostDelayed(Action task, TimeSpan delay, string name = null)
         {
             Task.Run(async () =>
             {
@@ -206,7 +206,7 @@ namespace Iridium360.Connect.Framework
         /// Enqueues the task.
         /// </summary>
         /// <param name="task">The task.</param>
-        public virtual void Post(Func<Task> task, string name)
+        public virtual void Post(Func<Task> task, string name = null)
         {
             Post(new AWorkContainer(task, name));
         }

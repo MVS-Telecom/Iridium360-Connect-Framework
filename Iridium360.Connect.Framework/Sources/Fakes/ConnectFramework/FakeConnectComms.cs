@@ -5,6 +5,7 @@ using Iridium360.Connect.Framework.Messaging.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Message = Iridium360.Connect.Framework.Messaging.Message;
 
@@ -298,58 +299,55 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
-        private DateTime time = DateTime.MinValue;
+
         private int i = 0;
+        private ThreadWorker thread = new ThreadWorker();
+        private Random r = new Random();
+        private SemaphoreSlim locker = new SemaphoreSlim(1, 1);
 
         public async Task<ushort> SendData(byte[] data)
         {
-            ushort _messageId = (ushort)storage.GetShort("message-id", 0);
-            var ___messageId = _messageId + 1;
-            i++;
-
-            if (i % 3 == 0)
+            try
             {
+                await locker.WaitAsync();
                 await Task.Delay(2000);
-                throw new Exception("Dummy send errior");
-            }
 
-            Task.Run(async () =>
-            {
+
+                ushort _messageId = (ushort)storage.GetShort("message-id", 0);
+                var ___messageId = _messageId + 1;
+                storage.PutShort("message-id", (short)___messageId);
+
+                i++;
+
+                //if (i % 5 == 0)
+                //{
+                //    await Task.Delay(2000);
+                //    throw new Exception("Dummy send errior");
+                //}
+
+
                 var m = Message.Unpack(data, new InMemoryBuffer());
                 if (m is MessageSentMO sent)
                 {
-                    await Task.Delay(10000);
-
-                    var ack = MessageAckMT.Create(ProtocolVersion.v3__WeatherExtension, (byte)sent.SentGroup, new byte[] { 0, 2 }).Pack();
-
-                    PacketReceived(this, new PacketReceivedEventArgs()
+                    thread.PostDelayed(() =>
                     {
-                        Payload = ack[0].Payload,
-                        MessageId = (short)(10005 + ___messageId),
-                    });
+                        //r.Next(0, new RealmPacketBuffer().GetMessageByGroup(sent.Group).TotalParts);
+
+                        var ack = MessageAckMT.Create(ProtocolVersion.v3__WeatherExtension, (byte)sent.SentGroup, new byte[] { }).Pack();
+
+                        PacketReceived(this, new PacketReceivedEventArgs()
+                        {
+                            Payload = ack[0].Payload,
+                            MessageId = (short)(10005 + ___messageId),
+                        });
+
+                    }, TimeSpan.FromSeconds(10));
                 }
-            });
 
 
-            return await Task.Run(async () =>
-            {
-                await Task.Delay(1000);
-
-                storage.PutShort("message-id", (short)___messageId);
-
-
-                _ = Task.Run(async () =>
+                thread.Post(async () =>
                 {
-                    var delay = DateTime.Now - time;
-
-                    if (delay < TimeSpan.FromSeconds(6))
-                        delay = TimeSpan.FromSeconds(6) + delay;
-                    else
-                        delay = TimeSpan.FromSeconds(6);
-
-                    time = DateTime.Now;
-
-                    await Task.Delay(delay);
+                    await Task.Delay(TimeSpan.FromSeconds(8));
 
 
                     PacketStatusUpdated(this, new PacketStatusUpdatedEventArgs()
@@ -359,28 +357,29 @@ namespace Iridium360.Connect.Framework.Fakes
                     });
 
 
-
-                    await Task.Delay(delay.Add(TimeSpan.FromSeconds(6)));
-
-
-                    var m = Message.Unpack(data) as ChatMessageMO;
-
-                    if (m != null && m.TotalParts == 1)
-                    {
-                        var p = ChatMessageMT.Create(m.Version, m.Subscriber, m.Id, m.Conversation, m.Text, m.Lat, m.Lon, m.Alt, m.ByskyToken, m.File, m.FileExtension, m.ImageQuality, m.Subject).Pack();
-
-                        PacketReceived(this, new PacketReceivedEventArgs()
-                        {
-                            Payload = p[0].Payload,
-                            MessageId = (short)(10000 + ___messageId),
-                        });
-                    }
+                    //await Task.Delay(TimeSpan.FromSeconds(6));
 
 
+                    //var m = Message.Unpack(data) as ChatMessageMO;
+
+                    //if (m != null && m.TotalParts == 1)
+                    //{
+                    //var p = ChatMessageMT.Create(m.Version, m.Subscriber, m.Id, m.Conversation, m.Text, m.Lat, m.Lon, m.Alt, m.ByskyToken, m.File, m.FileExtension, m.ImageQuality, m.Subject).Pack();
+
+                    //PacketReceived(this, new PacketReceivedEventArgs()
+                    //{
+                    //    Payload = p[0].Payload,
+                    //    MessageId = (short)(10000 + ___messageId),
+                    //});
+                    //}
                 });
 
                 return _messageId;
-            });
+            }
+            finally
+            {
+                locker.Release();
+            }
         }
 
         public async Task StartDeviceSearch()
