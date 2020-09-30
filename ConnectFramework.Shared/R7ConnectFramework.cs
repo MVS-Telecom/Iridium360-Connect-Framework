@@ -364,12 +364,10 @@ namespace ConnectFramework.Shared
         /// <summary>
         /// 
         /// </summary>
-        public Task RequestBattery()
+        public async Task RequestBattery()
         {
-            return Task.Run(() =>
-            {
-                comms.RequestBatteryStatus();
-            });
+            await Reconnect(throwOnError: true);
+            comms.RequestBatteryStatus();
         }
 
 
