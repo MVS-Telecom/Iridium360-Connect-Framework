@@ -121,6 +121,29 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// 
         /// </summary>
+        public void ResetHungPackets()
+        {
+            lock (locker)
+            {
+                using (var realm = PacketBufferHelper.GetBufferInstance())
+                {
+                    var sources = realm
+                        .All<Part>()
+                        .Where(x => x.Status == (int)PacketStatus.SendingToDevice)
+                        .ToList();
+
+                    realm.Write(() =>
+                    {
+                        foreach (var source in sources)
+                            source.Status = (int)PacketStatus.None;
+                    });
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="group"></param>
         /// <returns></returns>
         public Message GetMessageByGroup(uint group, PacketDirection direction)

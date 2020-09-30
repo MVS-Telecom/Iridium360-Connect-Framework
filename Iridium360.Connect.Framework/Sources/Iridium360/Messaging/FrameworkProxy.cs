@@ -131,6 +131,11 @@ namespace Iridium360.Connect.Framework.Messaging
         event EventHandler<MessageProgressChangedEventArgs> MessageTransmitProgressChanged;
         event EventHandler<MessageProgressChangedEventArgs> MessageTransferProgressChanged;
 
+        /// <summary>
+        /// Сбросить пакеты, находящиеся в состоянии "Отправляется на устройство"
+        /// </summary>
+        void ResetHungPackets();
+
         Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, string messageId);
 
         [Obsolete("Должен быть один метод SendMessage")]
@@ -187,7 +192,6 @@ namespace Iridium360.Connect.Framework.Messaging
         public IDevice ConnectedDevice => framework.ConnectedDevice;
 
 
-
         public FrameworkProxy(IFramework framework, ILogger logger, IPacketBuffer buffer, IStorage storage)
         {
             this.framework = framework;
@@ -200,6 +204,13 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ResetHungPackets()
+        {
+            buffer.ResetHungPackets();
+        }
 
 
 

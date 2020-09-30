@@ -14,6 +14,11 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
     public interface IPacketBuffer
     {
         /// <summary>
+        /// Сбросить пакеты, находящиеся в состоянии "Отправляется на устройство"
+        /// </summary>
+        void ResetHungPackets();
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="group"></param>
