@@ -539,8 +539,9 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <summary>
         /// 
         /// </summary>
-        public void RequestBattery()
+        public async Task RequestBattery()
         {
+            await Reconnect();
             PostReadGatt(battery);
             PostCommand(new ActionCommand(AppId, KeyIndex, ActionRequestType.BatteryUpdate));
         }

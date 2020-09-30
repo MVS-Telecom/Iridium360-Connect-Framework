@@ -260,9 +260,9 @@ namespace ConnectFramework.Shared
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public void RequestBattery()
+        public Task RequestBattery()
         {
-            framework.RequestBattery();
+            return framework.RequestBattery();
         }
 
 

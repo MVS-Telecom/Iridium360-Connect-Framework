@@ -736,9 +736,9 @@ namespace Iridium360.Connect.Framework.Implementations
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public void RequestBattery()
+        public Task RequestBattery()
         {
-            framework.RequestBattery();
+            return framework.RequestBattery();
         }
 
 

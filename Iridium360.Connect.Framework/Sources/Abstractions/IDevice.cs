@@ -167,7 +167,7 @@ namespace Iridium360.Connect.Framework
         /// <summary>
         /// 
         /// </summary>
-        void RequestBattery();
+        Task RequestBattery();
 
         /// <summary>
         /// 

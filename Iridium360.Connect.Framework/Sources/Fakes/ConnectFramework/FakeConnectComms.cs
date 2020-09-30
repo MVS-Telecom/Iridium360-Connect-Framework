@@ -145,9 +145,9 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
-        public void RequestBattery()
+        public async Task RequestBattery()
         {
-
+            await Task.Delay(200);
         }
 
         public void RequestLocation()
