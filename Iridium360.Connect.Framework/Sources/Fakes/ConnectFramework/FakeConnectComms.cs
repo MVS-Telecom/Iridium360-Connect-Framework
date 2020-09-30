@@ -258,6 +258,7 @@ namespace Iridium360.Connect.Framework.Fakes
         public async Task Disconnect()
         {
             await Task.Delay(1000);
+            device.SetState(DeviceState.Disconnected);
         }
 
         public async Task ForgetDevice()
