@@ -1384,7 +1384,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Packet progress {p0} -> {p1}/{p2}");
+                logger.Log($"[R7] Packet progress {p0} -> {p1}/{p2 + 1}");
             });
         }
 
