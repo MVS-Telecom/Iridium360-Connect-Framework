@@ -701,7 +701,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     buffer.SetPacketStatus(packet.Id, PacketStatus.TransferredToDevice, packetId);
 
-                    logger.Log($"[PACKET] Transferred to device with Id={packetId}");
+                    logger.Log($"[PACKET] Transferred to device with Id={packetId} `0x{packet.Payload.ToHexString()}`");
 
 
                     MessageTransferProgressChanged?.Invoke(this, new MessageProgressChangedEventArgs()
