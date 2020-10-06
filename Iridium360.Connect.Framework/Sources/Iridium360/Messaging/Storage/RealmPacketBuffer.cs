@@ -121,6 +121,24 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public int GetTransmittingPackets()
+        {
+            lock (locker)
+            {
+                using (var realm = PacketBufferHelper.GetBufferInstance())
+                {
+                    return realm
+                        .All<Part>()
+                        .Where(x => x.Status == (int)PacketStatus.TransferredToDevice)
+                        .Count();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void ResetHungPackets()
         {
             lock (locker)

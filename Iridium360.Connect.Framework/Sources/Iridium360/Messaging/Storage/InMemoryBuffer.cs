@@ -10,6 +10,13 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         private List<Packet> packets = new List<Packet>();
         private List<Message> messages = new List<Message>();
 
+        public int GetTransmittingPackets()
+        {
+            lock (typeof(InMemoryBuffer))
+            {
+                return packets.Count(x => x.Status == PacketStatus.TransferredToDevice);
+            }
+        }
 
         public void ResetHungPackets()
         {
