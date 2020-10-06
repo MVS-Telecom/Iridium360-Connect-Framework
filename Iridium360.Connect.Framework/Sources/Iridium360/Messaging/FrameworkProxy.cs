@@ -136,8 +136,25 @@ namespace Iridium360.Connect.Framework.Messaging
         /// </summary>
         void ResetHungPackets();
 
+        /// <summary>
+        /// Кол-во пакетов находящихся в отправке (на устройстве)
+        /// </summary>
+        /// <returns></returns>
+        int GetTransmittingPackets();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="messageId"></param>
+        /// <returns></returns>
         Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> SendMessage(Message message, string messageId);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="messageId"></param>
+        /// <returns></returns>
         [Obsolete("Должен быть один метод SendMessage")]
         Task<(string messageId, int readyParts, int totalParts, bool transferSuccess)> RetrySendMessage(string messageId);
     }
@@ -201,6 +218,16 @@ namespace Iridium360.Connect.Framework.Messaging
 
             framework.PacketStatusUpdated += Framework__PacketStatusUpdated;
             framework.PacketReceived += Framework__PacketReceived;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public int GetTransmittingPackets()
+        {
+            return buffer.GetTransmittingPackets();
         }
 
 
