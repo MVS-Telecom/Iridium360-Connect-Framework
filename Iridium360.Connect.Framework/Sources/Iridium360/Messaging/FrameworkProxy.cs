@@ -608,8 +608,6 @@ namespace Iridium360.Connect.Framework.Messaging
                     return (messageId, 0, 0, true);
                 }
 
-                buffer.SetMessageSendAttempt(message.Id, message.SendAttempt + 1);
-
                 var result = await SendMessagePackets(message.Id, packets);
 
                 return (messageId, result.readyParts, result.totalParts, result.transferSuccess);
