@@ -697,7 +697,20 @@ namespace ConnectFramework.Shared
                     }
 
                     if (ConnectedDevice?.State == DeviceState.Connected && args == null)
-                        throw new MessageSendingException($"Packet Id={messageId} transfer to device timeout");
+                    {
+                        if (i + 1 > attempts)
+                        {
+                            throw new MessageSendingException($"Packet Id={messageId} transfer to device timeout");
+                        }
+                        else
+                        {
+                            Debugger.Break();
+                            await Disconnect();
+                            await Reconnect();
+                            continue;
+                        }
+                    }
+
 
                     if (args?.Status == MessageStatus.ErrorToolong)
                         throw new MessageSendingException($"Packet Id={messageId} is too long");
@@ -710,6 +723,7 @@ namespace ConnectFramework.Shared
                     {
                         Debugger.Break();
                         await Disconnect();
+                        await Reconnect();
                     }
 
 
