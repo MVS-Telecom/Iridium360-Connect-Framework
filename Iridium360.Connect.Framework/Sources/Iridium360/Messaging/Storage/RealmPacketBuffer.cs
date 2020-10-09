@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -496,6 +497,21 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                             source.TransmittedDate = DateTimeOffset.MinValue;
                     });
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void DeleteAll()
+        {
+            lock (locker)
+            {
+                string path = PacketBufferHelper.GetBufferDbPath();
+
+                if (File.Exists(path))
+                    File.Delete(path);
             }
         }
 

@@ -112,6 +112,11 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// <param name="packetId"></param>
         /// <returns></returns>
         Packet GetPacket(string packetId);
+
+        /// <summary>
+        /// ПОЛНОЕ УДАЛЕНИЕ ВСЕХ ПАКЕТОВ И СООБЕЩЕНИЙ!
+        /// </summary>
+        void DeleteAll();
     }
 
 

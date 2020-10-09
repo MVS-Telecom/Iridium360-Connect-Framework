@@ -140,5 +140,14 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         {
             throw new NotImplementedException();
         }
+
+        public void DeleteAll()
+        {
+            lock (typeof(InMemoryBuffer))
+            {
+                messages.Clear();
+                packets.Clear();
+            }
+        }
     }
 }

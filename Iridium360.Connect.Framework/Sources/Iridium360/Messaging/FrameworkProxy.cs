@@ -795,14 +795,19 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
+        public async Task ForgetDevice()
+        {
+            await framework.ForgetDevice();
+            buffer.DeleteAll();
+        }
+
+
 
         public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1) => framework.Connect(id, force, throwOnError, attempts);
 
         public Task<bool> Connect(IBluetoothDevice device, bool force = true, bool throwOnError = false, int attempts = 1) => framework.Connect(device, force, throwOnError, attempts);
 
         public Task Disconnect() => framework.Disconnect();
-
-        public Task ForgetDevice() => framework.ForgetDevice();
 
         public Task SendManual() => framework.SendManual();
 
