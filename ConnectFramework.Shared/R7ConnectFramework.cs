@@ -389,7 +389,7 @@ namespace ConnectFramework.Shared
         public async Task Disconnect()
         {
             comms.Disconnect();
-            await Task.Delay(1000);
+            await Task.Delay(2000);
         }
 
 
