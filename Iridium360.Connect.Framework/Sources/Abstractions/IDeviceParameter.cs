@@ -142,6 +142,9 @@ namespace Iridium360.Connect.Framework
         {
             get
             {
+                if (x == null)
+                    return null;
+
                 return Enum.GetValues(type).Cast<Enum>().FirstOrDefault(x => Convert.ToInt32(x) == cachedValue);
             }
         }
