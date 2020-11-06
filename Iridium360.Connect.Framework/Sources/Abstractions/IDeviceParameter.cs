@@ -32,6 +32,11 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         Enum CachedValue { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        void RestoreCachedValue(Enum value);
 
         /// <summary>
         /// Название группы, к которой относится параметр
@@ -141,7 +146,6 @@ namespace Iridium360.Connect.Framework
             }
         }
 
-
         /// <summary>
         /// Название группы, к которой относится параметр
         /// </summary>
@@ -247,6 +251,29 @@ namespace Iridium360.Connect.Framework
             //}
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        public void RestoreCachedValue(Enum value)
+        {
+            if (value == null)
+                return;
+
+            try
+            {
+                UpdateCachedValue(new int[] { Convert.ToInt32(value) });
+            }
+            catch (DeviceIsLockedException e1)
+            {
+                Debugger.Break();
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+                throw e;
+            }
+        }
 
         /// <summary>
         /// 
@@ -269,7 +296,7 @@ namespace Iridium360.Connect.Framework
 
             if (@new?.FirstOrDefault() == byte.MaxValue || @new?.FirstOrDefault() == 999 || @new?.FirstOrDefault() == -1)
                 throw new DeviceIsLockedException();
-            
+
 
 
             bool changed = @new?.FirstOrDefault() != cachedValue;

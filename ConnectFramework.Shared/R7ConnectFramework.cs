@@ -664,10 +664,18 @@ namespace ConnectFramework.Shared
                                 r.Set();
                             }
                         });
+                        var handler2 = new EventHandler<DeviceConnectionChangedEventArgs>((s, e) =>
+                        {
+                            if (e.State == DeviceState.Disconnected)
+                            {
+                                r.Set();
+                            }
+                        });
 
                         try
                         {
                             PacketStatusUpdated += handler;
+                            ConnectedDevice.ConnectionChanged += handler2;
 
 #if ANDROID
                             comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
@@ -685,6 +693,7 @@ namespace ConnectFramework.Shared
                         finally
                         {
                             PacketStatusUpdated -= handler;
+                            ConnectedDevice.ConnectionChanged -= handler2;
                         }
                     });
 
