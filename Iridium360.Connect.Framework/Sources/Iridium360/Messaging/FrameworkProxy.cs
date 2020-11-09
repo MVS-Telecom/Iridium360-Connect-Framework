@@ -457,8 +457,6 @@ namespace Iridium360.Connect.Framework.Messaging
                     case MessageStatus.Transmitted:
                         logger.Log($"[PACKET] `{e.MessageId}` -> Transmitted");
                         //Debugger.Break();
-
-                        buffer.SetPacketStatus(e.MessageId, PacketStatus.Transmitted);
                         break;
 
                     default:
@@ -472,6 +470,17 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 if (e.Status == MessageStatus.Transmitted)
                 {
+                    ///Прошлое кол-во отправленных чатей сообщения
+                    var oldCount = buffer
+                        .GetPackets(packet.Group, packet.Direction, includePayload: false)
+                        .Where(x => x.Status >= PacketStatus.Transmitted)
+                        .Count();
+
+
+                    ///Обновляем статус пакета
+                    buffer.SetPacketStatus(e.MessageId, PacketStatus.Transmitted);
+
+
                     var message = buffer.GetMessageByGroup(packet.Group, packet.Direction);
 
                     if (message == null)
@@ -483,11 +492,20 @@ namespace Iridium360.Connect.Framework.Messaging
                     }
 
 
-                    ///Кол-во отправленных чатей сообщения
+                    ///Новое кол-во отправленных чатей сообщения
                     var transmittedCount = buffer
-                        .GetPackets(packet.Group, packet.Direction)
+                        .GetPackets(packet.Group, packet.Direction, includePayload: false)
                         .Where(x => x.Status >= PacketStatus.Transmitted)
                         .Count();
+
+
+                    ///Такое возможно (глюк фреймворка / глюк / дисконнект блютуза)
+                    if (oldCount == transmittedCount)
+                    {
+                        Console.WriteLine("Transmitted parts count not changed");
+                        Debugger.Break();
+                        return;
+                    }
 
 
                     logger.Log($"[MESSAGE] Message `{message.Id}` progress changed -> {Math.Round(100 * (transmittedCount / (double)packet.TotalParts), 1)}% ({transmittedCount}/{packet.TotalParts})");
