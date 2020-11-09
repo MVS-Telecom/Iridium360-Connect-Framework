@@ -27,7 +27,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
             }
         }
 
-        public List<Packet> GetPackets(uint group, PacketDirection direction)
+        public List<Packet> GetPackets(uint group, PacketDirection direction, bool includePayload = true)
         {
             lock (typeof(InMemoryBuffer))
             {

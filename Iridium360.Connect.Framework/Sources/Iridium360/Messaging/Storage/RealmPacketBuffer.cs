@@ -302,7 +302,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public List<Packet> GetPackets(uint group, PacketDirection direction)
+        public List<Packet> GetPackets(uint group, PacketDirection direction, bool includePayload = true)
         {
             lock (locker)
             {
@@ -312,7 +312,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                         .All<Part>()
                         .Where(x => x.Group == group && x.Direction == (int)direction)
                         .ToList()
-                        .Select(x => BuildPacket(x))
+                        .Select(x => BuildPacket(x, includePayload))
                         .ToList();
 
                     return parts;
@@ -406,7 +406,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                     if (source == null)
                         return null;
 
-                    return BuildPacket(source);
+                    return BuildPacket(source, includePayload: true);
                 }
             }
         }
@@ -429,7 +429,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                     if (source == null)
                         return null;
 
-                    return BuildPacket(source);
+                    return BuildPacket(source, includePayload: true);
                 }
             }
         }
@@ -523,7 +523,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// 
         /// </summary>
         /// <param name="source"></param>
-        private static Packet BuildPacket(Part source)
+        private static Packet BuildPacket(Part source, bool includePayload)
         {
             return new Packet()
             {
@@ -533,7 +533,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
                 Direction = (PacketDirection)source.Direction,
                 Index = (uint)source.Index,
                 TotalParts = (uint)source.TotalParts,
-                Payload = source.Payload,
+                Payload = includePayload ? source.Payload : null,
                 Status = (PacketStatus)source.Status,
                 TransmittedDate = source.TransmittedDate == DateTimeOffset.MinValue ? (DateTime?)null : source.TransmittedDate.UtcDateTime
             };

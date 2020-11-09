@@ -68,7 +68,7 @@ namespace Iridium360.Connect.Framework.Messaging.Storage
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        List<Packet> GetPackets(uint groupId, PacketDirection direction);
+        List<Packet> GetPackets(uint groupId, PacketDirection direction, bool includePayload = true);
 
         /// <summary>
         /// 
