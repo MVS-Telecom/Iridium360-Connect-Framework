@@ -366,7 +366,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
             if (indexes.Any())
             {
-                var packets = buffer.GetPackets((uint)group, PacketDirection.Outbound);
+                var packets = buffer.GetPackets((uint)group, PacketDirection.Outbound, includePayload: false);
                 var resend = packets.Where(x => indexes.Contains((byte)x.Index)).ToList();
 
 
