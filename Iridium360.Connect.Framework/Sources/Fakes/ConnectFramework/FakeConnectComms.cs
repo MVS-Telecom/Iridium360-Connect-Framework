@@ -96,7 +96,14 @@ namespace Iridium360.Connect.Framework.Fakes
             return Task.Run(async () =>
             {
                 await Task.Delay(200);
-                ((BaseDeviceParameter)Parameters.SingleOrDefault(x => x.Id == parameter)).UpdateCachedValue(new int[] { Convert.ToByte(value) });
+
+                var p = ((BaseDeviceParameter)Parameters.SingleOrDefault(x => x.Id == parameter));
+                p.UpdateCachedValue(new int[] { Convert.ToByte(value) });
+
+                ParameterChanged(this, new ParameterChangedEventArgs()
+                {
+                    Parameter = p,
+                });
             });
         }
 
@@ -105,6 +112,12 @@ namespace Iridium360.Connect.Framework.Fakes
             return Task.Run(async () =>
             {
                 await Task.Delay(1000);
+
+                foreach (var p in Parameters)
+                    ParameterChanged(this, new ParameterChangedEventArgs()
+                    {
+                        Parameter = p
+                    });
             });
         }
 
@@ -114,6 +127,12 @@ namespace Iridium360.Connect.Framework.Fakes
             {
                 foreach (var id in ids)
                     await Task.Delay(200);
+
+                foreach (var id in ids)
+                    ParameterChanged(this, new ParameterChangedEventArgs()
+                    {
+                        Parameter = Parameters.FirstOrDefault(x => x.Id == id),
+                    });
             });
         }
 
