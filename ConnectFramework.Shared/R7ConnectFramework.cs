@@ -559,7 +559,6 @@ namespace ConnectFramework.Shared
 
         }
 
-
         private void Safety(Action action)
         {
             try
@@ -572,7 +571,7 @@ namespace ConnectFramework.Shared
             }
         }
 
-        private T Safety<T>(Func<T> action)
+        private T Safety<T>(Func<T> action, Func<T> error = null)
         {
             try
             {
@@ -581,7 +580,11 @@ namespace ConnectFramework.Shared
             catch (Exception e)
             {
                 Debugger.Break();
-                return default(T);
+
+                if (error != null)
+                    return error();
+                else
+                    return default(T);
             }
         }
 
@@ -1214,16 +1217,20 @@ namespace ConnectFramework.Shared
         private EventHandler<DeviceParameter> __DeviceParameterUpdated = delegate { };
 
 
+
         public void DeviceParameterUpdated(DeviceParameter p0)
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Device parameter changed `{p0.Label}` [{p0.Characteristic}] -> `{p0.CachedValue}`");
+                logger.Log($"[R7] Device parameter changed `{Safety(() => p0.Identifier.ToR7().FromR7().ToString(), () => p0.Identifier.ToString()) }` [{p0.Characteristic}] -> `{p0.CachedValue}`");
+
                 device.OnParameterChanged(p0);
 
                 __DeviceParameterUpdated(this, p0);
             });
         }
+
+
 
         private event EventHandler OnDeviceReady = delegate { };
 
