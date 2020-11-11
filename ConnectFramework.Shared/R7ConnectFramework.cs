@@ -294,6 +294,8 @@ namespace ConnectFramework.Shared
 
                                 bool ok = r.WaitOne(TimeSpan.FromSeconds(15));
 
+                                if (ConnectedDevice.State != DeviceState.Connected)
+                                    throw new DeviceConnectionException();
 
                                 if (ConnectedDevice.IncorrectPin == true)
                                     throw new IncorrectPinException();

@@ -106,7 +106,7 @@ namespace ConnectFramework.Shared
             }
         }
 
-        internal void SetLockStatus(LockState state, bool? incorrectPin = null)
+        internal void SetLockStatus(LockState state, bool? incorrectPin = null, bool fireEvent = true)
         {
             var @new = state;
             var @old = lockStatus;
@@ -117,12 +117,15 @@ namespace ConnectFramework.Shared
             {
                 lockStatus = @new;
 
-                DeviceLockStatusUpdated(this, new LockStatusUpdatedEventArgs()
+                if (fireEvent)
                 {
-                    IncorrectPin = incorrectPin,
-                    New = @new,
-                    Old = @old
-                });
+                    DeviceLockStatusUpdated(this, new LockStatusUpdatedEventArgs()
+                    {
+                        IncorrectPin = incorrectPin,
+                        New = @new,
+                        Old = @old
+                    });
+                }
             }
         }
 
@@ -243,7 +246,7 @@ namespace ConnectFramework.Shared
                 else
                 {
                     Parameters = null;
-                    SetLockStatus(LockState.Unknown);
+                    SetLockStatus(LockState.Unknown, fireEvent: false);
                 }
 
 
