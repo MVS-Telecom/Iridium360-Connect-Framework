@@ -145,6 +145,9 @@ namespace Iridium360.Connect.Framework
                 if (IsEvent)
                     return null;
 
+                if (type == null)
+                    throw new ArgumentNullException($"Parameter `{Id}` enum type is null!");
+
                 return Enum.GetValues(type).Cast<Enum>().FirstOrDefault(x => Convert.ToInt32(x) == cachedValue);
             }
         }
