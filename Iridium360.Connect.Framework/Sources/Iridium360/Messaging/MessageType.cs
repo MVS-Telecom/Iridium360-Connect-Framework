@@ -45,7 +45,12 @@ namespace Iridium360.Connect.Framework.Messaging
         /// <summary>
         /// Повторно отправить части сообщения
         /// </summary>
-        Ack = 8
+        Ack = 8,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Balance = 9
     }
 }
 
