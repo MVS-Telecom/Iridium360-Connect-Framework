@@ -581,7 +581,7 @@ namespace ConnectFramework.Shared
             }
             catch (Exception e)
             {
-                Debugger.Break();
+                //Debugger.Break();
 
                 if (error != null)
                     return error();
