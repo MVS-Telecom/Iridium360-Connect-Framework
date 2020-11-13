@@ -127,7 +127,7 @@ namespace Iridium360.Connect.Framework.Messaging
             {
                 this.Payload = content.Skip(this.Index * length).Take(length).ToArray();
 
-                if (this.Payload.Length == 0)
+                if (this.Payload.Length == 0 && Index > 0)
                     break;
 
                 using (MemoryStream stream2 = new MemoryStream())
