@@ -348,6 +348,21 @@ namespace Iridium360.Connect.Framework.Fakes
 
 
                 var m = Message.Unpack(data, new InMemoryBuffer());
+
+                if (m is BalanceMO balance)
+                {
+                    thread.PostDelayed(() =>
+                    {
+                        var balanceMT = BalanceMT.Create(ProtocolVersion.v3__WeatherExtension, DateTime.UtcNow, DateTime.UtcNow.AddDays(-12), DateTime.UtcNow.AddDays(30), 672, 1000, 328).Pack();
+
+                        PacketReceived(this, new PacketReceivedEventArgs()
+                        {
+                            Payload = balanceMT[0].Payload,
+                            MessageId = (short)(10006 + ___messageId),
+                        });
+
+                    }, TimeSpan.FromSeconds(15));
+                }
                 if (m is MessageSentMO sent)
                 {
                     thread.PostDelayed(() =>
