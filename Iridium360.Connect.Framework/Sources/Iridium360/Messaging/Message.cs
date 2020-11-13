@@ -103,7 +103,7 @@ namespace Iridium360.Connect.Framework.Messaging
             ///8 - длина заголовков
             int length = MAX_PACKAGE_LENGTH - 8;
 
-            int parts = (int)Math.Ceiling(content.Length / (double)length);
+            int parts = (int)Math.Max(1, Math.Ceiling(content.Length / (double)length));
 
             if (returnEmptyPackets)
             {
