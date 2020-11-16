@@ -353,7 +353,7 @@ namespace Iridium360.Connect.Framework.Fakes
                 {
                     thread.PostDelayed(() =>
                     {
-                        var balanceMT = BalanceMT.Create(ProtocolVersion.v3__WeatherExtension, DateTime.UtcNow, DateTime.UtcNow.AddDays(-12), DateTime.UtcNow.AddDays(30), 672, 1000, 328).Pack();
+                        var balanceMT = BalanceMT.Create(ProtocolVersion.v3__WeatherExtension, DateTime.UtcNow.AddDays(-12), DateTime.UtcNow.AddDays(30), 672, 1000, 328).Pack();
 
                         PacketReceived(this, new PacketReceivedEventArgs()
                         {
