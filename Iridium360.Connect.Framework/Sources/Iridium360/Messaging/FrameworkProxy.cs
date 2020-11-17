@@ -843,6 +843,6 @@ namespace Iridium360.Connect.Framework.Messaging
 
         public void Dispose() => framework.Dispose();
 
-        public Task<bool> Reconnect(bool throwOnError = true, int attempts = 1) => framework.Reconnect(throwOnError: throwOnError, attempts: attempts);
+        public Task<bool> Reconnect(bool force = true, bool throwOnError = true, int attempts = 1) => framework.Reconnect(force: force, throwOnError: throwOnError, attempts: attempts);
     }
 }

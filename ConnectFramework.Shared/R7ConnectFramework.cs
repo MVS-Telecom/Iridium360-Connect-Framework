@@ -418,12 +418,12 @@ namespace ConnectFramework.Shared
         /// </summary>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Reconnect(bool throwOnError = true, int attempts = 1)
+        public Task<bool> Reconnect(bool force = true, bool throwOnError = true, int attempts = 1)
         {
             if (deviceId == Guid.Empty)
                 throw new InvalidOperationException("Device was not connected previosly");
 
-            return Connect(deviceId, throwOnError: throwOnError, attempts: attempts);
+            return Connect(deviceId, force: force, throwOnError: throwOnError, attempts: attempts);
         }
 
         /// <summary>
@@ -940,7 +940,7 @@ namespace ConnectFramework.Shared
                 {
                     await updateLock.WaitAsync();
 
-                    await Reconnect();
+                    await Reconnect(force: false, throwOnError: true);
 
                     foreach (var p in ids)
                     {

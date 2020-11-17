@@ -291,7 +291,7 @@ namespace Iridium360.Connect.Framework.Fakes
         }
 
 
-        public async Task<bool> Reconnect(bool throwOnError = false, int attempts = 1)
+        public async Task<bool> Reconnect(bool force = true, bool throwOnError = false, int attempts = 1)
         {
             await Task.Delay(2000);
             return true;

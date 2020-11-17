@@ -260,7 +260,7 @@ namespace Iridium360.Connect.Framework.Implementations
         /// Повторно подключиться к устройству
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> Reconnect(bool throwOnError = false, int attempts = 1)
+        public async Task<bool> Reconnect(bool force = true, bool throwOnError = false, int attempts = 1)
         {
             if (deviceMac == Guid.Empty)
             {
