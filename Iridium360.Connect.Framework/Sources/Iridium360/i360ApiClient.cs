@@ -3,6 +3,7 @@ using Iridium360.Connect.Framework.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -286,15 +287,21 @@ namespace Iridium360.Connect.Framework
             }
             catch (HttpRequestException)
             {
-                ///Устройство не найдено или ошибка на сервере
-                if (result?.HttpResponse?.StatusCode == HttpStatusCode.NotFound || result?.HttpResponse?.StatusCode == HttpStatusCode.InternalServerError)
+                ///Устройство не найдено 
+                if (result?.HttpResponse?.StatusCode == HttpStatusCode.NotFound)
                 {
                     return new i360DeviceStatus();
                 }
-                else
+
+                ///Ошибка на сервере
+                if (result?.HttpResponse?.StatusCode == HttpStatusCode.InternalServerError)
                 {
+                    Console.WriteLine($"Server error `{result?.HttpResponse?.StatusCode}`");
+                    Debugger.Break();
                     throw;
                 }
+
+                throw;
             }
 
             return result.ApiResult;
