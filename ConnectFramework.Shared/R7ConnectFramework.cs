@@ -916,6 +916,9 @@ namespace ConnectFramework.Shared
         }
 
 
+        private SemaphoreSlim updateLock = new SemaphoreSlim(1, 1);
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -925,61 +928,70 @@ namespace ConnectFramework.Shared
         {
             return Task.Run(async () =>
             {
-                await Reconnect();
-
-                foreach (var p in ids)
+                try
                 {
-                    ///Делаем 2 попытки - возможно параметр еще "не готов"
-                    for (int i = 1; i <= 2; i++)
+                    await updateLock.WaitAsync();
+
+                    await Reconnect();
+
+                    foreach (var p in ids)
                     {
-                        try
+                        ///Делаем 2 попытки - возможно параметр еще "не готов"
+                        for (int i = 1; i <= 2; i++)
                         {
-                            var a = comms.CurrentDevice.ParameterForIdentifier(p.ToR7().EnumToInt());
-
-#if ANDROID
-                            if (a?.Available?.BooleanValue() != true)
-                                throw new ParameterUnavailableException(p);
-#else
-                            if (a?.Available != true)
-                                throw new ParameterUnavailableException(p);
-#endif
-
-                            var _parameter = a.Identifier.ToR7();
-
-                            ///Запрашиваем параметр с устройства
-#if ANDROID
-                            (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
-#elif IOS
-                            comms.CurrentDevice.Request(_parameter.EnumToInt());
-#endif
-
-                            ///Ждем изменения параметра
-                            bool updated = await WaitForParameterAny(_parameter, throwOnError: false);
-
-                            ///Если значение параметра не изменилось - 99.9% что устройство требует разблокировки по PIN
-                            if (!updated && ConnectedDevice.LockStatus == LockState.Locked)
+                            try
                             {
-                                await Unlock();
+                                var a = comms.CurrentDevice.ParameterForIdentifier(p.ToR7().EnumToInt());
 
-                                ///После успешной разблокировки делаем повторную попытку чтения
+#if ANDROID
+                                if (a?.Available?.BooleanValue() != true)
+                                    throw new ParameterUnavailableException(p);
+#else
+                                if (a?.Available != true)
+                                    throw new ParameterUnavailableException(p);
+#endif
 
+                                var _parameter = a.Identifier.ToR7();
+
+                                ///Запрашиваем параметр с устройства
 #if ANDROID
                                 (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
 #elif IOS
                                 comms.CurrentDevice.Request(_parameter.EnumToInt());
 #endif
 
-                                await WaitForParameterAny(_parameter, throwOnError: true);
-                            }
+                                ///Ждем изменения параметра
+                                bool updated = await WaitForParameterAny(_parameter, throwOnError: false);
 
-                            ///Все ок, значение получено - выходим из цикла
-                            break;
-                        }
-                        catch (ParameterUnavailableException ex)
-                        {
-                            await Task.Delay(300);
+                                ///Если значение параметра не изменилось - 99.9% что устройство требует разблокировки по PIN
+                                if (!updated && ConnectedDevice.LockStatus == LockState.Locked)
+                                {
+                                    await Unlock();
+
+                                    ///После успешной разблокировки делаем повторную попытку чтения
+
+#if ANDROID
+                                    (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+#elif IOS
+                                    comms.CurrentDevice.Request(_parameter.EnumToInt());
+#endif
+
+                                    await WaitForParameterAny(_parameter, throwOnError: true);
+                                }
+
+                                ///Все ок, значение получено - выходим из цикла
+                                break;
+                            }
+                            catch (ParameterUnavailableException ex)
+                            {
+                                await Task.Delay(300);
+                            }
                         }
                     }
+                }
+                finally
+                {
+                    updateLock.Release();
                 }
             });
         }
