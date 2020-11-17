@@ -215,6 +215,7 @@ namespace ConnectFramework.Shared
 
         private SemaphoreSlim unlockLocker = new SemaphoreSlim(1, 1);
         private Exception lastUnlockException = null;
+        private short? unlockPin = null;
 
         /// <summary>
         /// 
@@ -225,29 +226,34 @@ namespace ConnectFramework.Shared
         {
             return Task.Run(async () =>
             {
-                ///ЭТО ВАЖНО!
-                ///Возвращаем результат первого вызова для всех вызовов в очереди ожидающих завершения первого
-                ///В случае неуспеха первого вызова все последующие также буду неуспешны (например неверный пин) - избегаем этого
-
-                #region
-
-                bool returnLastUnlockResult = false;
-
-                if (unlockLocker.CurrentCount == 0)
-                    returnLastUnlockResult = true;
-
-                await unlockLocker.WaitAsync();
-
-                if (returnLastUnlockResult && lastUnlockException != null)
-                    throw lastUnlockException;
-
-                lastUnlockException = null;
-
-                #endregion
-
-
                 try
                 {
+                    #region
+
+                    ///ЭТО ВАЖНО!
+                    ///Возвращаем результат первого вызова для всех вызовов в очереди ожидающих завершения первого
+                    ///В случае неуспеха первого вызова все последующие также буду неуспешны (например неверный пин) - избегаем этого
+
+
+                    bool returnLastUnlockResult = false;
+
+                    if (unlockLocker.CurrentCount == 0)
+                        returnLastUnlockResult = true;
+
+                    await unlockLocker.WaitAsync();
+
+                    if (pin == null || pin == unlockPin)
+                        if (returnLastUnlockResult && lastUnlockException != null)
+                            throw lastUnlockException;
+
+                    lastUnlockException = null;
+
+
+                    #endregion
+
+
+
+
                     const int attempts = 2;
 
                     for (int i = 1; i <= attempts; i++)
@@ -265,10 +271,9 @@ namespace ConnectFramework.Shared
                             if (ConnectedDevice.LockStatus == LockState.Unlocked)
                                 return;
 
-                            if (pin == null)
-                                pin = storage.GetShort("r7-device-pin", 1234);
+                            unlockPin = pin ?? storage.GetShort("r7-device-pin", 1234);
 
-                            logger.Log($"[R7] Unlocking with `{pin}`");
+                            logger.Log($"[R7] Unlocking with `{unlockPin}`");
 
 
                             AutoResetEvent r = new AutoResetEvent(false);
@@ -287,9 +292,9 @@ namespace ConnectFramework.Shared
                                 await Reconnect(throwOnError: true);
 
 #if ANDROID
-                                comms.Unlock(pin.Value);
+                                comms.Unlock(unlockPin.Value);
 #elif IOS
-                                comms.Unlock((nuint)pin);
+                                comms.Unlock((nuint)unlockPin);
 #endif
 
                                 bool ok = r.WaitOne(TimeSpan.FromSeconds(15));
@@ -297,17 +302,20 @@ namespace ConnectFramework.Shared
                                 if (ConnectedDevice.State != DeviceState.Connected)
                                     throw new DeviceConnectionException();
 
+                                if (!ok)
+                                    throw new TimeoutException();
+
                                 if (ConnectedDevice.IncorrectPin == true)
                                     throw new IncorrectPinException();
 
-                                if (!ok)
-                                    throw new TimeoutException();
+                                if (ConnectedDevice.LockStatus == LockState.Locked)
+                                    throw new IncorrectPinException();
 
                                 if (ConnectedDevice.LockStatus != LockState.Unlocked)
                                     throw new DeviceIsLockedException();
 
 
-                                storage.PutShort("r7-device-pin", pin.Value);
+                                storage.PutShort("r7-device-pin", unlockPin.Value);
                                 logger.Log("[R7] Unlock success");
                             }
                             finally
@@ -338,7 +346,7 @@ namespace ConnectFramework.Shared
                             else
                             {
                                 logger.Log($"[R7] Unlock error {e}");
-                                Debugger.Break();
+                                //Debugger.Break();
                                 throw e;
                             }
                         }
@@ -459,19 +467,41 @@ namespace ConnectFramework.Shared
         /// <param name="flags"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1)
+        public async Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1)
         {
-            return Task.Run(async () =>
+            if (device.State == DeviceState.Connected)
+                return true;
+
+            if (!force && connectLock.CurrentCount == 0)
+                return true;
+
+
+            return await Task.Run(async () =>
             {
-                if (device.State == DeviceState.Connected)
-                    return true;
-
-                if (!force && connectLock.CurrentCount == 0)
-                    return true;
-
                 try
                 {
+                    bool returnLastResult = false;
+
+                    ///Если подключение уже выполняется -
+                    ///ожидаем завершения и возвращаем результат без новой попытки подключиться, если в прошлый раз подключиться не удалось
+                    if (connectLock.CurrentCount == 0)
+                        returnLastResult = true;
+
                     await connectLock.WaitAsync();
+
+                    if (returnLastResult)
+                    {
+                        if (device.State != DeviceState.Connected && throwOnError)
+                            throw new DeviceConnectionException();
+                        else
+                            return device.State == DeviceState.Connected;
+                    }
+
+
+                    ///Устройство уже подключено!
+                    if (device.State == DeviceState.Connected)
+                        return true;
+
 
                     deviceId = id;
 
@@ -560,6 +590,9 @@ namespace ConnectFramework.Shared
             });
 
         }
+
+
+
 
         private void Safety(Action action)
         {
@@ -891,6 +924,9 @@ namespace ConnectFramework.Shared
         }
 
 
+        private SemaphoreSlim updateLock = new SemaphoreSlim(1, 1);
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -900,58 +936,70 @@ namespace ConnectFramework.Shared
         {
             return Task.Run(async () =>
             {
-                await Reconnect();
-
-                foreach (var p in ids)
+                try
                 {
-                    ///Делаем 2 попытки - возможно параметр еще "не готов"
-                    for (int i = 1; i <= 2; i++)
+                    await updateLock.WaitAsync();
+
+                    await Reconnect();
+
+                    foreach (var p in ids)
                     {
-                        try
+                        ///Делаем 2 попытки - возможно параметр еще "не готов"
+                        for (int i = 1; i <= 2; i++)
                         {
-                            var a = comms.CurrentDevice.ParameterForIdentifier(p.ToR7().EnumToInt());
-
-#if ANDROID
-                            if (a?.Available?.BooleanValue() != true)
-                                throw new ParameterUnavailableException(p);
-#else
-                            if (a?.Available != true)
-                                throw new ParameterUnavailableException(p);
-#endif
-
-                            var _parameter = a.Identifier.ToR7();
-
-                            ///Запрашиваем параметр с устройства
-#if ANDROID
-                            (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
-#elif IOS
-                            comms.CurrentDevice.Request(_parameter.EnumToInt());
-#endif
-
-                            ///Ждем изменения параметра
-                            bool updated = await WaitForParameterAny(_parameter, throwOnError: false);
-
-                            ///Если значение параметра не изменилось - 99.9% что устройство требует разблокировки по PIN
-                            if (!updated && ConnectedDevice.LockStatus == LockState.Locked)
+                            try
                             {
-                                await Unlock();
+                                var a = comms.CurrentDevice.ParameterForIdentifier(p.ToR7().EnumToInt());
 
-                                ///После успешной разблокировки делаем повторную попытку чтения
+#if ANDROID
+                                if (a?.Available?.BooleanValue() != true)
+                                    throw new ParameterUnavailableException(p);
+#else
+                                if (a?.Available != true)
+                                    throw new ParameterUnavailableException(p);
+#endif
 
+                                var _parameter = a.Identifier.ToR7();
+
+                                ///Запрашиваем параметр с устройства
 #if ANDROID
                                 (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
 #elif IOS
                                 comms.CurrentDevice.Request(_parameter.EnumToInt());
 #endif
 
-                                await WaitForParameterAny(_parameter, throwOnError: true);
+                                ///Ждем изменения параметра
+                                bool updated = await WaitForParameterAny(_parameter, throwOnError: false);
+
+                                ///Если значение параметра не изменилось - 99.9% что устройство требует разблокировки по PIN
+                                if (!updated && ConnectedDevice.LockStatus == LockState.Locked)
+                                {
+                                    await Unlock();
+
+                                    ///После успешной разблокировки делаем повторную попытку чтения
+
+#if ANDROID
+                                    (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+#elif IOS
+                                    comms.CurrentDevice.Request(_parameter.EnumToInt());
+#endif
+
+                                    await WaitForParameterAny(_parameter, throwOnError: true);
+                                }
+
+                                ///Все ок, значение получено - выходим из цикла
+                                break;
+                            }
+                            catch (ParameterUnavailableException ex)
+                            {
+                                await Task.Delay(300);
                             }
                         }
-                        catch (ParameterUnavailableException ex)
-                        {
-                            await Task.Delay(300);
-                        }
                     }
+                }
+                finally
+                {
+                    updateLock.Release();
                 }
             });
         }
