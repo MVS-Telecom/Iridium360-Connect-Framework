@@ -482,7 +482,12 @@ namespace ConnectFramework.Shared
                     await connectLock.WaitAsync();
 
                     if (returnLastResult)
-                        return device.State == DeviceState.Connected;
+                    {
+                        if (device.State != DeviceState.Connected && throwOnError)
+                            throw new DeviceConnectionException();
+                        else
+                            return device.State == DeviceState.Connected;
+                    }
 
 
                     ///Устройство уже подключено!
