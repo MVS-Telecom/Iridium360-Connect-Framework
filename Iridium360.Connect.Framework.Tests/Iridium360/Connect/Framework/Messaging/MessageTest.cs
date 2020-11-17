@@ -363,6 +363,68 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
 
 
 
+        [TestMethod]
+        public async Task Balance()
+        {
+            try
+            {
+                var serial = "20975";
+                var api = new i360ApiClient("<token>", serial);
+                var result = await api.GetDeviceStatus();
+
+
+                try
+                {
+                    if (result?.Prepaid == null)
+                    {
+                        Debugger.Break();
+                        //continue;
+                    }
+
+                    var time = new DateTime(2020, 11, 17, 23, 58, 45, 0, DateTimeKind.Utc); //DateTime.UtcNow.AddMinutes(25);//.Date;
+                    var start = result.Prepaid.MonthlyBegin?.Date;
+                    var end = result.Prepaid.MonthlyNext?.Date;
+                    var a = result.Prepaid.Balance;
+                    var b = result.Prepaid.Units;
+                    var c = result.Prepaid.Usages;
+
+                    var p = BalanceMT.Create(ProtocolVersion.v3__WeatherExtension, time, start, end, a, b, c);
+                    var packets = p.Pack();
+                    var hex = packets[0].Payload.ToHexString();
+                    var p2 = (BalanceMT)BalanceMT.Unpack(packets[0].Payload);
+
+                    if (Math.Abs((time - p2.Time).TotalMinutes) > TimeSpan.FromMinutes(15).TotalMinutes)
+                        Assert.Fail();
+
+                    if (start != p2.MonthlyBegin)
+                        Assert.Fail();
+
+                    if (end != p2.MonthlyNext)
+                        Assert.Fail();
+
+                    if (a != p2.Balance)
+                        Assert.Fail();
+
+                    if (b != p2.Units)
+                        Assert.Fail();
+
+                    if (c != p2.Usages)
+                        Assert.Fail();
+
+                    //Debugger.Log(0, null, $"{line} OK\n");
+                }
+                catch (Exception e)
+                {
+                    Debugger.Break();
+                }
+            }
+            catch (Exception e2)
+            {
+                Debugger.Break();
+            }
+        }
+
+
 
         //        /// <summary>
         //        /// 
