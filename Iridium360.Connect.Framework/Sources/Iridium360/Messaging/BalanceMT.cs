@@ -9,6 +9,7 @@ namespace Iridium360.Connect.Framework.Messaging
     {
         public override MessageType Type => MessageType.Balance;
 
+        public DateTime Time { get; set; }
         public DateTime? MonthlyBegin { get; set; }
         public DateTime? MonthlyNext { get; set; }
         public int? Balance { get; set; }
@@ -19,6 +20,10 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected override void pack(BinaryBitWriter writer)
         {
+            writer.Write((uint)(Time - START).TotalDays, 14);
+            writer.Write((uint)Time.Hour, 5);
+            writer.Write((uint)(Time.Minute / 15d), 2);
+
             if (MonthlyBegin == null && MonthlyNext == null)
             {
                 writer.Write(false);
@@ -38,6 +43,10 @@ namespace Iridium360.Connect.Framework.Messaging
 
         protected override void unpack(BinaryBitReader reader)
         {
+            Time = START.AddDays(reader.ReadUInt(14));
+            Time = Time.AddHours(reader.ReadUInt(5));
+            Time = Time.AddMinutes(reader.ReadUInt(2) * 15);
+
             if (reader.ReadBoolean())
             {
                 MonthlyBegin = START.AddDays(reader.ReadUInt(14));
@@ -50,10 +59,11 @@ namespace Iridium360.Connect.Framework.Messaging
         }
 
 
-        public static BalanceMT Create(ProtocolVersion version, DateTime? monthlyBegin, DateTime? monthlyNext, int? balance, int? units, int? usages)
+        public static BalanceMT Create(ProtocolVersion version, DateTime time, DateTime? monthlyBegin, DateTime? monthlyNext, int? balance, int? units, int? usages)
         {
             BalanceMT response = Create<BalanceMT>(version);
 
+            response.Time = time;
             response.MonthlyBegin = monthlyBegin;
             response.MonthlyNext = monthlyNext;
             response.Balance = balance;
