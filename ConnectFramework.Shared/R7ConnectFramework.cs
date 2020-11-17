@@ -971,6 +971,9 @@ namespace ConnectFramework.Shared
 
                                 await WaitForParameterAny(_parameter, throwOnError: true);
                             }
+
+                            ///Все ок, значение получено - выходим из цикла
+                            break;
                         }
                         catch (ParameterUnavailableException ex)
                         {
