@@ -459,19 +459,25 @@ namespace ConnectFramework.Shared
         /// <param name="flags"></param>
         /// <param name="throwOnError"></param>
         /// <returns></returns>
-        public Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1)
+        public async Task<bool> Connect(Guid id, bool force = true, bool throwOnError = false, int attempts = 1)
         {
-            return Task.Run(async () =>
+            if (device.State == DeviceState.Connected)
+                return true;
+
+            if (!force && connectLock.CurrentCount == 0)
+                return true;
+
+
+            return await Task.Run(async () =>
             {
-                if (device.State == DeviceState.Connected)
-                    return true;
-
-                if (!force && connectLock.CurrentCount == 0)
-                    return true;
-
                 try
                 {
                     await connectLock.WaitAsync();
+
+                    
+                    if (device.State == DeviceState.Connected)
+                        return true;
+
 
                     deviceId = id;
 
