@@ -472,9 +472,20 @@ namespace ConnectFramework.Shared
             {
                 try
                 {
+                    bool returnLastResult = false;
+
+                    ///Если подключение уже выполняется -
+                    ///ожидаем завершения и возвращаем результат без новой попытки подключиться, если в прошлый раз подключиться не удалось
+                    if (connectLock.CurrentCount == 0)
+                        returnLastResult = true;
+
                     await connectLock.WaitAsync();
 
-                    
+                    if (returnLastResult)
+                        return device.State == DeviceState.Connected;
+
+
+                    ///Устройство уже подключено!
                     if (device.State == DeviceState.Connected)
                         return true;
 
@@ -566,6 +577,9 @@ namespace ConnectFramework.Shared
             });
 
         }
+
+
+
 
         private void Safety(Action action)
         {
