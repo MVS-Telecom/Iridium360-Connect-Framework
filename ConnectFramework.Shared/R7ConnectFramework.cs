@@ -472,9 +472,6 @@ namespace ConnectFramework.Shared
             if (device.State == DeviceState.Connected)
                 return true;
 
-            if (!force && connectLock.CurrentCount == 0)
-                return true;
-
 
             return await Task.Run(async () =>
             {
