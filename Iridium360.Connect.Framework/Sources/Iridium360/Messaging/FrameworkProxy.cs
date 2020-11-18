@@ -324,20 +324,21 @@ namespace Iridium360.Connect.Framework.Messaging
                 }
                 else
                 {
-                    Debugger.Break();
                     logger.Log($"[MESSAGE] Unknown bytes");
+                    Debugger.Break();
+
                 }
             }
             catch (EventNotHandledException ex1)
             {
+                logger.Log($"[MESSAGE] External exception occured while parsing `0x{e.Payload?.ToHexString()}` {ex1}");
                 Debugger.Break();
-                logger.Log($"[MESSAGE] External exception occured while parsing `{e.Payload.ToHexString()}` {ex1}");
                 throw ex1;
             }
             catch (Exception ex)
             {
+                logger.Log($"[MESSAGE] Exception occured while parsing `0x{e.Payload?.ToHexString()}` {ex}");
                 Debugger.Break();
-                logger.Log($"[MESSAGE] Exception occured while parsing `{e.Payload.ToHexString()}` {ex}");
             }
 
 
