@@ -290,6 +290,7 @@ namespace Iridium360.Connect.Framework
                 ///Устройство не найдено 
                 if (result?.HttpResponse?.StatusCode == HttpStatusCode.NotFound)
                 {
+                    Console.WriteLine($"Device not found on iridium360.ru");
                     return new i360DeviceStatus();
                 }
 
