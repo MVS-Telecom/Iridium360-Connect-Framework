@@ -383,7 +383,7 @@ namespace ConnectFramework.Shared
         /// </summary>
         /// <param name="pin"></param>
         /// <returns></returns>
-        public Task Unlock(short pin)
+        public Task Unlock(short? pin = null)
         {
             return framework.Unlock(pin);
         }

@@ -144,7 +144,7 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         /// <param name="pin"></param>
         /// <returns></returns>
-        Task Unlock(short pin);
+        Task Unlock(short? pin = null);
 
         /// <summary>
         /// 

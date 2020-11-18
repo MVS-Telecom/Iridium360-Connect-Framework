@@ -136,7 +136,7 @@ namespace Iridium360.Connect.Framework.Fakes
             });
         }
 
-        public Task Unlock(short pin)
+        public Task Unlock(short? pin = null)
         {
             return Task.Run(async () =>
             {

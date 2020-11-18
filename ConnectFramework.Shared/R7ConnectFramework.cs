@@ -147,7 +147,7 @@ namespace ConnectFramework.Shared
         public async Task Beep()
         {
             await Reconnect(throwOnError: true);
-            await Unlock();
+            await Unlock(throwOnError: true);
 
             comms.RequestBeep();
         }
@@ -160,7 +160,7 @@ namespace ConnectFramework.Shared
         public async Task FactoryReset()
         {
             await Reconnect(throwOnError: true);
-            await Unlock();
+            await Unlock(throwOnError: true);
 
             comms.FactoryReset();
         }
@@ -207,9 +207,9 @@ namespace ConnectFramework.Shared
         /// 
         /// </summary>
         /// <returns></returns>
-        public Task Unlock()
+        public Task Unlock(bool throwOnError = true)
         {
-            return Unlock(pin: null);
+            return Unlock(pin: null, throwOnError: throwOnError);
         }
 
 
@@ -222,7 +222,7 @@ namespace ConnectFramework.Shared
         /// </summary>
         /// <param name="pin"></param>
         /// <returns></returns>
-        public Task Unlock(short? pin = null)
+        public Task Unlock(short? pin = null, bool throwOnError = true)
         {
             return Task.Run(async () =>
             {
@@ -351,6 +351,11 @@ namespace ConnectFramework.Shared
                             }
                         }
                     }
+                }
+                catch (Exception)
+                {
+                    if (throwOnError)
+                        throw;
                 }
                 finally
                 {
@@ -641,7 +646,7 @@ namespace ConnectFramework.Shared
         public async Task RequestAlert()
         {
             await Reconnect(throwOnError: true);
-            await Unlock();
+            await Unlock(throwOnError: true);
 
             ///TODO: Нужны дополнительные проверки что оно сработало
             comms.RequestAlert();
@@ -655,7 +660,7 @@ namespace ConnectFramework.Shared
         public async Task SendManual()
         {
             await Reconnect(throwOnError: true);
-            await Unlock();
+            await Unlock(throwOnError: true);
 
             comms.RequestManual();
         }
@@ -872,8 +877,8 @@ namespace ConnectFramework.Shared
         {
             return Task.Run(async () =>
             {
-                await Reconnect();
-                await Unlock();
+                await Reconnect(throwOnError: true);
+                await Unlock(throwOnError: true);
 
 
                 var _parameter = parameter.ToR7();
@@ -938,6 +943,7 @@ namespace ConnectFramework.Shared
                     await updateLock.WaitAsync();
 
                     await Reconnect(force: false, throwOnError: true);
+                    await Unlock(throwOnError: false);
 
                     foreach (var p in ids)
                     {
@@ -971,7 +977,7 @@ namespace ConnectFramework.Shared
                                 ///Если значение параметра не изменилось - 99.9% что устройство требует разблокировки по PIN
                                 if (!updated && ConnectedDevice.LockStatus == LockState.Locked)
                                 {
-                                    await Unlock();
+                                    await Unlock(throwOnError: true);
 
                                     ///После успешной разблокировки делаем повторную попытку чтения
 
