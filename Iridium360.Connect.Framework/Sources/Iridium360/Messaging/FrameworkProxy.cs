@@ -292,10 +292,10 @@ namespace Iridium360.Connect.Framework.Messaging
 
                     if (message.Complete)
                     {
+                        logger.Log($"[MESSAGE] Message received `{message.GetType().Name}` Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> COMPLETED");
+
                         Debugger.Break();
-
-                        logger.Log($"[MESSAGE] Message received Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> COMPLETED");
-
+          
                         if (message is MessageAckMT resendMessage)
                         {
                             Debugger.Break();
