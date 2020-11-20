@@ -441,6 +441,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 if (packet == null)
                 {
+                    logger.Log($"[PACKET] Status changed -> {e.Status}, but packet `{e.MessageId}` not found (possibly from another app)");
 #if DEBUG
                     if (e.Status != MessageStatus.ReceivedByDevice)
                         Debugger.Break();

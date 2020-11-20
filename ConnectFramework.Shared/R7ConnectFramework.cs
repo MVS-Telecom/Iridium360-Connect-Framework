@@ -1275,7 +1275,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                logger.Log($"[R7] Device parameter changed `{Safety(() => p0.Identifier.ToR7().FromR7().ToString(), () => p0.Identifier.ToString()) }` [{p0.Characteristic}] -> `{p0.CachedValue}`");
+                logger.Log($"[R7] Device parameter updated `{Safety(() => p0.Identifier.ToR7().FromR7().ToString(), () => p0.Identifier.ToString()) }` [{p0.Characteristic}] -> `{p0.LabelForValue(p0.CachedValue) ?? p0.CachedValue.ToString()}`");
 
                 device.OnParameterChanged(p0);
 
