@@ -4,6 +4,7 @@ using Iridium360.Connect.Framework.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,8 +30,6 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
 
 
 
-
-
         /// <summary>
         /// FROM79153905090(12.05.20-10:45(UTC)): sms text
         /// </summary>
@@ -41,6 +40,41 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
         /// </summary>
         static Regex EMAIL = new Regex(@"^From:{1}.*\|{1}Sub\:{1}(?<sub>.*)\|{1}(?<text>.*)$", RegexOptions.Compiled);
 
+        /// <summary>
+        /// Message text
+        /// ——
+        /// 
+        /// Сообщение отправлено из точки(+55°40.61?, +37°15.34?)
+        /// </summary>
+        static Regex ROCKSTAR = new Regex(@"(?<=Сообщение отправлено из точки\()(?<location>.*)(?=\))", RegexOptions.Compiled);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Location GetLocation()
+        {
+            try
+            {
+                string location = ROCKSTAR.Match(RawText.Trim()).Groups["location"]?.Value?.Trim()?.Replace("?", "");
+
+                string lat = location?.Split(',')?.ElementAtOrDefault(0);
+                string lon = location?.Split(',')?.ElementAtOrDefault(1);
+
+                if (string.IsNullOrEmpty(lat) || string.IsNullOrEmpty(lon))
+                    return null;
+
+                double __lat = double.Parse(lat.Split('°')[0], CultureInfo.InvariantCulture) + (double.Parse(lat.Split('°')[1], CultureInfo.InvariantCulture) / 60d);
+                double __lon = double.Parse(lon.Split('°')[0], CultureInfo.InvariantCulture) + (double.Parse(lon.Split('°')[1], CultureInfo.InvariantCulture) / 60d);
+
+                return new Location(__lat, __lon);
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
 
         /// <summary>
@@ -63,6 +97,23 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
             }
             catch
             {
+            }
+
+
+            ///ROCKSTAR
+            if (string.IsNullOrEmpty(text))
+            {
+                try
+                {
+                    if (GetLocation() != null)
+                    {
+                        text = RawText.Trim().Split(new string[] { "———" }, StringSplitOptions.None)?.FirstOrDefault()?.Trim();
+                    }
+                }
+                catch
+                {
+
+                }
             }
 
 

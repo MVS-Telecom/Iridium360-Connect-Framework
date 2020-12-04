@@ -266,8 +266,9 @@ namespace Iridium360.Connect.Framework.Messaging
 
                         var subscriber = legacy.GetSubscriber();
                         var text = legacy.GetText();
+                        var location = legacy.GetLocation();
 
-                        var message = ChatMessageMT.Create(ProtocolVersion.v1, subscriber, null, null, text);
+                        var message = ChatMessageMT.Create(ProtocolVersion.v1, subscriber, null, null, text, location?.Latitude, location?.Longitude);
 
                         ExecuteEvent(() =>
                         {
@@ -295,7 +296,7 @@ namespace Iridium360.Connect.Framework.Messaging
                         logger.Log($"[MESSAGE] Message received `{message.GetType().Name}` Group={message.Group} Index={message.Index} Progress={message.ReadyParts}/{message.TotalParts} -> COMPLETED");
 
                         Debugger.Break();
-          
+
                         if (message is MessageAckMT resendMessage)
                         {
                             Debugger.Break();
