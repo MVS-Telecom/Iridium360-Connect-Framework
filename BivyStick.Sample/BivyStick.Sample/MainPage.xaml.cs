@@ -76,7 +76,7 @@ namespace BivyStick.Sample
 
         private async void smsSend_Clicked(object sender, EventArgs e)
         {
-            await framework.SendSms(sms.Text, sms.Text);
+            await framework.SendSms(sms.Text, smsText.Text);
             sms.Text = smsText.Text = string.Empty;
         }
     }
