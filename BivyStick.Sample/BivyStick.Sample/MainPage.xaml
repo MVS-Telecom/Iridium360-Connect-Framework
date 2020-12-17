@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BivyStick.Sample.MainPage">
+
+    <StackLayout>
+        <Button x:Name="startSearch" Text="Start search" Clicked="startSearch_Clicked" />
+        <Button x:Name="stopSearch" Text="Stop search" Clicked="stopSearch_Clicked"/>
+        <Label x:Name="deviceState"/>
+        <Label x:Name="battery"/>
+
+
+        <Editor x:Name="email" Placeholder="Email"/>
+        <Editor x:Name="emailText" Placeholder="Text"/>
+        <Button x:Name="emailSend" Text="Send" Clicked="emailSend_Clicked"/>
+
+
+        <Editor x:Name="sms" Placeholder="Phone number"/>
+        <Editor x:Name="smsText" Placeholder="Text"/>
+        <Button x:Name="smsSend" Text="Send" Clicked="smsSend_Clicked"/>
+
+    </StackLayout>
+
+</ContentPage>
