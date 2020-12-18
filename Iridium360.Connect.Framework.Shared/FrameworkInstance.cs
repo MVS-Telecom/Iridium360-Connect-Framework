@@ -57,5 +57,20 @@ namespace Iridium360.Connect.Framework
                 new RealmPacketBuffer(),
                 storage);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="storage"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public static IFrameworkProxy GetInstance_BIVYSTICK(IStorage storage, ILogger logger)
+        {
+#if ANDROID || IPHONE
+            return new global::BivyStick.Shared.BivyConnectFramework();
+#else
+            throw new NotSupportedException();
+#endif
+        }
     }
 }

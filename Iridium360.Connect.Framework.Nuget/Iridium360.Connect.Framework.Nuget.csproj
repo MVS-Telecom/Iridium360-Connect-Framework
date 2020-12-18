@@ -50,7 +50,7 @@
     <DisableExtraReferences>true</DisableExtraReferences>
     <Company>MVS Telecom</Company>
     <PackageIcon>nuget-logo.png</PackageIcon>
-    <Version>0.0.8.4</Version>
+    <Version>0.0.8.5-alpha</Version>
     
   </PropertyGroup>
   
@@ -94,6 +94,10 @@
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -114,12 +118,20 @@
 		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
 		<IncludeAssets>ConnectFramework.Android.dll</IncludeAssets>
 	</ProjectReference>
+	<ProjectReference Include="..\BivyStick\BivyStick.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>BivyStick.dll</IncludeAssets>
+	</ProjectReference>
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
     <ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj">
 		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
 		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
-	</ProjectReference>	
+	</ProjectReference>
+	<ProjectReference Include="..\BivyStick\BivyStick.csproj">
+		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+		<IncludeAssets>BivyStick.dll</IncludeAssets>
+	</ProjectReference>
   </ItemGroup>
   
   <ItemGroup>
@@ -136,5 +148,7 @@
 		</ItemGroup>
 	</Target>
 	<Import Project="..\ConnectFramework.Shared\ConnectFramework.Shared.projitems" Label="Shared" />
+	<Import Project="..\Iridium360.Connect.Framework.Shared\Iridium360.Connect.Framework.Shared.projitems" Label="Shared" />
+	<Import Project="..\BivyStick.Shared\BivyStick.Shared.projitems" Label="Shared" />
   
 </Project>

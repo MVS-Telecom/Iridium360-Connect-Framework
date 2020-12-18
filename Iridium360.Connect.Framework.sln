@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iridium360.Connect.Framewor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iridium360.Connect.Framework.Tests", "Iridium360.Connect.Framework.Tests\Iridium360.Connect.Framework.Tests.csproj", "{301602B8-8BEB-4801-A030-DE171590A6C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BivyStick", "BivyStick.Framework\BivyStick.csproj", "{665965AD-2828-46E7-BA9F-C576A4CFA4A9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BivyStick.Sample", "BivyStick.Sample\BivyStick.Sample\BivyStick.Sample.csproj", "{23E9B093-014C-4BF6-83C0-69E7C78B6A42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BivyStick.Sample.Android", "BivyStick.Sample\BivyStick.Sample.Android\BivyStick.Sample.Android.csproj", "{2E2EE19D-437B-4A1A-9273-601D480199C7}"
@@ -31,10 +29,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bindings", "Bindings", "{5A
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ConnectFramework.Shared", "ConnectFramework.Shared\ConnectFramework.Shared.shproj", "{893802E7-AA0B-4073-B470-6A492407E7ED}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BivyStick.Shared", "BivyStick.Shared\BivyStick.Shared.shproj", "{516DF317-B126-4EE5-8973-068506B243B6}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Iridium360.Connect.Framework.Shared", "Iridium360.Connect.Framework.Shared\Iridium360.Connect.Framework.Shared.shproj", "{1C8A69D6-2F92-4DAD-BCC6-35FE8F99FF88}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BivyStick", "BivyStick\BivyStick.csproj", "{88387AD6-9DC1-4101-9CE9-BAAC035A384C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Iridium360.Connect.Framework.Shared\Iridium360.Connect.Framework.Shared.projitems*{1c8a69d6-2f92-4dad-bcc6-35fe8f99ff88}*SharedItemsImports = 13
+		BivyStick.Shared\BivyStick.Shared.projitems*{516df317-b126-4ee5-8973-068506b243b6}*SharedItemsImports = 13
 		ConnectFramework.Shared\ConnectFramework.Shared.projitems*{893802e7-aa0b-4073-b470-6a492407e7ed}*SharedItemsImports = 13
+		BivyStick.Shared\BivyStick.Shared.projitems*{d0ef1f8f-e543-48d9-bf52-fda92fb09cc7}*SharedItemsImports = 5
 		ConnectFramework.Shared\ConnectFramework.Shared.projitems*{d0ef1f8f-e543-48d9-bf52-fda92fb09cc7}*SharedItemsImports = 5
+		Iridium360.Connect.Framework.Shared\Iridium360.Connect.Framework.Shared.projitems*{d0ef1f8f-e543-48d9-bf52-fda92fb09cc7}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,18 +101,6 @@ Global
 		{301602B8-8BEB-4801-A030-DE171590A6C1}.Release|iPhone.Build.0 = Release|Any CPU
 		{301602B8-8BEB-4801-A030-DE171590A6C1}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{301602B8-8BEB-4801-A030-DE171590A6C1}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Release|iPhone.Build.0 = Release|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{23E9B093-014C-4BF6-83C0-69E7C78B6A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{23E9B093-014C-4BF6-83C0-69E7C78B6A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23E9B093-014C-4BF6-83C0-69E7C78B6A42}.Debug|iPhone.ActiveCfg = Debug|Any CPU
@@ -157,6 +153,18 @@ Global
 		{C386356E-B70D-4C7A-9158-AA0E2707A35D}.Release|iPhone.Build.0 = Release|Any CPU
 		{C386356E-B70D-4C7A-9158-AA0E2707A35D}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{C386356E-B70D-4C7A-9158-AA0E2707A35D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Release|iPhone.Build.0 = Release|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,10 +174,11 @@ Global
 		{D05120FC-203E-4FF1-9D86-9BC4475ADC75} = {5A1A0454-BEC1-4FC9-A357-A10FAB7A4882}
 		{D0EF1F8F-E543-48D9-BF52-FDA92FB09CC7} = {10143C9B-D9EA-4C8A-928E-B376A31E5882}
 		{301602B8-8BEB-4801-A030-DE171590A6C1} = {5770DF13-D32D-45F4-A79F-7328E8ABAC5C}
-		{665965AD-2828-46E7-BA9F-C576A4CFA4A9} = {5A1A0454-BEC1-4FC9-A357-A10FAB7A4882}
 		{23E9B093-014C-4BF6-83C0-69E7C78B6A42} = {9E0F1ADD-E785-44FD-9DBD-0250469D95D7}
 		{2E2EE19D-437B-4A1A-9273-601D480199C7} = {9E0F1ADD-E785-44FD-9DBD-0250469D95D7}
 		{69519104-EA83-4275-A493-2D7D05255FC1} = {9E0F1ADD-E785-44FD-9DBD-0250469D95D7}
+		{1C8A69D6-2F92-4DAD-BCC6-35FE8F99FF88} = {10143C9B-D9EA-4C8A-928E-B376A31E5882}
+		{88387AD6-9DC1-4101-9CE9-BAAC035A384C} = {5A1A0454-BEC1-4FC9-A357-A10FAB7A4882}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB710AD7-C285-4D8A-8397-EF0D5F9DF4D0}

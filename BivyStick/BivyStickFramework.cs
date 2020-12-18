@@ -49,6 +49,13 @@ namespace BivyStick
             }
         }
 
+        public Guid DeviceId => device.Id;
+
+        public string Name => device.Name;
+
+        public int? Battery { get; private set; }
+
+
         public BivyStickFramework()
         {
             var adapter = CrossBluetoothLE.Current.Adapter;
@@ -72,6 +79,7 @@ namespace BivyStick
                 if (device != null)
                 {
                     device = null;
+                    Battery = null;
                     DeviceDisconnected(this, new EventArgs());
                 }
             }
@@ -91,6 +99,7 @@ namespace BivyStick
                 if (device != null)
                 {
                     device = null;
+                    Battery = null;
                     DeviceDisconnected(this, new EventArgs());
                 }
             }
@@ -226,9 +235,11 @@ namespace BivyStick
                         {
                             Console.WriteLine($"[BivyStick] BATTERY -> {e.Characteristic.Value[0]}%");
 
+                            Battery = e.Characteristic.Value[0];
+
                             BatteryUpdated(this, new BatteryUpdatedEventArgs()
                             {
-                                Value = e.Characteristic.Value[0]
+                                Value = Battery.Value
                             });
                         };
                         await battery.StartUpdatesAsync();

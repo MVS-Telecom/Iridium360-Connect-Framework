@@ -44,7 +44,8 @@ namespace Iridium360.Connect.Framework
     {
         RockStar = 0,
         RockFleet = 1,
-        RockAir = 2
+        RockAir = 2,
+        BivyStick = 3,
     }
 
 
