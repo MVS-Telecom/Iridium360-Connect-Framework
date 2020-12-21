@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.0;net48</TargetFrameworks>
+    <TargetFrameworks>xamarin.ios10;monoandroid10.0;netstandard2.1;net48</TargetFrameworks>
 	
 	<!--
 		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
@@ -50,7 +50,7 @@
     <DisableExtraReferences>true</DisableExtraReferences>
     <Company>MVS Telecom</Company>
     <PackageIcon>nuget-logo.png</PackageIcon>
-    <Version>0.0.8.9-alpha</Version>
+    <Version>0.0.8.10-alpha</Version>
     
   </PropertyGroup>
   
