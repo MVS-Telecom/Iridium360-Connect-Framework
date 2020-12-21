@@ -358,7 +358,7 @@ namespace BivyStick
 
                 const int chunksize = 20;
 
-                for (int start = 0; start < command.Command.Length; start += chunksize)
+                for (int start = 0; start < command.Command.Length; start += chunksize + 1)
                 {
                     var packet = ArrayHelper.GetCopy(command.Command, start, start + chunksize);
                     var ok = await write.WriteAsync(packet);
