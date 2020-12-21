@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <WarningLevel></WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Plugin.BLE" Version="2.2.0-pre2" />
   </ItemGroup>

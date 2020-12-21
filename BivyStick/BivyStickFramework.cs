@@ -125,6 +125,9 @@ namespace BivyStick
 
                 if (!adapter.IsScanning)
                 {
+                    if (!CrossBluetoothLE.Current.IsOn)
+                        throw new Exception("Bluetooth is turned off or unavailable");
+
                     adapter.ScanTimeout = (int)TimeSpan.FromSeconds(30).TotalMilliseconds;
                     adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
                     adapter.ScanTimeoutElapsed += Adapter_ScanTimeoutElapsed;
@@ -195,6 +198,10 @@ namespace BivyStick
                         Name = e.Device.Name
                     }
                 });
+            }
+            else
+            {
+                Console.WriteLine($"[BivyStick] Another device found {e.Device.Name} -> {e.Device.Id}");
             }
         }
 

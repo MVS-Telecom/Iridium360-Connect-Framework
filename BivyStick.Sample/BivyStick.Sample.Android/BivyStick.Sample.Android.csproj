@@ -56,7 +56,7 @@
     <PackageReference Include="Plugin.BLE">
       <Version>2.2.0-pre2</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1821" />
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
   </ItemGroup>
   <ItemGroup>
@@ -92,7 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BivyStick.Sample\BivyStick.Sample.csproj">
-      <Project>{D4349B1E-6008-419F-A07B-BE87FD1A31C3}</Project>
+      <Project>{23E9B093-014C-4BF6-83C0-69E7C78B6A42}</Project>
       <Name>BivyStick.Sample</Name>
     </ProjectReference>
   </ItemGroup>
