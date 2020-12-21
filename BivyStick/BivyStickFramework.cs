@@ -49,9 +49,9 @@ namespace BivyStick
             }
         }
 
-        public Guid DeviceId => device.Id;
+        public Guid DeviceId => device?.Id ?? Guid.Empty;
 
-        public string Name => device.Name;
+        public string Name => device?.Name;
 
         public int? Battery { get; private set; }
 
@@ -102,6 +102,16 @@ namespace BivyStick
                     Battery = null;
                     DeviceDisconnected(this, new EventArgs());
                 }
+            }
+        }
+
+
+        public async Task Disconnect()
+        {
+            if (device != null && device.State == Plugin.BLE.Abstractions.DeviceState.Connected)
+            {
+                var adapter = CrossBluetoothLE.Current.Adapter;
+                await adapter.DisconnectDeviceAsync(device);
             }
         }
 

@@ -166,6 +166,13 @@ namespace BivyStick.Shared
         public BivyStickDevice(BivyStickFramework framework)
         {
             this.framework = framework;
+            this.framework.BatteryUpdated += (s, e) =>
+            {
+                BatteryUpdated(this, new Iridium360.Connect.Framework.BatteryUpdatedEventArgs()
+                {
+                    Value = Battery
+                });
+            };
         }
 
         /// <summary>
@@ -360,7 +367,7 @@ namespace BivyStick.Shared
         /// <returns></returns>
         public Task Disconnect()
         {
-            throw new NotImplementedException();
+            return framework.Disconnect();
         }
 
         /// <summary>
