@@ -21,6 +21,16 @@ namespace BivyStick.Sample
             framework.DeviceConnected += Framework_DeviceConnected;
             framework.DeviceDisconnected += Framework_DeviceDisconnected;
             framework.DeviceDiscovered += Framework_DeviceDiscovered;
+            framework.DeviceDiscoveryTimeout += Framework_DeviceDiscoveryTimeout;
+        }
+
+
+        private void Framework_DeviceDiscoveryTimeout(object sender, EventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                await DisplayAlert("Alert", "Device search timeout", "OK");
+            });
         }
 
         private void Framework_DeviceDiscovered(object sender, DeviceDiscoveredEventArgs e)

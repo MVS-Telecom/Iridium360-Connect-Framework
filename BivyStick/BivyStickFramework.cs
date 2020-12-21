@@ -36,6 +36,7 @@ namespace BivyStick
     public class BivyStickFramework
     {
         public event EventHandler<DeviceDiscoveredEventArgs> DeviceDiscovered = delegate { };
+        public event EventHandler DeviceDiscoveryTimeout = delegate { };
         public event EventHandler DeviceConnected = delegate { };
         public event EventHandler DeviceDisconnected = delegate { };
         public event EventHandler<BatteryUpdatedEventArgs> BatteryUpdated = delegate { };
@@ -124,7 +125,9 @@ namespace BivyStick
 
                 if (!adapter.IsScanning)
                 {
+                    adapter.ScanTimeout = (int)TimeSpan.FromSeconds(30).TotalMilliseconds;
                     adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
+                    adapter.ScanTimeoutElapsed += Adapter_ScanTimeoutElapsed;
                     await adapter.StartScanningForDevicesAsync();
                 }
             }
@@ -140,6 +143,17 @@ namespace BivyStick
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Adapter_ScanTimeoutElapsed(object sender, EventArgs e)
+        {
+            DeviceDiscoveryTimeout(this, new EventArgs());
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         public async Task StopSearch()
         {
@@ -149,6 +163,7 @@ namespace BivyStick
                 if (adapter.IsScanning)
                 {
                     adapter.DeviceDiscovered -= Adapter_DeviceDiscovered;
+                    adapter.ScanTimeoutElapsed -= Adapter_ScanTimeoutElapsed;
                     await adapter.StopScanningForDevicesAsync();
                 }
             }
@@ -204,8 +219,10 @@ namespace BivyStick
                     return;
                 }
 
+                var cancel = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
                 var adapter = CrossBluetoothLE.Current.Adapter;
-                device = await adapter.ConnectToKnownDeviceAsync(id, new Plugin.BLE.Abstractions.ConnectParameters(autoConnect: true, forceBleTransport: true));
+                device = await adapter.ConnectToKnownDeviceAsync(id, new Plugin.BLE.Abstractions.ConnectParameters(autoConnect: true, forceBleTransport: true), cancel.Token);
 
                 if (device.State != Plugin.BLE.Abstractions.DeviceState.Connected)
                     throw new Exception("Connection error");
