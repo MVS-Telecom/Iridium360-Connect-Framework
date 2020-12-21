@@ -114,6 +114,7 @@
 
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
+	<PackageReference Include="Plugin.BLE" Version="2.2.0-pre2" />
     <ProjectReference Include="..\ConnectFramework.Android\ConnectFramework.Android.csproj">
 		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
 		<IncludeAssets>ConnectFramework.Android.dll</IncludeAssets>
@@ -124,6 +125,7 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
+	<PackageReference Include="Plugin.BLE" Version="2.2.0-pre2" />
     <ProjectReference Include="..\ConnectFramework.iOS\ConnectFramework.iOS.csproj">
 		<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
 		<IncludeAssets>ConnectFramework.iOS.dll</IncludeAssets>
