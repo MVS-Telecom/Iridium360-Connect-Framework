@@ -363,7 +363,7 @@ namespace BivyStick
                     var packet = ArrayHelper.GetCopy(command.Command, start, start + chunksize);
                     var ok = await write.WriteAsync(packet);
 
-                    Console.WriteLine($"[BivyStick] PROGRESS {Math.Round(((start + packet.Length) / (double)command.Command.Length) * 100d)}%");
+                    Console.WriteLine($"[BivyStick] PROGRESS {Math.Round(((start + packet.Length) / (double)command.Command.Length) * 100d)}% -> {packet.ToHexString()}");
 
                     if (!ok)
                         throw new Exception();
