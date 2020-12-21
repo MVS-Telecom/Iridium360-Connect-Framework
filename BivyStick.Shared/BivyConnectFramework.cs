@@ -444,9 +444,9 @@ namespace BivyStick.Shared
         public async Task StartDeviceSearch()
         {
             framework.DeviceDiscovered += Framework_DeviceDiscovered;
+            framework.DeviceDiscoveryTimeout += Framework_DeviceDiscoveryTimeout;
             await framework.StartSearch();
         }
-
 
         /// <summary>
         /// 
@@ -454,8 +454,22 @@ namespace BivyStick.Shared
         public async void StopDeviceSearch()
         {
             framework.DeviceDiscovered -= Framework_DeviceDiscovered;
+            framework.DeviceDiscoveryTimeout -= Framework_DeviceDiscoveryTimeout;
             await framework.StopSearch();
         }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Framework_DeviceDiscoveryTimeout(object sender, EventArgs e)
+        {
+            SearchTimeout(this, new EventArgs());
+        }
+
 
 
         /// <summary>
