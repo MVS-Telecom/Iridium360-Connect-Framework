@@ -61,7 +61,7 @@ namespace BivyStick.Shared
         /// <summary>
         /// 
         /// </summary>
-        public Guid Id => framework.DeviceId;
+        public Guid Id { get; internal set; }
 
         /// <summary>
         /// 
@@ -335,6 +335,7 @@ namespace BivyStick.Shared
             try
             {
                 await framework.Connect(id);
+                device.Id = id;
                 return true;
             }
             catch (Exception e)
