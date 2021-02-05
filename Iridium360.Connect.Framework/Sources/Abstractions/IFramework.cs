@@ -64,7 +64,7 @@ namespace Iridium360.Connect.Framework
     }
 
 
-    public interface IBluetoothHelper
+    public interface IBluetoothHelper : IDisposable
     {
         event EventHandler<ScanResultsEventArgs> ScanResults;
         event EventHandler<BluetoothStateChangedEventArgs> BluetoothStateChanged;
