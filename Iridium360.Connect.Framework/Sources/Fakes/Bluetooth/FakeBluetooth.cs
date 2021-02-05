@@ -47,8 +47,8 @@ namespace Iridium360.Connect.Framework.Fakes
 
 
         private FakeDevice FAKE_ROCKSTAR = new FakeDevice(Guid.Parse("00000000-0000-0000-0000-000780a3f079"), "RockSTAR 20975 ᴰᴱᴹᴼ");
-        private FakeDevice FAKE_ROCKSTAR2 = new FakeDevice(Guid.Parse("00000000-0000-0000-0000-000780a3f079"), "RockSTAR 29999 ᴰᴱᴹᴼ");
-        private FakeDevice FAKE_ROCKFLEET = new FakeDevice(Guid.Parse("00000000-0000-0000-0000-000780a3f078"), "RockFLEET 50309 ᴰᴱᴹᴼ");
+        private FakeDevice FAKE_ROCKSTAR2 = new FakeDevice(Guid.Parse("00000000-0000-0000-0000-000780a3f078"), "RockSTAR 29999 ᴰᴱᴹᴼ");
+        private FakeDevice FAKE_ROCKFLEET = new FakeDevice(Guid.Parse("00000000-0000-0000-0000-000780a3f077"), "RockFLEET 50309 ᴰᴱᴹᴼ");
 
 
         public void StartLeScan()
