@@ -91,8 +91,6 @@ namespace Iridium360.Connect.Framework
         private readonly string endpoint;
         private readonly HttpClient client;
         private readonly string token;
-        private readonly string serial;
-        private readonly string auth;
         private readonly bool shouldDisposeClient = false;
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace Iridium360.Connect.Framework
         /// <param name="serial"></param>
         /// <param name="client"></param>
         /// <param name="endpoint"></param>
-        public i360ApiClient(string token, string serial, HttpClient client = null, string endpoint = "https://demo.iridium360.ru")
+        public i360ApiClient(string token, HttpClient client = null, string endpoint = "https://demo.iridium360.ru")
         {
             if (client == null)
             {
@@ -113,10 +111,14 @@ namespace Iridium360.Connect.Framework
             this.client = client;
             this.endpoint = endpoint;
             this.token = token;
-            this.serial = serial;
-            this.auth = Md5.Get($"{serial}#{token}");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serial"></param>
+        /// <returns></returns>
+        private string GetAuth(string serial) => Md5.Get($"{serial}#{token}");
 
         /// <summary>
         /// 
@@ -124,14 +126,14 @@ namespace Iridium360.Connect.Framework
         /// <typeparam name="T"></typeparam>
         /// <param name="params"></param>
         /// <returns></returns>
-        private async Task<Result<T>> MakeApiRequest<T>(string actionName, Dictionary<string, string> @params = null)
+        private async Task<Result<T>> MakeApiRequest<T>(string actionName, string serial, Dictionary<string, string> @params = null)
         {
             try
             {
                 if (@params == null)
                     @params = new Dictionary<string, string>();
 
-                @params.Add("auth", auth);
+                @params.Add("auth", GetAuth(serial));
 
 
                 string _params = string.Join("&", @params.Select(x => $"{x.Key}={x.Value}"));
@@ -171,7 +173,7 @@ namespace Iridium360.Connect.Framework
             }
         }
 
-        private async Task<Result<T>> MakePostApiRequest<T>(string actionName, Dictionary<string, HttpContent> @params = null)
+        private async Task<Result<T>> MakePostApiRequest<T>(string actionName, string serial, Dictionary<string, HttpContent> @params = null)
         {
             try
             {
@@ -184,7 +186,7 @@ namespace Iridium360.Connect.Framework
 
                 using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
                 {
-                    content.Add(new StringContent(auth), "auth");
+                    content.Add(new StringContent(GetAuth(serial)), "auth");
 
                     foreach (var param in @params)
                     {
@@ -233,14 +235,14 @@ namespace Iridium360.Connect.Framework
         /// <param name="json"></param>
         /// <param name="zip"></param>
         /// <returns></returns>
-        public async Task<bool> SendFeedback(Feedback feedback, byte[] bytes)
+        public async Task<bool> SendFeedback(string serial, Feedback feedback, byte[] bytes)
         {
             var byteContent = new ByteArrayContent(bytes);
             byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
 
             var json = JsonConvert.SerializeObject(feedback, Formatting.Indented);
 
-            var result = await MakePostApiRequest<bool>("feedback", new Dictionary<string, HttpContent>
+            var result = await MakePostApiRequest<bool>("feedback", serial, new Dictionary<string, HttpContent>
             {
                 { "json", new StringContent(json, Encoding.UTF8,  "application/json") },
                 { "feedback.zip", byteContent },
@@ -256,9 +258,9 @@ namespace Iridium360.Connect.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<i360WeatherForecast> GetWeatherForecast(double lat, double lon)
+        public async Task<i360WeatherForecast> GetWeatherForecast(string serial, double lat, double lon)
         {
-            var result = await MakeApiRequest<i360WeatherForecast>("weather", new Dictionary<string, string>()
+            var result = await MakeApiRequest<i360WeatherForecast>("weather", serial, new Dictionary<string, string>()
             {
                 {"lat", lat.ToString(CultureInfo.InvariantCulture) },
                 {"lon", lon.ToString(CultureInfo.InvariantCulture) }
@@ -273,13 +275,13 @@ namespace Iridium360.Connect.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<i360DeviceStatus> GetDeviceStatus()
+        public async Task<i360DeviceStatus> GetDeviceStatus(string serial)
         {
             if (string.IsNullOrEmpty(serial))
                 throw new ArgumentNullException("Serial is null or empty");
 
 
-            var result = await MakeApiRequest<i360DeviceStatus>("device-info");
+            var result = await MakeApiRequest<i360DeviceStatus>("device-info", serial);
 
             try
             {
