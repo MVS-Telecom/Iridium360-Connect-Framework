@@ -401,12 +401,22 @@ namespace ConnectFramework.Shared
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task Disconnect()
+        public async Task Disconnect(bool withDelay = true)
         {
             comms.Disconnect();
-            await Task.Delay(2000);
+
+            if (withDelay)
+                await Task.Delay(2000);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task Disconnect()
+        {
+            await Disconnect(withDelay: true);
+        }
 
         /// <summary>
         /// 
@@ -818,6 +828,7 @@ namespace ConnectFramework.Shared
                 throw new BluetoothTurnedOffException();
 
 
+            await Disconnect(withDelay: false);
             await Enable();
             await Task.Delay(500);
 
