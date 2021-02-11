@@ -50,6 +50,8 @@ namespace Iridium360.Connect.Framework.Models
         public Hardware Hardware { get; set; }
         public DeviceInfo Device { get; set; }
         public Prepaid Prepaid { get; set; }
+        [Obsolete]
+        public bool IsAddedToIridium360 { get; set; }
     }
 
 }
