@@ -6,6 +6,7 @@ using Iridium360.Connect.Framework.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -241,6 +242,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
 
+
         /// <summary>
         /// 
         /// </summary>
@@ -335,6 +337,49 @@ namespace Iridium360.Connect.Framework.Messaging
                 logger.Log($"[MESSAGE] External exception occured while parsing `0x{e.Payload?.ToHexString()}` {ex1}");
                 Debugger.Break();
                 throw ex1;
+            }
+            catch (FormatException fex)
+            {
+                logger.Log($"[MESSAGE] Exception occured while parsing `0x{e.Payload?.ToHexString()}` {fex}");
+                Debugger.Break();
+
+
+                #region Workaround fix https://github.com/MVS-Telecom/Iridium360-Connect-Framework/issues/16
+
+                var packets = new List<string>();
+
+                ///Размер пакета передаваемого по блютузу
+                const int length = 20;
+
+                for (int i = 0; i < e.Payload.Length / length; i++)
+                {
+                    var hex = e.Payload.Skip(i * length).Take(length).ToArray().ToHexString();
+                    packets.Add(hex);
+                }
+
+
+                var duplicates = packets
+                    .Distinct()
+                    .Select(x => new { packet = x, count = packets.Where(y => y == x).Count() })
+                    .Where(x => x.count > 1);
+
+                if (duplicates.Any())
+                {
+                    logger.Log($"[MESSAGE] Multiple duplicate parts found in packet");
+                    Debugger.Break();
+
+                    Task.Run(async () =>
+                    {
+                        await framework.Disconnect();
+                        await framework.Reconnect(force: true, throwOnError: false);
+                    });
+
+                    throw fex;
+                }
+
+
+                #endregion
+
             }
             catch (Exception ex)
             {
