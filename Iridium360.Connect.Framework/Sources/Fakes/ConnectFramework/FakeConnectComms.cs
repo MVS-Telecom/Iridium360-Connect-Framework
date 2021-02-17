@@ -239,6 +239,11 @@ namespace Iridium360.Connect.Framework.Fakes
             device = new FakeConnectedDevice(null, this);
         }
 
+        public void ClearCaches()
+        {
+            //TODO
+        }
+
         public Task Beep()
         {
             return Task.Run(async () =>
@@ -335,9 +340,9 @@ namespace Iridium360.Connect.Framework.Fakes
                 await Task.Delay(1000);
 
 
-                ushort _messageId = (ushort)storage.GetShort("message-id", 0);
+                ushort _messageId = (ushort)storage.GetShort(device.Id, "message-id", 0);
                 var ___messageId = _messageId + 1;
-                storage.PutShort("message-id", (short)___messageId);
+                storage.PutShort(device.Id, "message-id", (short)___messageId);
 
                 i++;
 

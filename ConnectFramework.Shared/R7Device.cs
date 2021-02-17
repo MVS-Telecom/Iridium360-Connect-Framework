@@ -169,6 +169,20 @@ namespace ConnectFramework.Shared
 
 
         /// <summary>
+        /// 
+        /// </summary>
+        internal void ClearCaches()
+        {
+            Battery = null;
+            Parameters?.Clear();
+            IncorrectPin = null;
+            state = DeviceState.Disconnected;
+            lockStatus = LockState.Unknown;
+            Location = null;
+        }
+
+
+        /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <returns></returns>

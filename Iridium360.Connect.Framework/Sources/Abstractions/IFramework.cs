@@ -56,11 +56,11 @@ namespace Iridium360.Connect.Framework
 
     public interface IStorage
     {
-        void PutString(string key, string value);
-        string GetString(string key, string defaultValue);
-        short GetShort(string key, short defaultValue);
-        void PutShort(string key, short value);
-        void Remove(string key);
+        void PutString(Guid deviceId, string key, string value);
+        string GetString(Guid deviceId, string key, string defaultValue);
+        short GetShort(Guid deviceId, string key, short defaultValue);
+        void PutShort(Guid deviceId, string key, short value);
+        void Remove(Guid deviceId, string key);
     }
 
 
@@ -81,6 +81,11 @@ namespace Iridium360.Connect.Framework
         event EventHandler<EventArgs> SearchTimeout;
         event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated;
         event EventHandler<PacketReceivedEventArgs> PacketReceived;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void ClearCaches();
 
         /// <summary>
         /// 
@@ -157,10 +162,16 @@ namespace Iridium360.Connect.Framework
         /// </summary>
         Task GetReceivedMessages();
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         Task StartDeviceSearch();
-        void StopDeviceSearch();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        void StopDeviceSearch();
 
         /// <summary>
         /// 

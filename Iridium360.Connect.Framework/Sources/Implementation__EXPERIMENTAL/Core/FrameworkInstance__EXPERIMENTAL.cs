@@ -100,6 +100,15 @@ namespace Iridium360.Connect.Framework.Implementations
 
 
         /// <summary>
+        /// 
+        /// </summary>
+        public void ClearCaches()
+        {
+            //TODO
+        }
+
+
+        /// <summary>
         /// Блютуз устройство отключено
         /// </summary>
         /// <param name="sender"></param>
@@ -248,7 +257,7 @@ namespace Iridium360.Connect.Framework.Implementations
         public async Task ForgetDevice()
         {
             await Disconnect();
-            storage.Remove("device-pin");
+            storage.Remove(deviceMac, "device-pin");
         }
 
 
@@ -770,7 +779,7 @@ namespace Iridium360.Connect.Framework.Implementations
             {
                 ///Берем ранее сохраненный ПИН
                 if (pin == null)
-                    pin = storage.GetShort("device-pin", 1234);
+                    pin = storage.GetShort(deviceMac, "device-pin", 1234);
 
                 if (pin == null)
                     throw new ArgumentNullException("Pin is null");
@@ -780,7 +789,7 @@ namespace Iridium360.Connect.Framework.Implementations
                 await WaitForUnlocked();
 
                 ///При успешной разблокировке сохраняем новый ПИН
-                storage.PutShort("device-pin", pin.Value);
+                storage.PutShort(deviceMac, "device-pin", pin.Value);
             }
             finally
             {
@@ -1670,11 +1679,11 @@ namespace Iridium360.Connect.Framework.Implementations
             if (data.Length > 338)
                 throw new MessageSendingException("Message payload is too long");
 
-            ushort messageId = (ushort)storage.GetShort("message-id", 1);
+            ushort messageId = (ushort)storage.GetShort(deviceMac, "message-id", 1);
 
             await PostCommandAsync(new SendMessageCommand(AppId, KeyIndex, (short)messageId, data));
 
-            storage.PutShort("message-id", (short)(messageId + 1));
+            storage.PutShort(deviceMac, "message-id", (short)(messageId + 1));
 
             return messageId;
         }

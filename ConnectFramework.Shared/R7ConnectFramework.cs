@@ -110,6 +110,15 @@ namespace ConnectFramework.Shared
 #endif
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ClearCaches()
+        {
+            deviceId = Guid.Empty;
+            device.ClearCaches();
+        }
+
 
         /// <summary>
         /// 
@@ -271,7 +280,7 @@ namespace ConnectFramework.Shared
                             if (ConnectedDevice.LockStatus == LockState.Unlocked)
                                 return;
 
-                            unlockPin = pin ?? storage.GetShort("r7-device-pin", 1234);
+                            unlockPin = pin ?? storage.GetShort(device.Id, "r7-device-pin", 1234);
 
                             logger.Log($"[R7] Unlocking with `{unlockPin}`");
 
@@ -315,7 +324,7 @@ namespace ConnectFramework.Shared
                                     throw new DeviceIsLockedException();
 
 
-                                storage.PutShort("r7-device-pin", unlockPin.Value);
+                                storage.PutShort(device.Id, "r7-device-pin", unlockPin.Value);
                                 logger.Log("[R7] Unlock success");
                             }
                             finally
@@ -403,6 +412,7 @@ namespace ConnectFramework.Shared
         /// <returns></returns>
         public async Task Disconnect(bool withDelay = true)
         {
+            deviceId = Guid.Empty;
             comms.Disconnect();
 
             if (withDelay)
@@ -425,7 +435,7 @@ namespace ConnectFramework.Shared
         public async Task ForgetDevice()
         {
             await Disconnect();
-            storage.Remove("r7-device-pin");
+            storage.Remove(device.Id, "r7-device-pin");
         }
 
         /// <summary>
@@ -456,7 +466,6 @@ namespace ConnectFramework.Shared
 
         private static SemaphoreSlim connectLock = new SemaphoreSlim(1, 1);
         internal Guid deviceId;
-
 
 
         private static string ToBluetoothAddress(Guid deviceId)
@@ -516,7 +525,6 @@ namespace ConnectFramework.Shared
 
 
                     deviceId = id;
-
 
                     ///Должен быть включен блютуз
                     ///Пытаемся включить его программно, если не получается - выкидываем ошибку
@@ -692,7 +700,7 @@ namespace ConnectFramework.Shared
             {
                 await Reconnect(throwOnError: true, attempts: 2);
 
-                ushort messageId = (ushort)storage.GetShort("message-id", 1);
+                ushort messageId = (ushort)storage.GetShort(device.Id, "message-id", 1);
 
                 PacketStatusUpdatedEventArgs args = null;
 
@@ -751,7 +759,7 @@ namespace ConnectFramework.Shared
                     ///Success
                     if (args?.Status == MessageStatus.ReceivedByDevice)
                     {
-                        storage.PutShort("message-id", (short)(messageId + 1));
+                        storage.PutShort(device.Id, "message-id", (short)(messageId + 1));
                         return messageId;
                     }
 

@@ -221,6 +221,13 @@ namespace Iridium360.Connect.Framework.Messaging
             framework.PacketReceived += Framework__PacketReceived;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ClearCaches()
+        {
+            framework.ClearCaches();
+        }
 
         /// <summary>
         /// 
@@ -710,7 +717,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 if (string.IsNullOrEmpty(messageId))
                     messageId = ShortGuid.NewGuid().ToString();
 
-                var group = (byte)storage.GetShort("r7-group-id", 1);
+                var group = (byte)storage.GetShort(ConnectedDevice.Id, "r7-group-id", 1);
 
 
                 try
@@ -730,7 +737,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
 
                     ///Сразу увеличиваем - если будет ошибка, то для следующей отправки Group уже будет новый
-                    storage.PutShort("r7-group-id", (byte)(group + 1));
+                    storage.PutShort(ConnectedDevice.Id, "r7-group-id", (byte)(group + 1));
 
 
                     ///Сохраняем сообщение
