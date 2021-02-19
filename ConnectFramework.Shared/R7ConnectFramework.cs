@@ -413,10 +413,14 @@ namespace ConnectFramework.Shared
         public async Task Disconnect(bool withDelay = true)
         {
             deviceId = Guid.Empty;
-            comms.Disconnect();
 
-            if (withDelay)
-                await Task.Delay(2000);
+            if (bluetoothHelper.IsValueCreated && bluetoothHelper.Value.IsOn)
+            {
+                comms.Disconnect();
+
+                if (withDelay)
+                    await Task.Delay(2000);
+            }
         }
 
         /// <summary>
