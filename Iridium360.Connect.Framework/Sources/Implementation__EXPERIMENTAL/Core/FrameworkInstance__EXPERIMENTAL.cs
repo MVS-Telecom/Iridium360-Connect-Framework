@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("Iridium360.Connect.Framework")]
 [assembly: InternalsVisibleTo("Iridium360.Connect.iOS")]
+[assembly: InternalsVisibleTo("Iridium360.Connect.iOS.NotificationService")]
 [assembly: InternalsVisibleTo("Iridium360.Connect.Android")]
 [assembly: InternalsVisibleTo("Iridium360.Connect.Framework.Tests")]
 namespace Iridium360.Connect.Framework.Implementations
