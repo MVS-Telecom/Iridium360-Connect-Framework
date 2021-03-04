@@ -884,7 +884,7 @@ namespace ConnectFramework.Shared
             var fix = e.FoundDevices.Where(x => x.Mac.ToUpper().StartsWith("68:0A:E2") || x.Mac.ToUpper().StartsWith("CC:CC:CC")).ToList();
 
             foreach (var d in fix)
-                __DiscoveryFoundDevice(d.Mac, d.Name);
+                __DiscoveryFoundDevice(d.Mac, d.Name, "Native bluetooth");
         }
 
 
@@ -1574,18 +1574,28 @@ namespace ConnectFramework.Shared
         public void DiscoveryFoundDevice(Foundation.NSUuid deviceIdentifier, string deviceName)
 #endif
         {
-            __DiscoveryFoundDevice(deviceIdentifier.ToString(), deviceName);
+            __DiscoveryFoundDevice(deviceIdentifier.ToString(), deviceName, "R7 framework");
         }
 
 
-        public void __DiscoveryFoundDevice(string deviceIdentifier, string deviceName)
+        public void __DiscoveryFoundDevice(string deviceIdentifier, string deviceName, string source)
         {
             Safety(() =>
             {
                 if (devices.Any(x => x.Id.ToString() == deviceIdentifier.ToString()))
                     return;
 
-                devices.Add(new R7BluetoothDevice(deviceIdentifier.ToString(), deviceName));
+
+                ///WORKAROUND: https://github.com/MVS-Telecom/Iridium360-Connect-Framework/issues/17
+                if (string.IsNullOrEmpty(deviceName))
+                {
+                    Console.WriteLine($"Found possibly wrong device -> `{deviceIdentifier}` ({source})");
+                    Debugger.Break();
+                    return;
+                }
+
+
+                devices.Add(new R7BluetoothDevice(deviceIdentifier.ToString(), deviceName, source));
 
                 DeviceSearchResults(this, new DeviceSearchResultsEventArgs()
                 {

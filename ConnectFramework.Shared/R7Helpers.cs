@@ -100,9 +100,10 @@ namespace ConnectFramework.Shared
         public bool IsConnected => throw new NotSupportedException();
         public DeviceType? DeviceType => RockstarHelper.GetTypeByName(Name);
         public string Serial => RockstarHelper.GetSerialFromName(Name);
+        public string Source { get; private set; }
 
 
-        public R7BluetoothDevice(string id, string name)
+        public R7BluetoothDevice(string id, string name, string source)
         {
 #if ANDROID
             this.Id = Guid.Parse($"00000000-0000-0000-0000-{id.Replace(":", "")}");
@@ -115,6 +116,7 @@ namespace ConnectFramework.Shared
             this.Mac = null;
 #endif
             this.Name = name;
+            this.Source = source;
         }
 
 
