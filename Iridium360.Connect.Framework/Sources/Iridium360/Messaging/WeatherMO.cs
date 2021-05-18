@@ -102,6 +102,15 @@ namespace Iridium360.Connect.Framework.Messaging
             double? requestLon = null,
             byte? pointKey = null)
         {
+            if (requestLat == null && requestLon != null)
+                throw new ArgumentException("Request `lat` and `lon` should be both specified");
+
+            if (requestLat != null && requestLon == null)
+                throw new ArgumentException("Request `lat` and `lon` should be both specified");
+
+            if (requestLat != null && requestLon != null && pointKey == null)
+                throw new ArgumentException("`Point key` should be specified");
+
             WeatherMO weather = Create<WeatherMO>(version);
 
             weather.Lat = currentLat;
