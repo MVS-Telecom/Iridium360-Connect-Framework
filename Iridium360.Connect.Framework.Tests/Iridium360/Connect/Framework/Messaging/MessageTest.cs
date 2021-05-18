@@ -24,6 +24,80 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
     [TestClass]
     public class MessageTest
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void TestWeatherMO()
+        {
+            try
+            {
+                var lat = -27.112535;
+                var lon = -109.293498;
+
+                var message1 = WeatherMO.Create(ProtocolVersion.v1, lat, lon);
+                var message2 = WeatherMO.Create(ProtocolVersion.v2__LocationFix, lat, lon);
+                var message3 = WeatherMO.Create(ProtocolVersion.v3__WeatherExtension, lat, lon);
+                var message4 = WeatherMO.Create(ProtocolVersion.v4__WeatherExtension, lat, lon, lat, lon, 6);
+                var message5 = WeatherMO.Create(ProtocolVersion.v4__WeatherExtension, lat, lon);
+
+                var bytes1 = message1.Pack()[0].Payload;
+                var bytes2 = message2.Pack()[0].Payload;
+                var bytes3 = message3.Pack()[0].Payload;
+                var bytes4 = message4.Pack()[0].Payload;
+                var bytes5 = message4.Pack()[0].Payload;
+
+                var unpacked1 = (WeatherMO)WeatherMO.Unpack(bytes1, new InMemoryBuffer());
+                var unpacked2 = (WeatherMO)WeatherMO.Unpack(bytes2, new InMemoryBuffer());
+                var unpacked3 = (WeatherMO)WeatherMO.Unpack(bytes3, new InMemoryBuffer());
+                var unpacked4 = (WeatherMO)WeatherMO.Unpack(bytes4, new InMemoryBuffer());
+                var unpacked5 = (WeatherMO)WeatherMO.Unpack(bytes5, new InMemoryBuffer());
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void TestWeatherMT()
+        {
+            try
+            {
+                var weather = JsonConvert.DeserializeObject<i360PointForecast>(File.ReadAllText(@"C:\Users\Banana\Desktop\weather.json"));
+
+                var message1 = WeatherMT.Create(ProtocolVersion.v1, weather);
+                var message2 = WeatherMT.Create(ProtocolVersion.v2__LocationFix, weather);
+                var message3 = WeatherMT.Create(ProtocolVersion.v3__WeatherExtension, weather);
+                var message4 = WeatherMT.Create(ProtocolVersion.v4__WeatherExtension, weather, 7);
+
+                var bytes1 = message1.Pack()[0].Payload;
+                var bytes2 = message2.Pack()[0].Payload;
+                var bytes3 = message3.Pack()[0].Payload;
+                var bytes4 = message4.Pack()[0].Payload;
+
+                var unpacked1 = (WeatherMT)WeatherMT.Unpack(bytes1, new InMemoryBuffer());
+                var unpacked2 = (WeatherMT)WeatherMT.Unpack(bytes2, new InMemoryBuffer());
+                var unpacked3 = (WeatherMT)WeatherMT.Unpack(bytes3, new InMemoryBuffer());
+                var unpacked4 = (WeatherMT)WeatherMT.Unpack(bytes4, new InMemoryBuffer());
+
+                //var bytes1 = "1208058C9F98BEB30120867FF4FFEC3B1B0062F847FF2FB5B10230857FF47F125861074008FFE8FF8D165600C4F08FFE9F816107400CFFE8FFA516B600C4F08FFE6F022B6C01C8E01FFDBFD1C206C010FED1FFB32EAC054CE11FFDBFC4C29A8008FED1FF515085358608FCA3FF3758D70310C33FFA7F866DAD8339FCA3FF97D5D70818C23FFABF0AA2B00130847FF47F9A".ToByteArray();
+                //var message1 = (WeatherMT)WeatherMT.Unpack(bytes1, new InMemoryBuffer());
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+                throw;
+            }
+        }
+
+
+
         [TestMethod]
         public void ResendMessagePartsTest()
         {
@@ -363,66 +437,66 @@ Since the shovel is sending messages to the two exchanges, the queues have been 
 
 
 
-        [TestMethod]
-        public async Task Balance()
-        {
-            try
-            {
-                var serial = "20975";
-                var api = new i360ApiClient("<token>", serial);
-                var result = await api.GetDeviceStatus();
+        //[TestMethod]
+        //public async Task Balance()
+        //{
+        //    try
+        //    {
+        //        var serial = "20975";
+        //        var api = new i360ApiClient("<token>", serial);
+        //        var result = await api.GetDeviceStatus();
 
 
-                try
-                {
-                    if (result?.Prepaid == null)
-                    {
-                        Debugger.Break();
-                        //continue;
-                    }
+        //        try
+        //        {
+        //            if (result?.Prepaid == null)
+        //            {
+        //                Debugger.Break();
+        //                //continue;
+        //            }
 
-                    var time = new DateTime(2020, 11, 17, 23, 58, 45, 0, DateTimeKind.Utc); //DateTime.UtcNow.AddMinutes(25);//.Date;
-                    var start = result.Prepaid.MonthlyBegin?.Date;
-                    var end = result.Prepaid.MonthlyNext?.Date;
-                    var a = result.Prepaid.Balance;
-                    var b = result.Prepaid.Units;
-                    var c = result.Prepaid.Usages;
+        //            var time = new DateTime(2020, 11, 17, 23, 58, 45, 0, DateTimeKind.Utc); //DateTime.UtcNow.AddMinutes(25);//.Date;
+        //            var start = result.Prepaid.MonthlyBegin?.Date;
+        //            var end = result.Prepaid.MonthlyNext?.Date;
+        //            var a = result.Prepaid.Balance;
+        //            var b = result.Prepaid.Units;
+        //            var c = result.Prepaid.Usages;
 
-                    var p = BalanceMT.Create(ProtocolVersion.v3__WeatherExtension, time, start, end, a, b, c);
-                    var packets = p.Pack();
-                    var hex = packets[0].Payload.ToHexString();
-                    var p2 = (BalanceMT)BalanceMT.Unpack(packets[0].Payload);
+        //            var p = BalanceMT.Create(ProtocolVersion.v3__WeatherExtension, time, start, end, a, b, c);
+        //            var packets = p.Pack();
+        //            var hex = packets[0].Payload.ToHexString();
+        //            var p2 = (BalanceMT)BalanceMT.Unpack(packets[0].Payload);
 
-                    if (Math.Abs((time - p2.Time).TotalMinutes) > TimeSpan.FromMinutes(15).TotalMinutes)
-                        Assert.Fail();
+        //            if (Math.Abs((time - p2.Time).TotalMinutes) > TimeSpan.FromMinutes(15).TotalMinutes)
+        //                Assert.Fail();
 
-                    if (start != p2.MonthlyBegin)
-                        Assert.Fail();
+        //            if (start != p2.MonthlyBegin)
+        //                Assert.Fail();
 
-                    if (end != p2.MonthlyNext)
-                        Assert.Fail();
+        //            if (end != p2.MonthlyNext)
+        //                Assert.Fail();
 
-                    if (a != p2.Balance)
-                        Assert.Fail();
+        //            if (a != p2.Balance)
+        //                Assert.Fail();
 
-                    if (b != p2.Units)
-                        Assert.Fail();
+        //            if (b != p2.Units)
+        //                Assert.Fail();
 
-                    if (c != p2.Usages)
-                        Assert.Fail();
+        //            if (c != p2.Usages)
+        //                Assert.Fail();
 
-                    //Debugger.Log(0, null, $"{line} OK\n");
-                }
-                catch (Exception e)
-                {
-                    Debugger.Break();
-                }
-            }
-            catch (Exception e2)
-            {
-                Debugger.Break();
-            }
-        }
+        //            //Debugger.Log(0, null, $"{line} OK\n");
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Debugger.Break();
+        //        }
+        //    }
+        //    catch (Exception e2)
+        //    {
+        //        Debugger.Break();
+        //    }
+        //}
 
 
 
