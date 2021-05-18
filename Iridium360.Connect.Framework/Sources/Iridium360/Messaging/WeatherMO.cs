@@ -49,6 +49,10 @@ namespace Iridium360.Connect.Framework.Messaging
                     writer.Write((float)RequestLon, true, 8, 13);
                     writer.Write((uint)PointKey, 4);
                 }
+                else
+                {
+                    writer.Write(false);
+                }
             }
 
         }
