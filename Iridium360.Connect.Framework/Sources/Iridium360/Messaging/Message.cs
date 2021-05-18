@@ -32,7 +32,7 @@ namespace Iridium360.Connect.Framework.Messaging
         v3__WeatherExtension = 2,
 
         /// <summary>
-        /// Возможность запросить и получить прогноз на указанную в любую точку
+        /// Возможность запросить и получить прогноз на любую точку
         /// </summary>
         v4__WeatherExtension = 3
     }
