@@ -17,6 +17,11 @@ namespace Iridium360.Connect.Framework.Messaging
         public i360PointForecast Forecast { get; private set; }
 
         /// <summary>
+        /// Идентификатор координат для которых этот прогноз (см <see cref="WeatherMO.PointKey"/>)
+        /// </summary>
+        public byte? PointKey { get; private set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public override MessageType Type => MessageType.Weather;
@@ -149,6 +154,8 @@ namespace Iridium360.Connect.Framework.Messaging
                 }
             }
 
+            if (this.Version >= ProtocolVersion.v4__WeatherExtension && extended)
+                writer.Write((uint)PointKey, 4);
 
         }
 
@@ -282,6 +289,9 @@ namespace Iridium360.Connect.Framework.Messaging
             Forecast.DayInfos = forecasts.GroupBy(x => x.Date.Date).Select(x => new i360DayInfo() { Date = x.Key }).ToList();
             Forecast.Forecasts = forecasts;
 
+            if (this.Version >= ProtocolVersion.v4__WeatherExtension && extended)
+                PointKey = (byte)reader.ReadUInt(4);
+
         }
 
 
@@ -291,17 +301,19 @@ namespace Iridium360.Connect.Framework.Messaging
         private WeatherMT() { }
 
 
-        /// 
+        /// <summary>
         /// 
         /// </summary>
+        /// <param name="version"></param>
         /// <param name="forecast"></param>
-        /// <param name="extendedForecast"><see cref="ExtendedForecast"/></param>
+        /// <param name="pointKey"></param>
         /// <returns></returns>
-        public static WeatherMT Create(ProtocolVersion version, i360PointForecast forecast)
+        public static WeatherMT Create(ProtocolVersion version, i360PointForecast forecast, byte? pointKey = null)
         {
             WeatherMT weather = Create<WeatherMT>(version);
 
             weather.Forecast = forecast;
+            weather.PointKey = pointKey;
 
             return weather;
         }

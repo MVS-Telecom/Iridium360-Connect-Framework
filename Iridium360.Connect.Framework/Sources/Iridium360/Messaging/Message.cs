@@ -11,14 +11,36 @@ using System.Runtime.CompilerServices;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
-
+    /// <summary>
+    /// Версия протокола
+    /// </summary>
     public enum ProtocolVersion : byte
     {
+        /// <summary>
+        /// Первая версия протокола
+        /// </summary>
         v1 = 0,
+
+        /// <summary>
+        /// Более точное хранение координат в <see cref="MessageWithLocation"/>
+        /// </summary>
         v2__LocationFix = 1,
+
+        /// <summary>
+        /// Расширенный прогноз погоды (высота облаков, дальноть видимости)
+        /// </summary>
         v3__WeatherExtension = 2,
+
+        /// <summary>
+        /// Возможность запросить и получить прогноз на указанную в любую точку
+        /// </summary>
+        v4__WeatherExtension = 3
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     public abstract class Message
     {
         private static Dictionary<MessageType, System.Type> knownMOTypes = new Dictionary<MessageType, System.Type>();

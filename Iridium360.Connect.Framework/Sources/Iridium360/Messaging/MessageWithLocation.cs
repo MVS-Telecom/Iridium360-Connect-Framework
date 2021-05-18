@@ -4,13 +4,31 @@ using System.Text;
 
 namespace Iridium360.Connect.Framework.Messaging
 {
+    /// <summary>
+    /// Сообщение с координатами откуда оно было отправлено
+    /// </summary>
     public abstract class MessageWithLocation : Message
     {
+        /// <summary>
+        /// Широта точки откуда было отправлено сообщение
+        /// </summary>
         public double? Lat { get; protected set; }
+
+        /// <summary>
+        /// Долгота точки откуда было отправлено сообщение
+        /// </summary>
         public double? Lon { get; protected set; }
+
+        /// <summary>
+        /// Высота точки откуда было отправлено сообщение
+        /// </summary>
         public int? Alt { get; protected set; }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         protected void WriteLocation(BinaryBitWriter writer)
         {
             if (Version >= ProtocolVersion.v2__LocationFix)
@@ -36,6 +54,11 @@ namespace Iridium360.Connect.Framework.Messaging
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         protected void ReadLocation(BinaryBitReader reader)
         {
             if (Version >= ProtocolVersion.v2__LocationFix)
