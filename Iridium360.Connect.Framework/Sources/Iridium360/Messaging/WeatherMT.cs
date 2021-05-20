@@ -154,8 +154,18 @@ namespace Iridium360.Connect.Framework.Messaging
                 }
             }
 
-            if (this.Version >= ProtocolVersion.v4__WeatherExtension && extended)
-                writer.Write((uint)PointKey, 4);
+            if (this.Version >= ProtocolVersion.v4__WeatherExtension)
+            {
+                if (PointKey != null)
+                {
+                    writer.Write(true);
+                    writer.Write((uint)PointKey, 4);
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+            }
 
         }
 
@@ -289,8 +299,11 @@ namespace Iridium360.Connect.Framework.Messaging
             Forecast.DayInfos = forecasts.GroupBy(x => x.Date.Date).Select(x => new i360DayInfo() { Date = x.Key }).ToList();
             Forecast.Forecasts = forecasts;
 
-            if (this.Version >= ProtocolVersion.v4__WeatherExtension && extended)
-                PointKey = (byte)reader.ReadUInt(4);
+            if (this.Version >= ProtocolVersion.v4__WeatherExtension)
+            {
+                if (reader.ReadBoolean())
+                    PointKey = (byte)reader.ReadUInt(4);
+            }
 
         }
 

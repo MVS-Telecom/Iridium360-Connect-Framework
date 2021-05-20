@@ -51,7 +51,7 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                 var bytes2 = message2.Pack()[0].Payload;
                 var bytes3 = message3.Pack()[0].Payload;
                 var bytes4 = message4.Pack()[0].Payload;
-                var bytes5 = message4.Pack()[0].Payload;
+                var bytes5 = message5.Pack()[0].Payload;
 
                 var unpacked1 = (WeatherMO)WeatherMO.Unpack(bytes1, new InMemoryBuffer());
                 var unpacked2 = (WeatherMO)WeatherMO.Unpack(bytes2, new InMemoryBuffer());
@@ -80,17 +80,20 @@ namespace Iridium360.Connect.Framework.Tests.Messaging
                 var message1 = WeatherMT.Create(ProtocolVersion.v1, weather);
                 var message2 = WeatherMT.Create(ProtocolVersion.v2__LocationFix, weather);
                 var message3 = WeatherMT.Create(ProtocolVersion.v3__WeatherExtension, weather);
-                var message4 = WeatherMT.Create(ProtocolVersion.v4__WeatherExtension, weather, 7);
+                var message4 = WeatherMT.Create(ProtocolVersion.v4__WeatherExtension, weather);
+                var message5 = WeatherMT.Create(ProtocolVersion.v4__WeatherExtension, weather, 7);
 
                 var bytes1 = message1.Pack()[0].Payload;
                 var bytes2 = message2.Pack()[0].Payload;
                 var bytes3 = message3.Pack()[0].Payload;
                 var bytes4 = message4.Pack()[0].Payload;
+                var bytes5 = message5.Pack()[0].Payload;
 
                 var unpacked1 = (WeatherMT)WeatherMT.Unpack(bytes1, new InMemoryBuffer());
                 var unpacked2 = (WeatherMT)WeatherMT.Unpack(bytes2, new InMemoryBuffer());
                 var unpacked3 = (WeatherMT)WeatherMT.Unpack(bytes3, new InMemoryBuffer());
                 var unpacked4 = (WeatherMT)WeatherMT.Unpack(bytes4, new InMemoryBuffer());
+                var unpacked5 = (WeatherMT)WeatherMT.Unpack(bytes5, new InMemoryBuffer());
 
                 //var bytes1 = "1208058C9F98BEB30120867FF4FFEC3B1B0062F847FF2FB5B10230857FF47F125861074008FFE8FF8D165600C4F08FFE9F816107400CFFE8FFA516B600C4F08FFE6F022B6C01C8E01FFDBFD1C206C010FED1FFB32EAC054CE11FFDBFC4C29A8008FED1FF515085358608FCA3FF3758D70310C33FFA7F866DAD8339FCA3FF97D5D70818C23FFABF0AA2B00130847FF47F9A".ToByteArray();
                 //var message1 = (WeatherMT)WeatherMT.Unpack(bytes1, new InMemoryBuffer());
