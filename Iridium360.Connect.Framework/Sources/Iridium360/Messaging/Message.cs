@@ -352,7 +352,7 @@ namespace Iridium360.Connect.Framework.Messaging
         public virtual Iridium360.Connect.Framework.Messaging.Composite Composite { get; private set; }
 
 
-        public ProtocolVersion Version { get; private set; } = ProtocolVersion.v3__WeatherExtension;
+        public ProtocolVersion Version { get; private set; }
 
         public byte Group { get; private set; }
 
