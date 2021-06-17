@@ -165,6 +165,10 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                 else if (RockstarHelper.GetTypeBySerial(number) != null)
                     network = SubscriberNetwork.Rockstar;
 
+                ///
+                if (network == SubscriberNetwork.Mobile || network == SubscriberNetwork.Bysky)
+                    number = number.Replace("+", "");
+
                 return new Subscriber(number, network);
             }
             catch (Exception e)
