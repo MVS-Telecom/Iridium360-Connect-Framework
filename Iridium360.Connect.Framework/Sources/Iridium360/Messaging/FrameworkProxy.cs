@@ -345,59 +345,100 @@ namespace Iridium360.Connect.Framework.Messaging
                 Debugger.Break();
                 throw ex1;
             }
-            catch (FormatException fex)
+            catch (Exception fex)
             {
                 logger.Log($"[MESSAGE] Exception occured while parsing `0x{e.Payload?.ToHexString()}` {fex}");
                 Debugger.Break();
 
 
-                #region Workaround fix https://github.com/MVS-Telecom/Iridium360-Connect-Framework/issues/16
-
-                var packets = new List<string>();
-
-                ///Размер пакета передаваемого по блютузу
-                const int length = 20;
-
-                for (int i = 0; i < e.Payload.Length / length; i++)
+                if (IsPacketBroken(e.Payload) || IsPacketBroken2(e.Payload))
                 {
-                    var hex = e.Payload.Skip(i * length).Take(length).ToArray().ToHexString();
-                    packets.Add(hex);
-                }
-
-
-                var duplicates = packets
-                    .Distinct()
-                    .Select(x => new { packet = x, count = packets.Where(y => y == x).Count() })
-                    .Where(x => x.count > 1);
-
-                if (duplicates.Any())
-                {
-                    logger.Log($"[MESSAGE] Multiple duplicate parts found in packet");
-                    Debugger.Break();
-
                     Task.Run(async () =>
                     {
-                        await framework.Disconnect();
-                        await framework.Reconnect(force: true, throwOnError: false);
+                        try
+                        {
+                            var id = framework.ConnectedDevice.Id;
+                            await framework.Disconnect();
+                            await framework.Connect(id, force: true, throwOnError: false, attempts: 2);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Log($"[MESSAGE] Exception occured while reconnecting to device {ex}");
+                            Debugger.Break();
+                        }
                     });
-
-                    throw fex;
                 }
 
-
-                #endregion
-
-            }
-            catch (Exception ex)
-            {
-                logger.Log($"[MESSAGE] Exception occured while parsing `0x{e.Payload?.ToHexString()}` {ex}");
-                Debugger.Break();
             }
 
 
             Debugger.Break();
         }
 
+
+        /// <summary>
+        /// Workaround fix https://github.com/MVS-Telecom/Iridium360-Connect-Framework/issues/16
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        private bool IsPacketBroken(byte[] payload)
+        {
+            var packets = new List<string>();
+
+            ///Размер пакета передаваемого по блютузу
+            const int length = 20;
+
+            for (int i = 0; i < payload.Length / length; i++)
+            {
+                var hex = payload.Skip(i * length).Take(length).ToArray().ToHexString();
+                packets.Add(hex);
+            }
+
+
+            var duplicates = packets
+                .Distinct()
+                .Select(x => new { packet = x, count = packets.Where(y => y == x).Count() })
+                .Where(x => x.count > 1);
+
+            if (duplicates.Any())
+            {
+                logger.Log($"[MESSAGE] Packet is possibly broken (1) - multiple duplicate parts found");
+                Debugger.Break();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Workaround fix 2 https://github.com/MVS-Telecom/Iridium360-Connect-Framework/issues/16
+        /// </summary>
+        /// <param name="bytes"></param>
+        private bool IsPacketBroken2(byte[] payload)
+        {
+            int length = payload.Length % 20;
+
+            if (length <= 4)
+                return false;
+
+            var check = payload.Take(length).ToArray().ToHexString();
+
+            for (int i = 0; i < payload.Length; i++)
+            {
+                var hex = payload.Skip(length).Skip(i).Take(length).ToArray().ToHexString();
+
+                if (hex == check)
+                {
+                    logger.Log($"[MESSAGE] Packet is possibly broken (2) - multiple duplicate parts found");
+                    Debugger.Break();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
 
         /// <summary>
