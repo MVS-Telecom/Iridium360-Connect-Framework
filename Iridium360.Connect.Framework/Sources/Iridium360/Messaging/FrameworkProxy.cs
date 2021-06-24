@@ -410,7 +410,7 @@ namespace Iridium360.Connect.Framework.Messaging
         {
             int length = payload.Length % 20;
 
-            if (length == 0)
+            if (length <= 4)
                 return false;
 
             var check = payload.Take(length).ToArray().ToHexString();
