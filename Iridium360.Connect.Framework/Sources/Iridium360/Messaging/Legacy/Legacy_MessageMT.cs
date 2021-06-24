@@ -273,6 +273,9 @@ namespace Iridium360.Connect.Framework.Messaging.Legacy
                         string text = Encoding.GetEncoding(1251).GetString(message.Payload).Trim();
                         var parts = text.Split(new string[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
 
+                        if (parts.Count() < 2)
+                            throw new FormatException($"Invalid legacy message format");
+
                         message.Address = parts[0];
                         message.RawText = parts[1];
                     }
