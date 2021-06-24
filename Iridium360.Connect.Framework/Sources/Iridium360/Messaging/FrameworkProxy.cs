@@ -355,8 +355,17 @@ namespace Iridium360.Connect.Framework.Messaging
                 {
                     Task.Run(async () =>
                     {
-                        await framework.Disconnect();
-                        await framework.Reconnect(force: true, throwOnError: false);
+                        try
+                        {
+                            var id = framework.ConnectedDevice.Id;
+                            await framework.Disconnect();
+                            await framework.Connect(id, force: true, throwOnError: false, attempts: 2);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Log($"[MESSAGE] Exception occured while reconnecting to device {ex}");
+                            Debugger.Break();
+                        }
                     });
                 }
 
