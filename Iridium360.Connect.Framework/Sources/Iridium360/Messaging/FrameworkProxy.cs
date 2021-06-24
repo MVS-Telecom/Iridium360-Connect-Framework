@@ -393,7 +393,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
             if (duplicates.Any())
             {
-                logger.Log($"[MESSAGE] Multiple duplicate parts found in packet");
+                logger.Log($"[MESSAGE] Packet is possibly broken (1) - multiple duplicate parts found");
                 Debugger.Break();
 
                 return true;
@@ -421,7 +421,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
                 if (hex == check)
                 {
-                    logger.Log($"[MESSAGE] Multiple duplicate parts found in packet");
+                    logger.Log($"[MESSAGE] Packet is possibly broken (2) - multiple duplicate parts found");
                     Debugger.Break();
 
                     return true;
