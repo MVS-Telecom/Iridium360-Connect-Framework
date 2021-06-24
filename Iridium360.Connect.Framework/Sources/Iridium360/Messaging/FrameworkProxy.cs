@@ -345,13 +345,13 @@ namespace Iridium360.Connect.Framework.Messaging
                 Debugger.Break();
                 throw ex1;
             }
-            catch (FormatException fex)
+            catch (Exception fex)
             {
                 logger.Log($"[MESSAGE] Exception occured while parsing `0x{e.Payload?.ToHexString()}` {fex}");
                 Debugger.Break();
 
 
-                if (IsPacketBroken(e.Payload) || IsPacketBroken2(e.Payload)
+                if (IsPacketBroken(e.Payload) || IsPacketBroken2(e.Payload))
                 {
                     Task.Run(async () =>
                     {
@@ -360,11 +360,6 @@ namespace Iridium360.Connect.Framework.Messaging
                     });
                 }
 
-            }
-            catch (Exception ex)
-            {
-                logger.Log($"[MESSAGE] Exception occured while parsing `0x{e.Payload?.ToHexString()}` {ex}");
-                Debugger.Break();
             }
 
 
