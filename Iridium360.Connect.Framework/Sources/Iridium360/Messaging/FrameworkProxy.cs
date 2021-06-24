@@ -351,7 +351,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 Debugger.Break();
 
 
-                if (IsPacketBroken(e.Payload))
+                if (IsPacketBroken(e.Payload) || IsPacketBroken2(e.Payload)
                 {
                     Task.Run(async () =>
                     {
@@ -407,6 +407,34 @@ namespace Iridium360.Connect.Framework.Messaging
             return false;
         }
 
+        /// <summary>
+        /// Workaround fix 2 https://github.com/MVS-Telecom/Iridium360-Connect-Framework/issues/16
+        /// </summary>
+        /// <param name="bytes"></param>
+        private bool IsPacketBroken2(byte[] payload)
+        {
+            int length = payload.Length % 20;
+
+            if (length == 0)
+                return false;
+
+            var check = payload.Take(length).ToArray().ToHexString();
+
+            for (int i = 0; i < payload.Length; i++)
+            {
+                var hex = payload.Skip(length).Skip(i).Take(length).ToArray().ToHexString();
+
+                if (hex == check)
+                {
+                    logger.Log($"[MESSAGE] Multiple duplicate parts found in packet");
+                    Debugger.Break();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
 
         /// <summary>
