@@ -191,6 +191,7 @@ namespace Iridium360.Connect.Framework.Messaging
 
             var dates = new int[16];
             var forecasts = new List<i360Forecast>();
+            int month = 0;
 
             for (int j = 0; j < 16; j++)
             {
@@ -210,10 +211,8 @@ namespace Iridium360.Connect.Framework.Messaging
                         dates[j] = dates[j - 1];
 
 
-                    int month = 0;
-
                     if (j > 0 && dates[j] < dates[j - 1])
-                        month = 1;
+                        month++;
 
 
                     int hourOffset = (int)reader.ReadUInt(5);
