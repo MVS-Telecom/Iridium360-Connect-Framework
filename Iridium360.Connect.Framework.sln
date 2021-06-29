@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iridium360.Connect.Framework", "Iridium360.Connect.Framework\Iridium360.Connect.Framework.csproj", "{B17CE6FC-5D7B-4FBB-AC99-03D9A84729A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iridium360.Connect.Framework.Core", "Iridium360.Connect.Framework\Iridium360.Connect.Framework.Core.csproj", "{B17CE6FC-5D7B-4FBB-AC99-03D9A84729A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectFramework.Android", "ConnectFramework.Android\ConnectFramework.Android.csproj", "{BA7D3F4B-9599-4565-8ECB-2D0070D1B3CF}"
 EndProject
@@ -14,6 +14,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iridium360.Connect.Framework.Tests", "Iridium360.Connect.Framework.Tests\Iridium360.Connect.Framework.Tests.csproj", "{301602B8-8BEB-4801-A030-DE171590A6C1}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ConnectFramework.Shared\ConnectFramework.Shared.projitems*{d0ef1f8f-e543-48d9-bf52-fda92fb09cc7}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|iPhone = Debug|iPhone
