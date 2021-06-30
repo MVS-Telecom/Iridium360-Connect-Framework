@@ -351,7 +351,7 @@ namespace Iridium360.Connect.Framework.Messaging
                 Debugger.Break();
 
 
-                if (IsPacketBroken(e.Payload) || IsPacketBroken2(e.Payload))
+                if (fex.Message == "Invalid checksum!" || IsPacketBroken(e.Payload) || IsPacketBroken2(e.Payload))
                 {
                     Task.Run(async () =>
                     {
