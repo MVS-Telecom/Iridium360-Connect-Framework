@@ -36,7 +36,8 @@ jobs:
             -p:Configuration=Release
           
           $path = (dir "Iridium360.Connect.Framework.Nuget/bin/Release" -Filter *.nupkg | Sort-Object LastWriteTime -Desc | Select-Object -First 1).FullName       
-          #dotnet nuget push $path --source "https://nuget.pkg.github.com/MVS-Telecom/index.json" --api-key $env:API_KEY
+          
+          dotnet nuget push $path --source "https://nuget.pkg.github.com/MVS-Telecom/index.json" --api-key $env:API_KEY
           
           echo $("::set-output name=path::$path")
           
