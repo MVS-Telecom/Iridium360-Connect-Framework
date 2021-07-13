@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: recursive
-    
+        
     
     - run: nuget restore
     
@@ -40,14 +40,27 @@ jobs:
           $path = $file.FullName 
           $name = $file.Name 
           
-          dotnet nuget push $path --source "https://api.nuget.org/v3/index.json" --api-key $env:API_KEY
+          #dotnet nuget push $path --source "https://api.nuget.org/v3/index.json" --api-key $env:API_KEY
           
           echo $("::set-output name=path::$path")
           echo $("::set-output name=name::$name")
+          echo $("::set-output name=version::$PackageVersion")
           
       shell: pwsh
       env:
           API_KEY: ${{ secrets.NUGET_API_KEY }}
+          
+          
+    - name: Create Release
+      id: create_release
+      uses: zendesk/action-create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          tag_name: ${{ steps.nuget.outputs.version }}
+          release_name: Iridium.360.Connect.Framework ${{ steps.nuget.outputs.version }}
+          draft: false
+          prerelease: false
           
           
     - name: 'Save build artifact'
