@@ -1,0 +1,21 @@
+name: NUGET Iridium360.Connect.Framework
+
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    
+    
+    - run: nuget restore
