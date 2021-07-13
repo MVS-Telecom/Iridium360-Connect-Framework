@@ -18,9 +18,6 @@ jobs:
         submodules: recursive
     
     
-    - run: nuget restore
-    
-    
     - id: nuget
       name: Build and publish NuGet
       run: |
