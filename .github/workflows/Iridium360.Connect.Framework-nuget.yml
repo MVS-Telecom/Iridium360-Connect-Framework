@@ -19,3 +19,34 @@ jobs:
     
     
     - run: nuget restore
+    
+    
+    - id: nuget
+      name: Build and publish NuGet
+      run: |
+          $version = (Get-Content Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj | Select-String -Pattern '^\s*<Version>(.*)<\/Version>\s*$') -replace '<[^>]*>'
+          
+          $a = $([int]((GET-DATE).ToUniversalTime() - [datetime]"01/01/2021 00:00").TotalHours)
+          $b = $(((GET-DATE).ToUniversalTime()).ToString("mm"))
+          
+          $Suffix = $("$a$b")
+          $PackageVersion = $("$Version.$Suffix")
+          
+          echo $("Nuget generated name $PackageVersion")
+          dotnet pack Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj -p:PackageVersion=$PackageVersion --configuration Release
+          
+          $path = (dir "Iridium360.Connect.Framework.Nuget/bin/Release" -Filter *.nupkg | Sort-Object LastWriteTime -Desc | Select-Object -First 1).FullName       
+          #dotnet nuget push $path --source "https://nuget.pkg.github.com/MVS-Telecom/index.json" --api-key $env:API_KEY
+          
+          echo $("::set-output name=path::$path")
+          
+      shell: pwsh
+      env:
+          API_KEY: ${{ secrets.GUTHUB_NUGET_PUSH }}
+          
+          
+    - name: 'Save build artifact'
+      uses: actions/upload-artifact@v2
+      with:
+        name: iOS IPA
+        path: ${{ steps.nuget.outputs.path }}
