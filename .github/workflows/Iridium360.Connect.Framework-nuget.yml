@@ -27,7 +27,13 @@ jobs:
           $PackageVersion = (Get-Content Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj | Select-String -Pattern '^\s*<Version>(.*)<\/Version>\s*$') -replace '<[^>]*>'
           
           echo $("Nuget generated name $PackageVersion")
-          dotnet pack Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj -p:PackageVersion=$PackageVersion --configuration Release
+          
+          msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj `
+            -t:Clean `
+            -t:Rebuild `
+            -t:Pack `
+            -p:PackageVersion=$PackageVersion `
+            -p:Configuration=Release
           
           $path = (dir "Iridium360.Connect.Framework.Nuget/bin/Release" -Filter *.nupkg | Sort-Object LastWriteTime -Desc | Select-Object -First 1).FullName       
           #dotnet nuget push $path --source "https://nuget.pkg.github.com/MVS-Telecom/index.json" --api-key $env:API_KEY
