@@ -35,19 +35,22 @@ jobs:
             -p:PackageVersion=$PackageVersion `
             -p:Configuration=Release
           
-          $path = (dir "Iridium360.Connect.Framework.Nuget/bin/Release" -Filter *.nupkg | Sort-Object LastWriteTime -Desc | Select-Object -First 1).FullName       
+          $file = (dir "Iridium360.Connect.Framework.Nuget/bin/Release" -Filter *.nupkg | Sort-Object LastWriteTime -Desc | Select-Object -First 1)
+          $path = $file.FullName 
+          $name = $file.Name 
           
-          dotnet nuget push $path --source "https://nuget.pkg.github.com/MVS-Telecom/index.json" --api-key $env:API_KEY
+          dotnet nuget push $path --source "https://api.nuget.org/v3/index.json" --api-key $env:API_KEY
           
           echo $("::set-output name=path::$path")
+          echo $("::set-output name=name::$name")
           
       shell: pwsh
       env:
-          API_KEY: ${{ secrets.GUTHUB_NUGET_PUSH }}
+          API_KEY: ${{ secrets.NUGET_API_KEY }}
           
           
     - name: 'Save build artifact'
       uses: actions/upload-artifact@v2
       with:
-        name: iOS IPA
+        name: ${{ steps.nuget.outputs.name }}
         path: ${{ steps.nuget.outputs.path }}
