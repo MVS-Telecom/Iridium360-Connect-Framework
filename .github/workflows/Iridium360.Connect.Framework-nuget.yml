@@ -40,7 +40,7 @@ jobs:
           $path = $file.FullName 
           $name = $file.Name 
           
-          #dotnet nuget push $path --source "https://api.nuget.org/v3/index.json" --api-key $env:API_KEY
+          dotnet nuget push $path --source "https://api.nuget.org/v3/index.json" --api-key $env:API_KEY
           
           echo $("::set-output name=path::$path")
           echo $("::set-output name=name::$name")
@@ -58,7 +58,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           tag_name: ${{ steps.nuget.outputs.version }}
-          release_name: Iridium.360.Connect.Framework ${{ steps.nuget.outputs.version }}
+          release_name: Iridium360.Connect.Framework ${{ steps.nuget.outputs.version }}
           draft: false
           prerelease: false
           
