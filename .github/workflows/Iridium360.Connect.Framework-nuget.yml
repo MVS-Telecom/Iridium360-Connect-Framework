@@ -24,13 +24,7 @@ jobs:
     - id: nuget
       name: Build and publish NuGet
       run: |
-          $version = (Get-Content Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj | Select-String -Pattern '^\s*<Version>(.*)<\/Version>\s*$') -replace '<[^>]*>'
-          
-          $a = $([int]((GET-DATE).ToUniversalTime() - [datetime]"01/01/2021 00:00").TotalHours)
-          $b = $(((GET-DATE).ToUniversalTime()).ToString("mm"))
-          
-          $Suffix = $("$a$b")
-          $PackageVersion = $("$Version.$Suffix")
+          $PackageVersion = (Get-Content Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj | Select-String -Pattern '^\s*<Version>(.*)<\/Version>\s*$') -replace '<[^>]*>'
           
           echo $("Nuget generated name $PackageVersion")
           dotnet pack Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj -p:PackageVersion=$PackageVersion --configuration Release
