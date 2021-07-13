@@ -18,6 +18,9 @@ jobs:
         submodules: recursive
     
     
+    - run: nuget restore
+    
+    
     - id: nuget
       name: Build and publish NuGet
       run: |
@@ -26,6 +29,7 @@ jobs:
           echo $("Nuget generated name $PackageVersion")
           
           msbuild Iridium360.Connect.Framework.Nuget/Iridium360.Connect.Framework.Nuget.csproj `
+            -p:RestorePackages=false `
             -t:Clean `
             -t:Rebuild `
             -t:Pack `
