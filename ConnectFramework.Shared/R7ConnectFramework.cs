@@ -45,7 +45,7 @@ namespace ConnectFramework.Shared
         public event EventHandler<PacketStatusUpdatedEventArgs> PacketStatusUpdated;
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
-        public ConnectComms comms { internal get; set; }
+        internal Lazy<ConnectComms> comms { get; private set; }
         private R7Device device;
         private ILogger logger;
         private IStorage storage;
@@ -60,9 +60,6 @@ namespace ConnectFramework.Shared
             {
                 if (instance == null)
                 {
-#if ANDROID
-                    ConnectComms.Init(Application.Context);
-#endif
                     instance = new R7ConnectFramework(storage, logger, bluetoothHelper);
                 }
 
@@ -80,17 +77,27 @@ namespace ConnectFramework.Shared
             this.storage = storage;
             this.bluetoothHelper = bluetoothHelper;
 
+            comms = new Lazy<ConnectComms>(() =>
+            {
+                // It is necessary to grant bluetooth permissions on Android 12 before framework initialization
+                // Otherwise app crash will be occured
+                // More info here https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
 #if ANDROID
-            comms = ConnectComms.GetConnectComms();
-            comms.ResponseDelegate = new Java.Lang.Ref.WeakReference(this);
-            comms.MessagingDelegate = new Java.Lang.Ref.WeakReference(this);
-            comms.DiscoveryDelegate = new Java.Lang.Ref.WeakReference(this);
+                ConnectComms.Init(Application.Context);
+
+                var value = ConnectComms.GetConnectComms();
+                value.ResponseDelegate = new Java.Lang.Ref.WeakReference(this);
+                value.MessagingDelegate = new Java.Lang.Ref.WeakReference(this);
+                value.DiscoveryDelegate = new Java.Lang.Ref.WeakReference(this);
 #elif IOS
-            comms = ConnectComms.GetConnectComms;
-            comms.ResponseDelegate = new R(this);
-            comms.MessagingDelegate = new M(this);
-            comms.DiscoveryDelegate = new D(this);
+                var value = ConnectComms.GetConnectComms;
+                value.ResponseDelegate = new R(this);
+                value.MessagingDelegate = new M(this);
+                value.DiscoveryDelegate = new D(this);
 #endif
+                return value;
+
+            }, isThreadSafe: true);
 
 
             //Enable();
@@ -137,8 +144,8 @@ namespace ConnectFramework.Shared
 
                 OnDeviceReady += handler;
 
-                comms.EnableWithApplicationIdentifier("8705e62a2e1cac9019be882fa020556b");
-                comms.DisableUsageTimeout();
+                comms.Value.EnableWithApplicationIdentifier("8705e62a2e1cac9019be882fa020556b");
+                comms.Value.DisableUsageTimeout();
 
                 r.WaitOne(TimeSpan.FromSeconds(10));
                 OnDeviceReady -= handler;
@@ -158,7 +165,7 @@ namespace ConnectFramework.Shared
             await Reconnect(throwOnError: true);
             await Unlock(throwOnError: true);
 
-            comms.RequestBeep();
+            comms.Value.RequestBeep();
         }
 
 
@@ -171,7 +178,7 @@ namespace ConnectFramework.Shared
             await Reconnect(throwOnError: true);
             await Unlock(throwOnError: true);
 
-            comms.FactoryReset();
+            comms.Value.FactoryReset();
         }
 
 
@@ -195,7 +202,7 @@ namespace ConnectFramework.Shared
                 {
                     ConnectedDevice.LocationUpdated += handler;
 
-                    comms.RequestLastKnownGpsPosition();
+                    comms.Value.RequestLastKnownGpsPosition();
                     r.WaitOne(TimeSpan.FromSeconds(10));
 
                     if (ConnectedDevice.Location == null)
@@ -270,7 +277,7 @@ namespace ConnectFramework.Shared
                         try
                         {
 #if DEBUG && ANDROID
-                            bool a = comms.IsUnlocked().BooleanValue();
+                            bool a = comms.Value.IsUnlocked().BooleanValue();
                             bool b = device.LockStatus == LockState.Unlocked;
 
                             if (a != b)
@@ -301,7 +308,7 @@ namespace ConnectFramework.Shared
                                 await Reconnect(throwOnError: true);
 
 #if ANDROID
-                                comms.Unlock(unlockPin.Value);
+                                comms.Value.Unlock(unlockPin.Value);
 #elif IOS
                                 comms.Unlock((nuint)unlockPin);
 #endif
@@ -381,7 +388,7 @@ namespace ConnectFramework.Shared
         public async Task RequestNewLocation()
         {
             await Reconnect(throwOnError: true);
-            comms.RequestCurrentGpsPosition();
+            comms.Value.RequestCurrentGpsPosition();
         }
 
 
@@ -391,7 +398,7 @@ namespace ConnectFramework.Shared
         public async Task RequestBattery()
         {
             await Reconnect(throwOnError: true);
-            comms.RequestBatteryStatus();
+            comms.Value.RequestBatteryStatus();
         }
 
 
@@ -402,7 +409,7 @@ namespace ConnectFramework.Shared
         public async Task RequestMailboxCheck()
         {
             await Reconnect(throwOnError: true);
-            comms.RequestSatelliteMessageCheck();
+            comms.Value.RequestSatelliteMessageCheck();
         }
 
 
@@ -416,7 +423,7 @@ namespace ConnectFramework.Shared
 
             if (bluetoothHelper.IsValueCreated && bluetoothHelper.Value.IsOn)
             {
-                comms.Disconnect();
+                comms.Value.Disconnect();
 
                 if (withDelay)
                     await Task.Delay(2000);
@@ -568,7 +575,7 @@ namespace ConnectFramework.Shared
 
                                 await Enable();
 #if ANDROID
-                                comms.Connect(ToBluetoothAddress(id));
+                                comms.Value.Connect(ToBluetoothAddress(id));
 #elif IOS
                                 comms.Connect(new Foundation.NSUuid(id.ToString()));
 #endif
@@ -671,7 +678,7 @@ namespace ConnectFramework.Shared
             await Unlock(throwOnError: true);
 
             ///TODO: Нужны дополнительные проверки что оно сработало
-            comms.RequestAlert();
+            comms.Value.RequestAlert();
         }
 
 
@@ -684,7 +691,7 @@ namespace ConnectFramework.Shared
             await Reconnect(throwOnError: true);
             await Unlock(throwOnError: true);
 
-            comms.RequestManual();
+            comms.Value.RequestManual();
         }
 
 
@@ -740,7 +747,7 @@ namespace ConnectFramework.Shared
                             ConnectedDevice.ConnectionChanged += handler2;
 
 #if ANDROID
-                            comms.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
+                            comms.Value.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
 #elif IOS
                             comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
 #endif
@@ -825,7 +832,7 @@ namespace ConnectFramework.Shared
         public async Task GetReceivedMessages()
         {
             await Reconnect();
-            comms.RequestNextMessage();
+            comms.Value.RequestNextMessage();
         }
 
 
@@ -845,7 +852,7 @@ namespace ConnectFramework.Shared
             await Task.Delay(500);
 
 
-            comms.StartDiscovery();
+            comms.Value.StartDiscovery();
 
             //HACK
             bluetoothHelper.Value.StartLeScan();
@@ -860,7 +867,7 @@ namespace ConnectFramework.Shared
         {
             Safety(() =>
             {
-                comms.StopDiscovery();
+                comms.Value.StopDiscovery();
             });
 
 
@@ -908,7 +915,7 @@ namespace ConnectFramework.Shared
                 var _value = Convert.ToInt32(value);
 
 
-                var __parameter = comms.CurrentDevice.ParameterForIdentifier(_parameter.EnumToInt());
+                var __parameter = comms.Value.CurrentDevice.ParameterForIdentifier(_parameter.EnumToInt());
 
 #if IOS
                 if (__parameter == null || !__parameter.Available)
@@ -929,7 +936,7 @@ namespace ConnectFramework.Shared
 
 
 #if ANDROID
-                (comms.CurrentDevice as R7GenericDevice).UpdateParameter(_parameter, _value);
+                (comms.Value.CurrentDevice as R7GenericDevice).UpdateParameter(_parameter, _value);
 #elif IOS
                 comms.CurrentDevice.Update((nuint)(int)_parameter, NSData.FromArray(new byte[] { (byte)Convert.ToInt32(_value) }));
 #endif
@@ -937,7 +944,7 @@ namespace ConnectFramework.Shared
                 ///Запрашиваем новое значение с устройства чтобы убедиться что оно сохранилось
                 ///
 #if ANDROID
-                (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+                (comms.Value.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
 #elif IOS
                 comms.CurrentDevice.Request(_parameter.EnumToInt());
 #endif
@@ -975,7 +982,7 @@ namespace ConnectFramework.Shared
                         {
                             try
                             {
-                                var a = comms.CurrentDevice.ParameterForIdentifier(p.ToR7().EnumToInt());
+                                var a = comms.Value.CurrentDevice.ParameterForIdentifier(p.ToR7().EnumToInt());
 
 #if ANDROID
                                 if (a?.Available?.BooleanValue() != true)
@@ -989,9 +996,9 @@ namespace ConnectFramework.Shared
 
                                 ///Запрашиваем параметр с устройства
 #if ANDROID
-                                (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+                                (comms.Value.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
 #elif IOS
-                                comms.CurrentDevice.Request(_parameter.EnumToInt());
+                                comms.Value.CurrentDevice.Request(_parameter.EnumToInt());
 #endif
 
                                 ///Ждем изменения параметра
@@ -1005,9 +1012,9 @@ namespace ConnectFramework.Shared
                                     ///После успешной разблокировки делаем повторную попытку чтения
 
 #if ANDROID
-                                    (comms.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
+                                    (comms.Value.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
 #elif IOS
-                                    comms.CurrentDevice.Request(_parameter.EnumToInt());
+                                    comms.Value.CurrentDevice.Request(_parameter.EnumToInt());
 #endif
 
                                     await WaitForParameterAny(_parameter, throwOnError: true);
@@ -1045,7 +1052,7 @@ namespace ConnectFramework.Shared
             {
                 try
                 {
-                    var current = comms.CurrentDevice.ParameterForIdentifier(parameter.EnumToInt())?.CachedValue;
+                    var current = comms.Value.CurrentDevice.ParameterForIdentifier(parameter.EnumToInt())?.CachedValue;
 
 
                     if (current != 999
@@ -1083,7 +1090,7 @@ namespace ConnectFramework.Shared
                         ConnectedDevice.DeviceLockStatusUpdated += handler2;
                         r.WaitOne(TimeSpan.FromSeconds(10));
 
-                        var @new = comms.CurrentDevice.ParameterForIdentifier(parameter.EnumToInt())?.CachedValue;
+                        var @new = comms.Value.CurrentDevice.ParameterForIdentifier(parameter.EnumToInt())?.CachedValue;
 
                         if (@new == 999
                         || @new == 255
@@ -1426,7 +1433,7 @@ namespace ConnectFramework.Shared
                     Debugger.Break();
 
                 if (messages > 0)
-                    comms.RequestNextMessage();
+                    comms.Value.RequestNextMessage();
 
 #if DEBUG
                 //if (!test)
