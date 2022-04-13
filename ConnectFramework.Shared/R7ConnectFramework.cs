@@ -310,7 +310,7 @@ namespace ConnectFramework.Shared
 #if ANDROID
                                 comms.Value.Unlock(unlockPin.Value);
 #elif IOS
-                                comms.Unlock((nuint)unlockPin);
+                                comms.Value.Unlock((nuint)unlockPin);
 #endif
 
                                 bool ok = r.WaitOne(TimeSpan.FromSeconds(15));
@@ -577,7 +577,7 @@ namespace ConnectFramework.Shared
 #if ANDROID
                                 comms.Value.Connect(ToBluetoothAddress(id));
 #elif IOS
-                                comms.Connect(new Foundation.NSUuid(id.ToString()));
+                                comms.Value.Connect(new Foundation.NSUuid(id.ToString()));
 #endif
                                 r.WaitOne(TimeSpan.FromSeconds(20));
                             }
@@ -749,7 +749,7 @@ namespace ConnectFramework.Shared
 #if ANDROID
                             comms.Value.SendRawMessageWithDataAndIdentifier(data, (short)messageId);
 #elif IOS
-                            comms.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
+                            comms.Value.SendRawMessageWithDataAndIdentifier(Foundation.NSData.FromArray(data), (nuint)messageId);
 #endif
 
                             r.WaitOne(TimeSpan.FromSeconds(30));
@@ -938,7 +938,7 @@ namespace ConnectFramework.Shared
 #if ANDROID
                 (comms.Value.CurrentDevice as R7GenericDevice).UpdateParameter(_parameter, _value);
 #elif IOS
-                comms.CurrentDevice.Update((nuint)(int)_parameter, NSData.FromArray(new byte[] { (byte)Convert.ToInt32(_value) }));
+                comms.Value.CurrentDevice.Update((nuint)(int)_parameter, NSData.FromArray(new byte[] { (byte)Convert.ToInt32(_value) }));
 #endif
 
                 ///Запрашиваем новое значение с устройства чтобы убедиться что оно сохранилось
@@ -946,7 +946,7 @@ namespace ConnectFramework.Shared
 #if ANDROID
                 (comms.Value.CurrentDevice as R7GenericDevice).RequestParameter(_parameter);
 #elif IOS
-                comms.CurrentDevice.Request(_parameter.EnumToInt());
+                comms.Value.CurrentDevice.Request(_parameter.EnumToInt());
 #endif
 
                 ///Ждем получения этого значения
