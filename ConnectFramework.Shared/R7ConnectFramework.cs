@@ -102,7 +102,7 @@ namespace ConnectFramework.Shared
 
             //Enable();
 
-            device = new R7Device(this, logger);
+            device = new R7Device(this, logger, bluetoothHelper);
         }
 
 
@@ -421,13 +421,11 @@ namespace ConnectFramework.Shared
         {
             deviceId = Guid.Empty;
 
-            if (bluetoothHelper.IsValueCreated && bluetoothHelper.Value.IsOn)
-            {
+            if (comms.IsValueCreated)
                 comms.Value.Disconnect();
 
-                if (withDelay)
-                    await Task.Delay(2000);
-            }
+            if (withDelay)
+                await Task.Delay(2000);
         }
 
         /// <summary>

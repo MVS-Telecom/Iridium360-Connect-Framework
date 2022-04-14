@@ -158,13 +158,15 @@ namespace ConnectFramework.Shared
         private DeviceState state;
         private R7ConnectFramework framework;
         private ILogger logger;
+        private Lazy<IBluetoothHelper> bluetoothHelper;
         private ConnectDevice source => framework.comms.Value.CurrentDevice;
 
 
-        public R7Device(R7ConnectFramework framework, ILogger logger)
+        public R7Device(R7ConnectFramework framework, ILogger logger, Lazy<IBluetoothHelper> bluetoothHelper)
         {
             this.framework = framework;
             this.logger = logger;
+            this.bluetoothHelper = bluetoothHelper;
         }
 
 
@@ -238,6 +240,9 @@ namespace ConnectFramework.Shared
 
                 if (state == DeviceState.Connected)
                 {
+                    bluetoothHelper.Value.BluetoothStateChanged -= BluetoothStateChanged;
+                    bluetoothHelper.Value.BluetoothStateChanged += BluetoothStateChanged;
+
                     Parameters = source
                         .Parameters()
                         .Select(x =>
@@ -269,6 +274,24 @@ namespace ConnectFramework.Shared
                     ConnectedDevice = this,
                     State = this.state,
                 });
+            }
+        }
+
+        /// <summary>
+        /// Event to be called when smartphone's Bluetooth state was changed.
+        /// </summary>
+        /// <param name="sender">Event sender.</param>
+        /// <param name="args">Event args.</param>
+        private async void BluetoothStateChanged(object sender, BluetoothStateChangedEventArgs args)
+        {
+            // Workaround of strange ConnectFramework behavior on Android 12.
+            // Framework doesn't recognize RockStar disconnection after smarphone's Bluetooth was turned off.
+            // So performing force disconnect.
+            if (Xamarin.Essentials.DeviceInfo.Platform == Xamarin.Essentials.DevicePlatform.Android
+                && Xamarin.Essentials.DeviceInfo.Version >= new Version(12, 0)
+                && !args.IsEnabled)
+            {
+                await framework.Disconnect();
             }
         }
 
