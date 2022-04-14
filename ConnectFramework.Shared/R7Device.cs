@@ -158,7 +158,7 @@ namespace ConnectFramework.Shared
         private DeviceState state;
         private R7ConnectFramework framework;
         private ILogger logger;
-        private ConnectDevice source => framework.comms.CurrentDevice;
+        private ConnectDevice source => framework.comms.Value.CurrentDevice;
 
 
         public R7Device(R7ConnectFramework framework, ILogger logger)
@@ -220,7 +220,7 @@ namespace ConnectFramework.Shared
             {
 #if DEBUG && ANDROID
                 bool a = state == DeviceState.Connected;
-                bool b = framework.comms.IsConnected().BooleanValue();
+                bool b = framework.comms.Value.IsConnected().BooleanValue();
 
                 if (a != b)
                     Console.WriteLine("!! STATE != STATE !!!");
