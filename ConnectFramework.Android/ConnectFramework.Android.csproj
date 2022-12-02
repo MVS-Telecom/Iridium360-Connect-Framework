@@ -47,7 +47,7 @@
   <ItemGroup>
     <None Include="Jars\AboutJars.txt" />
     <None Include="Additions\AboutAdditions.txt" />
-    <LibraryProjectZip Include="Jars\connect-framework-142.aar" />
+    <LibraryProjectZip Include="Jars\connect-framework-145.aar" />
   </ItemGroup>
   <ItemGroup>
     <TransformFile Include="Transforms\Metadata.xml" />
