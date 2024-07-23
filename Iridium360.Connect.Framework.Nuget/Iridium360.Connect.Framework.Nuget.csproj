@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 
-    <TargetFrameworks>xamarin.ios10;monoandroid12.0;netstandard2.0;net48</TargetFrameworks>
+    <TargetFrameworks>xamarin.ios10;monoandroid13.0;netstandard2.0;net48</TargetFrameworks>
 	
 	<!--
 		https://dev.to/wabbbit/include-both-nuget-package-references-and-project-reference-dll-using-dotnet-pack-2d8p
