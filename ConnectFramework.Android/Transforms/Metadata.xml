@@ -17,5 +17,13 @@
 
   <remove-node path="/api/package[@name='uk.rock7.connect.firmware']/class[@name='FirmwareCacheRecord']" />
   <remove-node path="/api/package[@name='uk.rock7.connect']/class[@name='DeviceLogIndex']" />
-  
+	<remove-node path="/api/package[@name='uk.rock7.connect']/class[@name='ConnectComms.A']" />
+	<remove-node path="/api/package[@name='uk.rock7.connect.device.r7generic']/class[@name='R7GenericDeviceValueIoPwm']" />
+
+	<remove-node path="/api/package[@name='com.google.common.collect']" />
+	<remove-node path="/api/package[@name='com.google.common.util.concurrent']" />
+	<remove-node path="/api/package[@name='com.google.common.hash']" />
+	<remove-node path="/api/package[@name='com.google.common.reflect']" />
+	<remove-node path="/api/package[@name='com.google.common.primitives']" />
+
 </metadata>
